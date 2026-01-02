@@ -156,6 +156,18 @@
       color:rgba(28,31,37,.62);
       margin-bottom:10px;
     }
+
+    /* NEW: Counter pill on cards */
+    .count{
+      font-size: 12px;
+      color: rgba(28,31,37,.62);
+      background: rgba(232,240,255,.55);
+      border: 1px solid rgba(58,115,255,.14);
+      padding: 8px 10px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+    }
+
     .more{
       width:100%;
       border:none;
@@ -323,62 +335,78 @@
         <span class="hint">Landmarks • Castles • Attractions</span>
       </div>
       <div class="slider-row">
-        <article class="card" data-title="Nymphenburg Palace Visit" data-location="Munich" data-initiator="Initiated by Lina"
-          data-desc=" We visit Nymphenburg Palace together and walk through the gardens.
-This is a calm and easy activity with no rush.
-You can enjoy the surroundings and take photos if you like.
-Perfect if you want to explore the city together with others."
-          data-img="https://source.unsplash.com/featured/1200x800/?nymphenburg,palace">
+        <article class="card"
+          data-title="Nymphenburg Palace Visit"
+          data-location="Munich"
+          data-initiator="Initiated by Lina"
+          data-desc="We visit Nymphenburg Palace together and walk through the gardens. This is a calm and easy activity with no rush. You can enjoy the surroundings and take photos if you like. Perfect if you want to explore the city together with others."
+          data-img="https://source.unsplash.com/featured/1200x800/?nymphenburg,palace"
+          data-label="Participants"
+          data-signed="3"
+          data-needed="8">
           <img alt="City landmark" src="https://source.unsplash.com/featured/600x420/?nymphenburg,palace">
           <div class="card-body">
             <h3>Nymphenburg Palace Visit</h3>
             <p>Visit a famous palace and enjoy the gardens.</p>
             <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Lina</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Marienplatz Walk" data-location="Munich" data-initiator="Initiated by Omar"
-          data-desc=" We take a relaxed walk around Marienplatz and nearby streets.
-The focus is on getting to know the city center.
-There is no fixed plan and no pressure.
-Just come along and enjoy the walk."
-          data-img="https://source.unsplash.com/featured/1200x800/?marienplatz,munich">
+        <article class="card"
+          data-title="Marienplatz Walk"
+          data-location="Munich"
+          data-initiator="Initiated by Omar"
+          data-desc="We take a relaxed walk around Marienplatz and nearby streets. The focus is on getting to know the city center. There is no fixed plan and no pressure. Just come along and enjoy the walk."
+          data-img="https://source.unsplash.com/featured/1200x800/?marienplatz,munich"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="City attraction" src="https://source.unsplash.com/featured/600x420/?marienplatz,munich">
           <div class="card-body">
             <h3>Marienplatz Walk</h3>
             <p>See the main square and nearby streets.</p>
             <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Omar</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Munich Residenz Courtyard" data-location="Munich" data-initiator="Initiated by Sara"
-          data-desc=" We visit the courtyard of the Munich Residenz together.
-This activity is quiet and focused on architecture and history.
-You can look around at your own pace.
-A good option if you prefer calm meetups."
-          data-img="https://source.unsplash.com/featured/1200x800/?munich,residenz">
+        <article class="card"
+          data-title="Munich Residenz Courtyard"
+          data-location="Munich"
+          data-initiator="Initiated by Sara"
+          data-desc="We visit the courtyard of the Munich Residenz together. This activity is quiet and focused on architecture and history. You can look around at your own pace. A good option if you prefer calm meetups."
+          data-img="https://source.unsplash.com/featured/1200x800/?munich,residenz"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Historic building" src="https://source.unsplash.com/featured/600x420/?munich,residenz">
           <div class="card-body">
             <h3>Munich Residenz Courtyard</h3>
             <p>Architecture-focused, calm and short.</p>
             <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Sara</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Castle / Landmark Photo Spot" data-location="Munich area" data-initiator="Initiated by Ali"
-          data-desc=" We meet at a well-known landmark or castle.
-The goal is to explore and maybe take a few photos.
-There is no focus on people or performance.
-Just a simple and relaxed city activity."
-          data-img="https://source.unsplash.com/featured/1200x800/?castle,bavaria">
+        <article class="card"
+          data-title="Castle / Landmark Photo Spot"
+          data-location="Munich area"
+          data-initiator="Initiated by Ali"
+          data-desc="We meet at a well-known landmark or castle. The goal is to explore and maybe take a few photos. There is no focus on people or performance. Just a simple and relaxed city activity."
+          data-img="https://source.unsplash.com/featured/1200x800/?castle,bavaria"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Castle" src="https://source.unsplash.com/featured/600x420/?castle,bavaria">
           <div class="card-body">
             <h3>Castle / Landmark Photo Spot</h3>
             <p>Neutral landmark meetup — no people focus.</p>
             <div class="meta"><span>Munich area</span><span>•</span><span>Initiated by Ali</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
@@ -391,62 +419,78 @@ Just a simple and relaxed city activity."
         <span class="hint">Casual • Friendly</span>
       </div>
       <div class="slider-row">
-        <article class="card" data-title="Casual Football Kickabout" data-location="Local field" data-initiator="Initiated by Ben"
-          data-desc=" This is a relaxed football meetup for all levels.
-You can join even if you haven’t played in a long time.
-The focus is on fun, not competition.
-Come as you are and play a bit."
-          data-img="https://source.unsplash.com/featured/1200x800/?football,field">
+        <article class="card"
+          data-title="Casual Football Kickabout"
+          data-location="Local field"
+          data-initiator="Initiated by Ben"
+          data-desc="This is a relaxed football meetup for all levels. You can join even if you haven’t played in a long time. The focus is on fun, not competition. Come as you are and play a bit."
+          data-img="https://source.unsplash.com/featured/1200x800/?football,field"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Football field" src="https://source.unsplash.com/featured/600x420/?football,field">
           <div class="card-body">
             <h3>Casual Football Kickabout</h3>
             <p>Easy match — just join and play.</p>
             <div class="meta"><span>Local field</span><span>•</span><span>Initiated by Ben</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Park Jog (Beginner)" data-location="City park" data-initiator="Initiated by Mia"
-          data-desc=" We go for an easy jog together in the park.
-The pace is slow and suitable for beginners.
-There is no pressure to keep up.
-You can stop or walk at any time."
-          data-img="https://source.unsplash.com/featured/1200x800/?running,park">
+        <article class="card"
+          data-title="Park Jog (Beginner)"
+          data-location="City park"
+          data-initiator="Initiated by Mia"
+          data-desc="We go for an easy jog together in the park. The pace is slow and suitable for beginners. There is no pressure to keep up. You can stop or walk at any time."
+          data-img="https://source.unsplash.com/featured/1200x800/?running,park"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Running" src="https://source.unsplash.com/featured/600x420/?running,park">
           <div class="card-body">
             <h3>Park Jog (Beginner)</h3>
             <p>Short route, calm pace.</p>
             <div class="meta"><span>City park</span><span>•</span><span>Initiated by Mia</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Table Tennis Meetup" data-location="Community spot" data-initiator="Initiated by Noor"
-          data-desc=" We meet to play casual table tennis together.
-You don’t need special skills or experience.
-Games are short and friendly.
-It’s a simple way to be active and meet people."
-          data-img="https://source.unsplash.com/featured/1200x800/?tabletennis,pingpong">
+        <article class="card"
+          data-title="Table Tennis Meetup"
+          data-location="Community spot"
+          data-initiator="Initiated by Noor"
+          data-desc="We meet to play casual table tennis together. You don’t need special skills or experience. Games are short and friendly. It’s a simple way to be active and meet people."
+          data-img="https://source.unsplash.com/featured/1200x800/?tabletennis,pingpong"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Table tennis" src="https://source.unsplash.com/featured/600x420/?tabletennis,pingpong">
           <div class="card-body">
             <h3>Table Tennis Meetup</h3>
             <p>Quick games, friendly vibe.</p>
             <div class="meta"><span>Community spot</span><span>•</span><span>Initiated by Noor</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Basketball (Casual)" data-location="Outdoor court" data-initiator="Initiated by Leo"
-          data-desc=" We meet at an outdoor court to play basketball.
-This is a relaxed and friendly session.
-You can join for shooting or short games.
-Everyone is welcome."
-          data-img="https://source.unsplash.com/featured/1200x800/?basketball,court">
+        <article class="card"
+          data-title="Basketball (Casual)"
+          data-location="Outdoor court"
+          data-initiator="Initiated by Leo"
+          data-desc="We meet at an outdoor court to play basketball. This is a relaxed and friendly session. You can join for shooting or short games. Everyone is welcome."
+          data-img="https://source.unsplash.com/featured/1200x800/?basketball,court"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Basketball court" src="https://source.unsplash.com/featured/600x420/?basketball,court">
           <div class="card-body">
             <h3>Basketball (Casual)</h3>
             <p>Relaxed meetup at the court.</p>
             <div class="meta"><span>Outdoor court</span><span>•</span><span>Initiated by Leo</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
@@ -459,53 +503,78 @@ Everyone is welcome."
         <span class="hint">Practice • Support</span>
       </div>
       <div class="slider-row">
-        <article class="card" data-title="Language Exchange (Café)" data-location="Café" data-initiator="Initiated by Hanna"
-          data-desc=" We meet in a café to practice languages together.
-The atmosphere is relaxed and friendly.
-You can speak as much or as little as you want.
-Mistakes are completely okay."
-          data-img="https://source.unsplash.com/featured/1200x800/?cafe,conversation">
+        <article class="card"
+          data-title="Language Exchange (Café)"
+          data-location="Café"
+          data-initiator="Initiated by Hanna"
+          data-desc="We meet in a café to practice languages together. The atmosphere is relaxed and friendly. You can speak as much or as little as you want. Mistakes are completely okay."
+          data-img="https://source.unsplash.com/featured/1200x800/?cafe,conversation"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Cafe" src="https://source.unsplash.com/featured/600x420/?cafe,conversation">
           <div class="card-body">
             <h3>Language Exchange (Café)</h3>
             <p>Easy conversation practice.</p>
             <div class="meta"><span>Café</span><span>•</span><span>Initiated by Hanna</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Homework / Study Session" data-location="Library" data-initiator="Initiated by Yusuf"
+        <article class="card"
+          data-title="Homework / Study Session"
+          data-location="Library"
+          data-initiator="Initiated by Yusuf"
           data-desc="Quiet study session. Bring your tasks. Help each other if needed."
-          data-img="https://source.unsplash.com/featured/1200x800/?library,study">
+          data-img="https://source.unsplash.com/featured/1200x800/?library,study"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Library" src="https://source.unsplash.com/featured/600x420/?library,study">
           <div class="card-body">
             <h3>Homework / Study Session</h3>
             <p>Calm space for learning.</p>
             <div class="meta"><span>Library</span><span>•</span><span>Initiated by Yusuf</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="CV Help (Basics)" data-location="Community space" data-initiator="Initiated by Elena"
+        <article class="card"
+          data-title="CV Help (Basics)"
+          data-location="Community space"
+          data-initiator="Initiated by Elena"
           data-desc="Simple CV basics. Clear tips. Keep it short and helpful."
-          data-img="https://source.unsplash.com/featured/1200x800/?resume,writing">
+          data-img="https://source.unsplash.com/featured/1200x800/?resume,writing"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Writing" src="https://source.unsplash.com/featured/600x420/?resume,writing">
           <div class="card-body">
             <h3>CV Help (Basics)</h3>
             <p>Short help session.</p>
             <div class="meta"><span>Community space</span><span>•</span><span>Initiated by Elena</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Beginner German (A1)" data-location="Meetup spot" data-initiator="Initiated by Karim"
+        <article class="card"
+          data-title="Beginner German (A1)"
+          data-location="Meetup spot"
+          data-initiator="Initiated by Karim"
           data-desc="Simple beginner practice. Focus on basic phrases."
-          data-img="https://source.unsplash.com/featured/1200x800/?german,language">
+          data-img="https://source.unsplash.com/featured/1200x800/?german,language"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Learning" src="https://source.unsplash.com/featured/600x420/?language,learning">
           <div class="card-body">
             <h3>Beginner German (A1)</h3>
             <p>Basic phrases and practice.</p>
             <div class="meta"><span>Meetup spot</span><span>•</span><span>Initiated by Karim</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
@@ -518,50 +587,78 @@ Mistakes are completely okay."
         <span class="hint">Local • Easy</span>
       </div>
       <div class="slider-row">
-        <article class="card" data-title="Museum Visit (Simple)" data-location="Museum" data-initiator="Initiated by Emma"
+        <article class="card"
+          data-title="Museum Visit (Simple)"
+          data-location="Museum"
+          data-initiator="Initiated by Emma"
           data-desc="Visit a museum together. No stress. Focus on exploring."
-          data-img="https://source.unsplash.com/featured/1200x800/?museum,interior">
+          data-img="https://source.unsplash.com/featured/1200x800/?museum,interior"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Museum" src="https://source.unsplash.com/featured/600x420/?museum,interior">
           <div class="card-body">
             <h3>Museum Visit (Simple)</h3>
             <p>Explore a museum calmly.</p>
             <div class="meta"><span>Museum</span><span>•</span><span>Initiated by Emma</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="City Event Walk-By" data-location="City center" data-initiator="Initiated by Adam"
+        <article class="card"
+          data-title="City Event Walk-By"
+          data-location="City center"
+          data-initiator="Initiated by Adam"
           data-desc="A short walk to check out a local event atmosphere."
-          data-img="https://source.unsplash.com/featured/1200x800/?festival,street">
+          data-img="https://source.unsplash.com/featured/1200x800/?festival,street"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Event" src="https://source.unsplash.com/featured/600x420/?festival,street">
           <div class="card-body">
             <h3>City Event Walk-By</h3>
             <p>Casual event vibe, no pressure.</p>
             <div class="meta"><span>City center</span><span>•</span><span>Initiated by Adam</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Local Exhibition" data-location="Gallery" data-initiator="Initiated by Nina"
+        <article class="card"
+          data-title="Local Exhibition"
+          data-location="Gallery"
+          data-initiator="Initiated by Nina"
           data-desc="Visit a small exhibition. Take it slow."
-          data-img="https://source.unsplash.com/featured/1200x800/?gallery,exhibition">
+          data-img="https://source.unsplash.com/featured/1200x800/?gallery,exhibition"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Gallery" src="https://source.unsplash.com/featured/600x420/?gallery,exhibition">
           <div class="card-body">
             <h3>Local Exhibition</h3>
             <p>Simple gallery visit.</p>
             <div class="meta"><span>Gallery</span><span>•</span><span>Initiated by Nina</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Coffee After Event" data-location="Café" data-initiator="Initiated by Jonas"
+        <article class="card"
+          data-title="Coffee After Event"
+          data-location="Café"
+          data-initiator="Initiated by Jonas"
           data-desc="If you want, grab a coffee after. Calm chat."
-          data-img="https://source.unsplash.com/featured/1200x800/?coffee,cafe">
+          data-img="https://source.unsplash.com/featured/1200x800/?coffee,cafe"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Cafe" src="https://source.unsplash.com/featured/600x420/?coffee,cafe">
           <div class="card-body">
             <h3>Coffee After Event</h3>
             <p>Short chat, friendly vibe.</p>
             <div class="meta"><span>Café</span><span>•</span><span>Initiated by Jonas</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
@@ -574,50 +671,78 @@ Mistakes are completely okay."
         <span class="hint">Safe • Calm</span>
       </div>
       <div class="slider-row">
-        <article class="card" data-title="Playground Meetup" data-location="Park" data-initiator="Initiated by Mariam"
+        <article class="card"
+          data-title="Playground Meetup"
+          data-location="Park"
+          data-initiator="Initiated by Mariam"
           data-desc="Meet at a playground, kids can play, parents can chat."
-          data-img="https://source.unsplash.com/featured/1200x800/?playground,park">
+          data-img="https://source.unsplash.com/featured/1200x800/?playground,park"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Playground" src="https://source.unsplash.com/featured/600x420/?playground,park">
           <div class="card-body">
             <h3>Playground Meetup</h3>
             <p>Simple park meetup for families.</p>
             <div class="meta"><span>Park</span><span>•</span><span>Initiated by Mariam</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Picnic (Simple)" data-location="Green area" data-initiator="Initiated by Paul"
+        <article class="card"
+          data-title="Picnic (Simple)"
+          data-location="Green area"
+          data-initiator="Initiated by Paul"
           data-desc="Bring something small, enjoy a calm picnic."
-          data-img="https://source.unsplash.com/featured/1200x800/?picnic,park">
+          data-img="https://source.unsplash.com/featured/1200x800/?picnic,park"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Picnic" src="https://source.unsplash.com/featured/600x420/?picnic,park">
           <div class="card-body">
             <h3>Picnic (Simple)</h3>
             <p>Relaxed picnic atmosphere.</p>
             <div class="meta"><span>Green area</span><span>•</span><span>Initiated by Paul</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Family Walk" data-location="Nearby area" data-initiator="Initiated by Sofia"
+        <article class="card"
+          data-title="Family Walk"
+          data-location="Nearby area"
+          data-initiator="Initiated by Sofia"
           data-desc="Short walk suitable for kids. Easy pace."
-          data-img="https://source.unsplash.com/featured/1200x800/?family,park">
+          data-img="https://source.unsplash.com/featured/1200x800/?family,park"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Family walk" src="https://source.unsplash.com/featured/600x420/?family,park">
           <div class="card-body">
             <h3>Family Walk</h3>
             <p>Easy walk, kid-friendly.</p>
             <div class="meta"><span>Nearby area</span><span>•</span><span>Initiated by Sofia</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Kids Craft Hour" data-location="Community room" data-initiator="Initiated by Tom"
+        <article class="card"
+          data-title="Kids Craft Hour"
+          data-location="Community room"
+          data-initiator="Initiated by Tom"
           data-desc="Simple crafts. Calm and friendly."
-          data-img="https://source.unsplash.com/featured/1200x800/?kids,craft">
+          data-img="https://source.unsplash.com/featured/1200x800/?kids,craft"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Crafts" src="https://source.unsplash.com/featured/600x420/?kids,craft">
           <div class="card-body">
             <h3>Kids Craft Hour</h3>
             <p>Simple creative time.</p>
             <div class="meta"><span>Community room</span><span>•</span><span>Initiated by Tom</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
@@ -630,50 +755,78 @@ Mistakes are completely okay."
         <span class="hint">Easy • Fresh air</span>
       </div>
       <div class="slider-row">
-        <article class="card" data-title="Easy Forest Walk" data-location="Forest trail" data-initiator="Initiated by Lea"
+        <article class="card"
+          data-title="Easy Forest Walk"
+          data-location="Forest trail"
+          data-initiator="Initiated by Lea"
           data-desc="Simple walk in nature. Beginner-friendly."
-          data-img="https://source.unsplash.com/featured/1200x800/?forest,trail">
+          data-img="https://source.unsplash.com/featured/1200x800/?forest,trail"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Forest trail" src="https://source.unsplash.com/featured/600x420/?forest,trail">
           <div class="card-body">
             <h3>Easy Forest Walk</h3>
             <p>Calm walk in a forest area.</p>
             <div class="meta"><span>Forest trail</span><span>•</span><span>Initiated by Lea</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Lakeside Walk" data-location="Lake" data-initiator="Initiated by Sam"
+        <article class="card"
+          data-title="Lakeside Walk"
+          data-location="Lake"
+          data-initiator="Initiated by Sam"
           data-desc="Easy walk near a lake. Simple meetup."
-          data-img="https://source.unsplash.com/featured/1200x800/?lake,walk">
+          data-img="https://source.unsplash.com/featured/1200x800/?lake,walk"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Lake" src="https://source.unsplash.com/featured/600x420/?lake,walk">
           <div class="card-body">
             <h3>Lakeside Walk</h3>
             <p>Fresh air and calm view.</p>
             <div class="meta"><span>Lake</span><span>•</span><span>Initiated by Sam</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Beginner Hike" data-location="Trail" data-initiator="Initiated by Noor"
+        <article class="card"
+          data-title="Beginner Hike"
+          data-location="Trail"
+          data-initiator="Initiated by Noor"
           data-desc="Short, beginner hike. Keep it simple."
-          data-img="https://source.unsplash.com/featured/1200x800/?hiking,trail">
+          data-img="https://source.unsplash.com/featured/1200x800/?hiking,trail"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Hiking" src="https://source.unsplash.com/featured/600x420/?hiking,trail">
           <div class="card-body">
             <h3>Beginner Hike</h3>
             <p>Short hike, easy pace.</p>
             <div class="meta"><span>Trail</span><span>•</span><span>Initiated by Noor</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Sunset Viewpoint" data-location="Viewpoint" data-initiator="Initiated by Mia"
+        <article class="card"
+          data-title="Sunset Viewpoint"
+          data-location="Viewpoint"
+          data-initiator="Initiated by Mia"
           data-desc="Meet to watch the sunset at a viewpoint."
-          data-img="https://source.unsplash.com/featured/1200x800/?sunset,viewpoint">
+          data-img="https://source.unsplash.com/featured/1200x800/?sunset,viewpoint"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Sunset" src="https://source.unsplash.com/featured/600x420/?sunset,viewpoint">
           <div class="card-body">
             <h3>Sunset Viewpoint</h3>
             <p>Calm sunset meetup.</p>
             <div class="meta"><span>Viewpoint</span><span>•</span><span>Initiated by Mia</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
@@ -686,50 +839,78 @@ Mistakes are completely okay."
         <span class="hint">Create • Chill</span>
       </div>
       <div class="slider-row">
-        <article class="card" data-title="Simple Painting Session" data-location="Workshop space" data-initiator="Initiated by Anna"
+        <article class="card"
+          data-title="Simple Painting Session"
+          data-location="Workshop space"
+          data-initiator="Initiated by Anna"
           data-desc="Paint together. No skills needed."
-          data-img="https://source.unsplash.com/featured/1200x800/?painting,workshop">
+          data-img="https://source.unsplash.com/featured/1200x800/?painting,workshop"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Painting" src="https://source.unsplash.com/featured/600x420/?painting,workshop">
           <div class="card-body">
             <h3>Simple Painting Session</h3>
             <p>Relaxed painting time.</p>
             <div class="meta"><span>Workshop space</span><span>•</span><span>Initiated by Anna</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Craft Table Meetup" data-location="Community room" data-initiator="Initiated by Leo"
+        <article class="card"
+          data-title="Craft Table Meetup"
+          data-location="Community room"
+          data-initiator="Initiated by Leo"
           data-desc="Simple crafts at a table. Chill vibe."
-          data-img="https://source.unsplash.com/featured/1200x800/?crafts,workshop">
+          data-img="https://source.unsplash.com/featured/1200x800/?crafts,workshop"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Crafts" src="https://source.unsplash.com/featured/600x420/?crafts,workshop">
           <div class="card-body">
             <h3>Craft Table Meetup</h3>
             <p>Easy crafts, friendly.</p>
             <div class="meta"><span>Community room</span><span>•</span><span>Initiated by Leo</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Photography Walk (Objects)" data-location="City area" data-initiator="Initiated by Lina"
+        <article class="card"
+          data-title="Photography Walk (Objects)"
+          data-location="City area"
+          data-initiator="Initiated by Lina"
           data-desc="Take simple photos of buildings and objects — no people focus."
-          data-img="https://source.unsplash.com/featured/1200x800/?photography,city">
+          data-img="https://source.unsplash.com/featured/1200x800/?photography,city"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Photography" src="https://source.unsplash.com/featured/600x420/?photography,city">
           <div class="card-body">
             <h3>Photography Walk (Objects)</h3>
             <p>Buildings, objects, calm pace.</p>
             <div class="meta"><span>City area</span><span>•</span><span>Initiated by Lina</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
-        <article class="card" data-title="Music Listening Session" data-location="Quiet space" data-initiator="Initiated by Omar"
+        <article class="card"
+          data-title="Music Listening Session"
+          data-location="Quiet space"
+          data-initiator="Initiated by Omar"
           data-desc="Listen to music and share favorites. Keep it simple."
-          data-img="https://source.unsplash.com/featured/1200x800/?music,headphones">
+          data-img="https://source.unsplash.com/featured/1200x800/?music,headphones"
+          data-label="Participants"
+          data-signed="0"
+          data-needed="0">
           <img alt="Music" src="https://source.unsplash.com/featured/600x420/?music,headphones">
           <div class="card-body">
             <h3>Music Listening Session</h3>
             <p>Share songs, relaxed chat.</p>
             <div class="meta"><span>Quiet space</span><span>•</span><span>Initiated by Omar</span></div>
+            <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
@@ -756,6 +937,8 @@ Mistakes are completely okay."
         <ul class="modal-facts">
           <li class="fact" id="modalLocation"></li>
           <li class="fact" id="modalInitiator"></li>
+          <!-- NEW: counter fact -->
+          <li class="fact" id="modalCount"></li>
         </ul>
 
         <div class="modal-actions">
@@ -769,7 +952,7 @@ Mistakes are completely okay."
   </div>
 
   <script>
-    // Simple modal logic (no stats, no numbers)
+    // Simple modal logic (prototype counter + modal)
     const backdrop = document.getElementById("modalBackdrop");
     const closeBtn = document.getElementById("modalClose");
 
@@ -777,13 +960,22 @@ Mistakes are completely okay."
     const mDesc = document.getElementById("modalDesc");
     const mLoc  = document.getElementById("modalLocation");
     const mInit = document.getElementById("modalInitiator");
+    const mCount = document.getElementById("modalCount");
     const mImg  = document.getElementById("modalImg");
+
+    function formatCount(card){
+      const label = card.dataset.label || "Participants";
+      const signed = (card.dataset.signed ?? "0");
+      const needed = (card.dataset.needed ?? "0");
+      return `${label}: ${signed} / ${needed}`;
+    }
 
     function openModal(card){
       mTitle.textContent = card.dataset.title || "Activity";
       mDesc.textContent  = card.dataset.desc || "";
       mLoc.textContent   = "Location: " + (card.dataset.location || "");
       mInit.textContent  = card.dataset.initiator || "";
+      mCount.textContent = formatCount(card);
       mImg.src           = card.dataset.img || card.querySelector("img")?.src || "";
 
       backdrop.style.display = "flex";
@@ -808,6 +1000,12 @@ Mistakes are completely okay."
     closeBtn.addEventListener("click", closeModal);
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && backdrop.style.display === "flex") closeModal();
+    });
+
+    // NEW: Render the counter UI on each card
+    document.querySelectorAll(".card").forEach(card => {
+      const ui = card.querySelector("[data-count-ui]");
+      if (ui) ui.textContent = formatCount(card);
     });
   </script>
 </body>
