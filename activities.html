@@ -68,7 +68,7 @@
       border-color: rgba(58,115,255,.35);
       box-shadow:0 10px 24px rgba(58,115,255,.12);
     }
-    .lang{
+    .pill-btn{
       padding:0 12px;
       height:40px;
       border-radius:999px;
@@ -76,8 +76,11 @@
       background:white;
       cursor:pointer;
       font-weight:500;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
-    .lang:hover{ border-color: rgba(58,115,255,.35); }
+    .pill-btn:hover{ border-color: rgba(58,115,255,.35); }
 
     /* Page header */
     .page-head{
@@ -150,14 +153,17 @@
     }
     .meta{
       display:flex;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
       font-size:12px;
       color:rgba(28,31,37,.62);
       margin-bottom:10px;
     }
+    .meta .dot{
+      opacity:.6;
+    }
 
-    /* NEW: Counter pill on cards */
+    /* Counter pill on cards */
     .count{
       font-size: 12px;
       color: rgba(28,31,37,.62);
@@ -199,7 +205,7 @@
       border: var(--border);
       box-shadow: 0 28px 80px rgba(0,0,0,.30);
       display:grid;
-      grid-template-columns: 1.2fr .8fr;
+      grid-template-columns: .9fr 1.1fr; /* smaller image area to fit more details */
       min-height: 420px;
     }
     @media (max-width: 860px){
@@ -208,13 +214,20 @@
 
     .modal-media{
       background:#f3f5f8;
-      min-height: 260px;
+      min-height: 220px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
     }
     .modal-media img{
       width:100%;
-      height:100%;
+      max-height: 260px;         /* smaller image */
+      height:auto;
       object-fit:cover;
+      border-radius: 14px;
       display:block;
+      background:#eee;
     }
     .modal-content{
       padding:18px 18px 18px;
@@ -248,21 +261,83 @@
       color:rgba(28,31,37,.78);
       line-height:1.5;
     }
+
     .modal-facts{
       margin:0;
       padding:0;
       list-style:none;
       display:grid;
-      gap:8px;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
       font-size:13px;
       color:rgba(28,31,37,.72);
     }
+    @media (max-width: 860px){
+      .modal-facts{ grid-template-columns: 1fr; }
+    }
+
     .fact{
       background: rgba(232,240,255,.55);
       border: 1px solid rgba(58,115,255,.14);
       padding:10px 12px;
       border-radius: 14px;
     }
+
+    .fact-title{
+      font-size:11px;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      color:rgba(28,31,37,.62);
+      margin-bottom:6px;
+    }
+    .fact-value{
+      font-size:13px;
+      color:rgba(28,31,37,.78);
+      line-height:1.35;
+    }
+
+    .fact-link{
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .fact-link:hover{
+      border-color: rgba(58,115,255,.35);
+      box-shadow:0 10px 24px rgba(58,115,255,.10);
+    }
+    .calendar-hint{
+      font-size:12px;
+      color:rgba(28,31,37,.6);
+      margin-top:6px;
+    }
+
+    /* Participant bar */
+    .bar-wrap{
+      margin-top:8px;
+      background: rgba(58,115,255,.10);
+      border: 1px solid rgba(58,115,255,.18);
+      border-radius: 999px;
+      height: 12px;
+      overflow:hidden;
+    }
+    .bar-fill{
+      height:100%;
+      width:0%;
+      background: var(--primary-blue);
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+    .bar-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .bar-row small{
+      color:rgba(28,31,37,.62);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
     .modal-actions{
       margin-top:auto;
       display:flex;
@@ -302,16 +377,15 @@
       </div>
 
       <div class="nav-actions">
-        <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
+        <button class="pill-btn" type="button" aria-label="Region selector">Munich ▾</button>
+        <button class="pill-btn" type="button" aria-label="Language selector">EN ▾</button>
         <button class="icon-btn" type="button" title="Profile (visual only)" aria-label="Profile">
-          <!-- simple user icon -->
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="#3A73FF" stroke-width="2"/>
             <path d="M20 21a8 8 0 1 0-16 0" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </button>
         <a class="icon-btn" href="index.html" title="Logout (prototype link)" aria-label="Logout">
-          <!-- simple logout icon -->
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M10 17l5-5-5-5" stroke="#3A73FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M15 12H3" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
@@ -325,7 +399,7 @@
   <main class="container">
     <section class="page-head">
       <h1>Activities</h1>
-      <p class="muted">Scroll categories horizontally. Click “More” to open details. (Prototype)</p>
+      <p class="muted">Scroll categories horizontally. Click “More” to open details.</p>
     </section>
 
     <!-- Categories -->
@@ -335,21 +409,28 @@
         <span class="hint">Landmarks • Castles • Attractions</span>
       </div>
       <div class="slider-row">
+
         <article class="card"
           data-title="Nymphenburg Palace Visit"
-          data-location="Meet at Marienplatz.
-          13.00 on Mo. 20.04.2026 "
+          data-location="Marienplatz (Fischbrunnen)"
+          data-datetime="Sat, 17 Jan 2026 • 13:00"
+          data-dtstart="2026-01-17T13:00"
+          data-dtend="2026-01-17T16:00"
           data-initiator="Initiated by Lina"
+          data-req="Comfortable shoes; MVV ticket (Zone M) recommended"
           data-desc="We visit Nymphenburg Palace together and walk through the gardens. This is a calm and easy activity with no rush. You can enjoy the surroundings and take photos if you like. Perfect if you want to explore the city together with others."
           data-img="/images/nymphenburg-TH.jpeg"
           data-label="Participants"
-          data-signed="3"
-          data-needed="8">
+          data-signed="5"
+          data-needed="12">
           <img alt="City landmark" src="/images/nymphenburg-TH.jpeg">
           <div class="card-body">
             <h3>Nymphenburg Palace Visit</h3>
             <p>Visit a famous palace and enjoy the gardens.</p>
-            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Lina</span></div>
+            <div class="meta">
+              <span>Meet: Marienplatz</span><span class="dot">•</span>
+              <span>Sat, 17 Jan • 13:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -357,18 +438,25 @@
 
         <article class="card"
           data-title="Marienplatz Walk"
-          data-location="Munich"
+          data-location="Karlsplatz (Stachus) — under the main gate"
+          data-datetime="Sun, 18 Jan 2026 • 11:00"
+          data-dtstart="2026-01-18T11:00"
+          data-dtend="2026-01-18T12:30"
           data-initiator="Initiated by Omar"
+          data-req="No requirements"
           data-desc="We take a relaxed walk around Marienplatz and nearby streets. The focus is on getting to know the city center. There is no fixed plan and no pressure. Just come along and enjoy the walk."
           data-img="/images/marienplatz-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="8"
+          data-needed="20">
           <img alt="City attraction" src="/images/marienplatz-TH.jpeg">
           <div class="card-body">
             <h3>Marienplatz Walk</h3>
             <p>See the main square and nearby streets.</p>
-            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Omar</span></div>
+            <div class="meta">
+              <span>Meet: Stachus</span><span class="dot">•</span>
+              <span>Sun, 18 Jan • 11:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -376,37 +464,51 @@
 
         <article class="card"
           data-title="Munich Residenz Courtyard"
-          data-location="Munich"
+          data-location="Odeonsplatz (near Feldherrnhalle)"
+          data-datetime="Tue, 20 Jan 2026 • 16:30"
+          data-dtstart="2026-01-20T16:30"
+          data-dtend="2026-01-20T18:00"
           data-initiator="Initiated by Sara"
+          data-req="No requirements"
           data-desc="We visit the courtyard of the Munich Residenz together. This activity is quiet and focused on architecture and history. You can look around at your own pace. A good option if you prefer calm meetups."
           data-img="/images/residenz-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="4"
+          data-needed="10">
           <img alt="Historic building" src="/images/residenz-TH.jpeg">
           <div class="card-body">
             <h3>Munich Residenz Courtyard</h3>
-            <p>Afternoon meetup to get to kow munich.</p>
-            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Sara</span></div>
+            <p>Quiet architecture + history meetup.</p>
+            <div class="meta">
+              <span>Meet: Odeonsplatz</span><span class="dot">•</span>
+              <span>Tue, 20 Jan • 16:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
 
         <article class="card"
-          data-title="Castle Neuschwanstein"
-          data-location="Munich area"
+          data-title="Castle Neuschwanstein (Day Trip)"
+          data-location="München Hbf — main hall info board"
+          data-datetime="Sat, 24 Jan 2026 • 07:40"
+          data-dtstart="2026-01-24T07:40"
+          data-dtend="2026-01-24T18:30"
           data-initiator="Initiated by Ali"
-          data-desc="We meet at a well-known landmark or castle. The goal is to explore and maybe take a few photos. There is no focus on people or performance. Just a simple and relaxed city activity."
+          data-req="Full-day availability; MVV/DB ticket; warm clothing"
+          data-desc="We meet at Munich Central Station and go together by public transport for a day trip. The goal is to explore and take photos — relaxed pace, plenty of breaks. Great if you want a bigger Bavaria highlight with a small group."
           data-img="/images/neuschwanstein-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="6"
+          data-needed="9">
           <img alt="Castle" src="/images/neuschwanstein-TH.jpeg">
           <div class="card-body">
-            <h3>Castle Neuschwanstein</h3>
-            <p>Historic bavarian landmark via public transport.</p>
-            <div class="meta"><span>Munich area</span><span>•</span><span>Initiated by Ali</span></div>
+            <h3>Castle Neuschwanstein (Day Trip)</h3>
+            <p>Historic Bavarian landmark via public transport.</p>
+            <div class="meta">
+              <span>Meet: München Hbf</span><span class="dot">•</span>
+              <span>Sat, 24 Jan • 07:40</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -414,41 +516,56 @@
 
         <article class="card"
           data-title="Olympiapark Walk & Viewpoints"
-          data-location="Munich"
+          data-location="Universität (U-Bahn) — exit to Ludwigstraße"
+          data-datetime="Thu, 22 Jan 2026 • 15:30"
+          data-dtstart="2026-01-22T15:30"
+          data-dtend="2026-01-22T17:00"
           data-initiator="Initiated by Farah"
-          data-desc="We meet at Olympiapark and take a relaxed walk through the park. We stop at a few viewpoints and enjoy the atmosphere. There is no fixed route and no pressure to talk. A calm way to explore Munich together."
+          data-req="Comfortable shoes; optional water bottle"
+          data-desc="We meet centrally and go together to Olympiapark for a relaxed walk. We stop at viewpoints and enjoy the atmosphere. No fixed route and no pressure to talk."
           data-img="/images/olympiapark-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="3"
+          data-needed="14">
           <img alt="City park" src="/images/olympiapark-TH.jpeg">
           <div class="card-body">
             <h3>Olympiapark Walk & Viewpoints</h3>
             <p>Easy walk with viewpoints and open pace.</p>
-            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Farah</span></div>
+            <div class="meta">
+              <span>Meet: Universität</span><span class="dot">•</span>
+              <span>Thu, 22 Jan • 15:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
-        
+
         <article class="card"
           data-title="Englischer Garten Landmark Walk"
-          data-location="Munich"
+          data-location="Odeonsplatz — at the U-Bahn entrance"
+          data-datetime="Sun, 25 Jan 2026 • 12:00"
+          data-dtstart="2026-01-25T12:00"
+          data-dtend="2026-01-25T14:00"
           data-initiator="Initiated by Jonas"
-          data-desc="We meet in the Englischer Garten and walk to a few well-known spots. The pace is slow and you can join for as long as you like. This is a simple outdoor city activity with lots of space. Perfect if you want a calm meetup in nature inside the city."
+          data-req="No requirements"
+          data-desc="We meet centrally and walk to well-known spots in the Englischer Garten. The pace is slow and you can join for as long as you like. A calm meetup in nature inside the city."
           data-img="/images/EnglishGarden-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="7"
+          data-needed="18">
           <img alt="City garden" src="/images/EnglishGarden-TH.jpeg">
           <div class="card-body">
             <h3>Englischer Garten Landmark Walk</h3>
             <p>Calm city-nature walk with known spots.</p>
-            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Jonas</span></div>
+            <div class="meta">
+              <span>Meet: Odeonsplatz</span><span class="dot">•</span>
+              <span>Sun, 25 Jan • 12:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
+
       </div>
     </section>
 
@@ -458,20 +575,28 @@
         <span class="hint">Casual • Friendly</span>
       </div>
       <div class="slider-row">
+
         <article class="card"
           data-title="Casual Football Kickabout"
-          data-location="Local field"
+          data-location="Sendlinger Tor — by the fountain"
+          data-datetime="Wed, 21 Jan 2026 • 18:15"
+          data-dtstart="2026-01-21T18:15"
+          data-dtend="2026-01-21T20:00"
           data-initiator="Initiated by Ben"
-          data-desc="This is a relaxed football meetup for all levels. You can join even if you haven’t played in a long time. The focus is on fun, not competition. Come as you are and play a bit."
+          data-req="Sports shoes; optional water bottle"
+          data-desc="This is a relaxed football meetup for all levels. The focus is on fun, not competition. Come as you are and play a bit."
           data-img="/images/football-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="10"
+          data-needed="16">
           <img alt="Football field" src="/images/football-TH.jpeg">
           <div class="card-body">
             <h3>Casual Football Kickabout</h3>
             <p>Easy match — just join and play.</p>
-            <div class="meta"><span>Local field</span><span>•</span><span>Initiated by Ben</span></div>
+            <div class="meta">
+              <span>Meet: Sendlinger Tor</span><span class="dot">•</span>
+              <span>Wed, 21 Jan • 18:15</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -479,18 +604,25 @@
 
         <article class="card"
           data-title="Park Jog (Beginner)"
-          data-location="City park"
+          data-location="Münchner Freiheit — at the U-Bahn exit"
+          data-datetime="Tue, 27 Jan 2026 • 07:30"
+          data-dtstart="2026-01-27T07:30"
+          data-dtend="2026-01-27T08:15"
           data-initiator="Initiated by Mia"
-          data-desc="We go for an easy jog together in the park. The pace is slow and suitable for beginners. There is no pressure to keep up. You can stop or walk at any time."
+          data-req="Running shoes; warm layer in winter"
+          data-desc="We go for an easy jog together. The pace is slow and suitable for beginners. No pressure to keep up — you can stop or walk anytime."
           data-img="/images/jogging-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="6"
+          data-needed="12">
           <img alt="Running" src="/images/jogging-TH.jpeg">
           <div class="card-body">
             <h3>Park Jog (Beginner)</h3>
             <p>Short route, calm pace.</p>
-            <div class="meta"><span>City park</span><span>•</span><span>Initiated by Mia</span></div>
+            <div class="meta">
+              <span>Meet: Münchner Freiheit</span><span class="dot">•</span>
+              <span>Tue, 27 Jan • 07:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -498,18 +630,25 @@
 
         <article class="card"
           data-title="Table Tennis Meetup"
-          data-location="Community spot"
+          data-location="Hauptbahnhof — in front of the “DB Reisezentrum”"
+          data-datetime="Fri, 23 Jan 2026 • 17:30"
+          data-dtstart="2026-01-23T17:30"
+          data-dtend="2026-01-23T19:00"
           data-initiator="Initiated by Noor"
-          data-desc="We meet to play casual table tennis together. You don’t need special skills or experience. Games are short and friendly. It’s a simple way to be active and meet people."
+          data-req="No requirements (paddles available); optional indoor shoes"
+          data-desc="We meet to play casual table tennis together. Games are short and friendly — a simple way to be active and meet people."
           data-img="/images/tabletennis-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="4"
+          data-needed="10">
           <img alt="Table tennis" src="/images/tabletennis-TH.jpeg">
           <div class="card-body">
             <h3>Table Tennis Meetup</h3>
             <p>Quick games, friendly vibe.</p>
-            <div class="meta"><span>Community spot</span><span>•</span><span>Initiated by Noor</span></div>
+            <div class="meta">
+              <span>Meet: München Hbf</span><span class="dot">•</span>
+              <span>Fri, 23 Jan • 17:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -517,18 +656,25 @@
 
         <article class="card"
           data-title="Basketball (Casual)"
-          data-location="Outdoor court"
+          data-location="Ostbahnhof — by the main entrance"
+          data-datetime="Sun, 01 Feb 2026 • 15:00"
+          data-dtstart="2026-02-01T15:00"
+          data-dtend="2026-02-01T16:30"
           data-initiator="Initiated by Leo"
-          data-desc="We meet at an outdoor court to play basketball. This is a relaxed and friendly session. You can join for shooting or short games. Everyone is welcome."
+          data-req="Indoor/outdoor sports shoes; optional ball if you have one"
+          data-desc="We meet and go together to an outdoor court to play basketball. Relaxed and friendly session — join for shooting or short games."
           data-img="/images/basketball-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="7"
+          data-needed="14">
           <img alt="Basketball court" src="/images/basketball-TH.jpeg">
           <div class="card-body">
             <h3>Basketball (Casual)</h3>
             <p>Relaxed meetup at the court.</p>
-            <div class="meta"><span>Outdoor court</span><span>•</span><span>Initiated by Leo</span></div>
+            <div class="meta">
+              <span>Meet: Ostbahnhof</span><span class="dot">•</span>
+              <span>Sun, 01 Feb • 15:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -536,18 +682,25 @@
 
         <article class="card"
           data-title="Badminton (Casual Doubles)"
-          data-location="Sports hall"
+          data-location="Giselastraße — at the U-Bahn entrance"
+          data-datetime="Thu, 29 Jan 2026 • 19:00"
+          data-dtstart="2026-01-29T19:00"
+          data-dtend="2026-01-29T20:30"
           data-initiator="Initiated by Noor"
-          data-desc="We play casual badminton in a friendly atmosphere. You can join even if you are new to the sport. We rotate partners and keep everything relaxed. Come for a bit of movement and an easy meetup."
+          data-req="Indoor shoes; sports clothes"
+          data-desc="We play casual badminton in a friendly atmosphere. We rotate partners and keep everything relaxed. Come for a bit of movement and an easy meetup."
           data-img="/images/badminton-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="8"
+          data-needed="16">
           <img alt="Badminton" src="/images/badminton-TH.jpeg">
           <div class="card-body">
             <h3>Badminton (Casual Doubles)</h3>
             <p>Friendly games, relaxed pace.</p>
-            <div class="meta"><span>Sports hall</span><span>•</span><span>Initiated by Noor</span></div>
+            <div class="meta">
+              <span>Meet: Giselastraße</span><span class="dot">•</span>
+              <span>Thu, 29 Jan • 19:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -555,22 +708,30 @@
 
         <article class="card"
           data-title="Stretch & Mobility Session"
-          data-location="Park"
+          data-location="Theresienwiese — near the Bavaria statue"
+          data-datetime="Sat, 31 Jan 2026 • 10:30"
+          data-dtstart="2026-01-31T10:30"
+          data-dtend="2026-01-31T11:30"
           data-initiator="Initiated by Lea"
-          data-desc="We do a simple stretch and mobility session together. The movements are easy and suitable for beginners. You can follow along at your own pace and take breaks anytime. A calm way to feel better and meet people without pressure."
+          data-req="Comfortable clothes; optional yoga mat"
+          data-desc="We do a simple stretch and mobility session together. Movements are easy and beginner-friendly. Take breaks anytime — calm way to feel better and meet people."
           data-img="/images/yoga-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="9"
+          data-needed="20">
           <img alt="Stretching" src="/images/yoga-TH.jpeg">
           <div class="card-body">
             <h3>Stretch & Mobility Session</h3>
             <p>Easy stretching, beginner-friendly.</p>
-            <div class="meta"><span>Park</span><span>•</span><span>Initiated by Lea</span></div>
+            <div class="meta">
+              <span>Meet: Theresienwiese</span><span class="dot">•</span>
+              <span>Sat, 31 Jan • 10:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
+
       </div>
     </section>
 
@@ -580,20 +741,28 @@
         <span class="hint">Practice • Support</span>
       </div>
       <div class="slider-row">
+
         <article class="card"
           data-title="Language Exchange (Café)"
-          data-location="Café"
+          data-location="Sendlinger Tor — outside the station"
+          data-datetime="Mon, 26 Jan 2026 • 18:00"
+          data-dtstart="2026-01-26T18:00"
+          data-dtend="2026-01-26T19:30"
           data-initiator="Initiated by Hanna"
-          data-desc="We meet in a café to practice languages together. The atmosphere is relaxed and friendly. You can speak as much or as little as you want. Mistakes are completely okay."
+          data-req="No requirements (just bring curiosity)"
+          data-desc="We meet in a café to practice languages together. The atmosphere is relaxed and friendly. Mistakes are completely okay."
           data-img="/images/cafe-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="11"
+          data-needed="24">
           <img alt="Cafe" src="/images/cafe-TH.jpeg">
           <div class="card-body">
             <h3>Language Exchange (Café)</h3>
             <p>Easy conversation practice.</p>
-            <div class="meta"><span>Café</span><span>•</span><span>Initiated by Hanna</span></div>
+            <div class="meta">
+              <span>Meet: Sendlinger Tor</span><span class="dot">•</span>
+              <span>Mon, 26 Jan • 18:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -601,18 +770,25 @@
 
         <article class="card"
           data-title="Homework / Study Session"
-          data-location="Library"
+          data-location="Universität (LMU) — main entrance"
+          data-datetime="Wed, 28 Jan 2026 • 16:00"
+          data-dtstart="2026-01-28T16:00"
+          data-dtend="2026-01-28T18:00"
           data-initiator="Initiated by Yusuf"
+          data-req="Bring your tasks/materials; laptop optional"
           data-desc="Quiet study session. Bring your tasks. Help each other if needed."
           data-img="/images/study-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="6"
+          data-needed="14">
           <img alt="Library" src="/images/study-TH.jpeg">
           <div class="card-body">
             <h3>Homework / Study Session</h3>
             <p>Calm space for learning.</p>
-            <div class="meta"><span>Library</span><span>•</span><span>Initiated by Yusuf</span></div>
+            <div class="meta">
+              <span>Meet: Universität</span><span class="dot">•</span>
+              <span>Wed, 28 Jan • 16:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -620,18 +796,25 @@
 
         <article class="card"
           data-title="CV Help (Basics)"
-          data-location="Community space"
+          data-location="Münchner Freiheit — at the tram stop"
+          data-datetime="Thu, 05 Feb 2026 • 17:30"
+          data-dtstart="2026-02-05T17:30"
+          data-dtend="2026-02-05T18:45"
           data-initiator="Initiated by Elena"
+          data-req="Bring your CV (paper or PDF); language level A2+ helpful (not required)"
           data-desc="Simple CV basics. Clear tips. Keep it short and helpful."
           data-img="/images/CV-TH.jpeg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="5"
+          data-needed="10">
           <img alt="Writing" src="/images/CV-TH.jpeg">
           <div class="card-body">
             <h3>CV Help (Basics)</h3>
             <p>Short help session.</p>
-            <div class="meta"><span>Community space</span><span>•</span><span>Initiated by Elena</span></div>
+            <div class="meta">
+              <span>Meet: Münchner Freiheit</span><span class="dot">•</span>
+              <span>Thu, 05 Feb • 17:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -639,18 +822,25 @@
 
         <article class="card"
           data-title="Beginner German (A1)"
-          data-location="Meetup spot"
+          data-location="Karlsplatz (Stachus) — near the fountain"
+          data-datetime="Sat, 07 Feb 2026 • 11:00"
+          data-dtstart="2026-02-07T11:00"
+          data-dtend="2026-02-07T12:15"
           data-initiator="Initiated by Karim"
+          data-req="No requirements"
           data-desc="Simple beginner practice. Focus on basic phrases."
           data-img="https://source.unsplash.com/featured/1200x800/?german,language"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="12"
+          data-needed="22">
           <img alt="Learning" src="https://source.unsplash.com/featured/600x420/?language,learning">
           <div class="card-body">
             <h3>Beginner German (A1)</h3>
             <p>Basic phrases and practice.</p>
-            <div class="meta"><span>Meetup spot</span><span>•</span><span>Initiated by Karim</span></div>
+            <div class="meta">
+              <span>Meet: Stachus</span><span class="dot">•</span>
+              <span>Sat, 07 Feb • 11:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -658,18 +848,25 @@
 
         <article class="card"
           data-title="German in Daily Life (Simple Practice)"
-          data-location="Community space"
+          data-location="Marienplatz (Fischbrunnen)"
+          data-datetime="Tue, 03 Feb 2026 • 18:30"
+          data-dtstart="2026-02-03T18:30"
+          data-dtend="2026-02-03T20:00"
           data-initiator="Initiated by Hanna"
-          data-desc="We practice simple German for everyday situations like shopping or appointments. The session is beginner-friendly and you can speak as much as you want. We keep it calm and supportive with no pressure. A good option if you want practical language confidence."
+          data-req="No requirements"
+          data-desc="We practice simple German for everyday situations like shopping or appointments. Beginner-friendly, calm and supportive — no pressure. A good option if you want practical language confidence."
           data-img="/images/daily-german.jpg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="9"
+          data-needed="20">
           <img alt="Learning together" src="/images/daily-german.jpg">
           <div class="card-body">
             <h3>German in Daily Life (Simple Practice)</h3>
             <p>Practical phrases for everyday situations.</p>
-            <div class="meta"><span>Community space</span><span>•</span><span>Initiated by Hanna</span></div>
+            <div class="meta">
+              <span>Meet: Marienplatz</span><span class="dot">•</span>
+              <span>Tue, 03 Feb • 18:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -677,22 +874,30 @@
 
         <article class="card"
           data-title="Job Search Basics (Support Session)"
-          data-location="Library"
+          data-location="Hauptbahnhof — by the main entrance"
+          data-datetime="Wed, 04 Feb 2026 • 16:30"
+          data-dtstart="2026-02-04T16:30"
+          data-dtend="2026-02-04T18:00"
           data-initiator="Initiated by Adam"
-          data-desc="We meet to share simple job search tips and basic support. You can bring questions about where to look and how to apply. Everything stays practical and beginner-friendly. Join for a calm session with clear, helpful steps."
+          data-req="Bring 1–2 job questions; CV optional"
+          data-desc="We meet to share simple job search tips and basic support. Practical and beginner-friendly — clear steps and helpful examples."
           data-img="/images/job-search.jpg"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="7"
+          data-needed="14">
           <img alt="Job search" src="/images/job-search.jpg">
           <div class="card-body">
             <h3>Job Search Basics (Support Session)</h3>
             <p>Simple tips and support for applications.</p>
-            <div class="meta"><span>Library</span><span>•</span><span>Initiated by Adam</span></div>
+            <div class="meta">
+              <span>Meet: München Hbf</span><span class="dot">•</span>
+              <span>Wed, 04 Feb • 16:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
+
       </div>
     </section>
 
@@ -702,20 +907,28 @@
         <span class="hint">Local • Easy</span>
       </div>
       <div class="slider-row">
+
         <article class="card"
           data-title="Museum Visit (Simple)"
-          data-location="Museum"
+          data-location="Odeonsplatz — at the U-Bahn entrance"
+          data-datetime="Sun, 08 Feb 2026 • 13:30"
+          data-dtstart="2026-02-08T13:30"
+          data-dtend="2026-02-08T15:30"
           data-initiator="Initiated by Emma"
+          data-req="Museum ticket (can be bought on-site); quiet indoor behavior"
           data-desc="Visit a museum together. No stress. Focus on exploring."
           data-img="https://source.unsplash.com/featured/1200x800/?museum,interior"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="6"
+          data-needed="12">
           <img alt="Museum" src="https://source.unsplash.com/featured/600x420/?museum,interior">
           <div class="card-body">
             <h3>Museum Visit (Simple)</h3>
             <p>Explore a museum calmly.</p>
-            <div class="meta"><span>Museum</span><span>•</span><span>Initiated by Emma</span></div>
+            <div class="meta">
+              <span>Meet: Odeonsplatz</span><span class="dot">•</span>
+              <span>Sun, 08 Feb • 13:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -723,18 +936,25 @@
 
         <article class="card"
           data-title="City Event Walk-By"
-          data-location="City center"
+          data-location="Marienplatz — under the Rathaus"
+          data-datetime="Fri, 06 Feb 2026 • 18:00"
+          data-dtstart="2026-02-06T18:00"
+          data-dtend="2026-02-06T19:15"
           data-initiator="Initiated by Adam"
+          data-req="No requirements"
           data-desc="A short walk to check out a local event atmosphere."
           data-img="https://source.unsplash.com/featured/1200x800/?festival,street"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="12"
+          data-needed="25">
           <img alt="Event" src="https://source.unsplash.com/featured/600x420/?festival,street">
           <div class="card-body">
             <h3>City Event Walk-By</h3>
             <p>Casual event vibe, no pressure.</p>
-            <div class="meta"><span>City center</span><span>•</span><span>Initiated by Adam</span></div>
+            <div class="meta">
+              <span>Meet: Marienplatz</span><span class="dot">•</span>
+              <span>Fri, 06 Feb • 18:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -742,18 +962,25 @@
 
         <article class="card"
           data-title="Local Exhibition"
-          data-location="Gallery"
+          data-location="Sendlinger Tor — outside the station"
+          data-datetime="Thu, 12 Feb 2026 • 17:45"
+          data-dtstart="2026-02-12T17:45"
+          data-dtend="2026-02-12T19:00"
           data-initiator="Initiated by Nina"
+          data-req="No requirements"
           data-desc="Visit a small exhibition. Take it slow."
           data-img="https://source.unsplash.com/featured/1200x800/?gallery,exhibition"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="5"
+          data-needed="12">
           <img alt="Gallery" src="https://source.unsplash.com/featured/600x420/?gallery,exhibition">
           <div class="card-body">
             <h3>Local Exhibition</h3>
             <p>Simple gallery visit.</p>
-            <div class="meta"><span>Gallery</span><span>•</span><span>Initiated by Nina</span></div>
+            <div class="meta">
+              <span>Meet: Sendlinger Tor</span><span class="dot">•</span>
+              <span>Thu, 12 Feb • 17:45</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -761,22 +988,30 @@
 
         <article class="card"
           data-title="Coffee After Event"
-          data-location="Café"
+          data-location="Karlsplatz (Stachus) — main exit"
+          data-datetime="Sat, 14 Feb 2026 • 16:00"
+          data-dtstart="2026-02-14T16:00"
+          data-dtend="2026-02-14T17:00"
           data-initiator="Initiated by Jonas"
+          data-req="No requirements"
           data-desc="If you want, grab a coffee after. Calm chat."
           data-img="https://source.unsplash.com/featured/1200x800/?coffee,cafe"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="7"
+          data-needed="15">
           <img alt="Cafe" src="https://source.unsplash.com/featured/600x420/?coffee,cafe">
           <div class="card-body">
             <h3>Coffee After Event</h3>
             <p>Short chat, friendly vibe.</p>
-            <div class="meta"><span>Café</span><span>•</span><span>Initiated by Jonas</span></div>
+            <div class="meta">
+              <span>Meet: Stachus</span><span class="dot">•</span>
+              <span>Sat, 14 Feb • 16:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
+
       </div>
     </section>
 
@@ -786,20 +1021,28 @@
         <span class="hint">Safe • Calm</span>
       </div>
       <div class="slider-row">
+
         <article class="card"
           data-title="Playground Meetup"
-          data-location="Park"
+          data-location="Münchner Freiheit — at the U-Bahn exit"
+          data-datetime="Sat, 07 Feb 2026 • 10:00"
+          data-dtstart="2026-02-07T10:00"
+          data-dtend="2026-02-07T11:30"
           data-initiator="Initiated by Mariam"
+          data-req="Kids supervision required; weather-appropriate clothes"
           data-desc="Meet at a playground, kids can play, parents can chat."
           data-img="https://source.unsplash.com/featured/1200x800/?playground,park"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="6"
+          data-needed="14">
           <img alt="Playground" src="https://source.unsplash.com/featured/600x420/?playground,park">
           <div class="card-body">
             <h3>Playground Meetup</h3>
             <p>Simple park meetup for families.</p>
-            <div class="meta"><span>Park</span><span>•</span><span>Initiated by Mariam</span></div>
+            <div class="meta">
+              <span>Meet: Münchner Freiheit</span><span class="dot">•</span>
+              <span>Sat, 07 Feb • 10:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -807,18 +1050,25 @@
 
         <article class="card"
           data-title="Picnic (Simple)"
-          data-location="Green area"
+          data-location="Marienplatz (Fischbrunnen)"
+          data-datetime="Sun, 15 Feb 2026 • 12:00"
+          data-dtstart="2026-02-15T12:00"
+          data-dtend="2026-02-15T13:30"
           data-initiator="Initiated by Paul"
+          data-req="Bring a small snack/drink; blanket optional"
           data-desc="Bring something small, enjoy a calm picnic."
           data-img="https://source.unsplash.com/featured/1200x800/?picnic,park"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="9"
+          data-needed="20">
           <img alt="Picnic" src="https://source.unsplash.com/featured/600x420/?picnic,park">
           <div class="card-body">
             <h3>Picnic (Simple)</h3>
             <p>Relaxed picnic atmosphere.</p>
-            <div class="meta"><span>Green area</span><span>•</span><span>Initiated by Paul</span></div>
+            <div class="meta">
+              <span>Meet: Marienplatz</span><span class="dot">•</span>
+              <span>Sun, 15 Feb • 12:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -826,18 +1076,25 @@
 
         <article class="card"
           data-title="Family Walk"
-          data-location="Nearby area"
+          data-location="Odeonsplatz — at Feldherrnhalle"
+          data-datetime="Sun, 15 Feb 2026 • 10:30"
+          data-dtstart="2026-02-15T10:30"
+          data-dtend="2026-02-15T11:45"
           data-initiator="Initiated by Sofia"
+          data-req="Stroller-friendly; comfortable shoes"
           data-desc="Short walk suitable for kids. Easy pace."
           data-img="https://source.unsplash.com/featured/1200x800/?family,park"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="5"
+          data-needed="12">
           <img alt="Family walk" src="https://source.unsplash.com/featured/600x420/?family,park">
           <div class="card-body">
             <h3>Family Walk</h3>
             <p>Easy walk, kid-friendly.</p>
-            <div class="meta"><span>Nearby area</span><span>•</span><span>Initiated by Sofia</span></div>
+            <div class="meta">
+              <span>Meet: Odeonsplatz</span><span class="dot">•</span>
+              <span>Sun, 15 Feb • 10:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -845,22 +1102,30 @@
 
         <article class="card"
           data-title="Kids Craft Hour"
-          data-location="Community room"
+          data-location="Sendlinger Tor — outside the station"
+          data-datetime="Wed, 11 Feb 2026 • 16:00"
+          data-dtstart="2026-02-11T16:00"
+          data-dtend="2026-02-11T17:15"
           data-initiator="Initiated by Tom"
+          data-req="Kids supervision required; materials provided"
           data-desc="Simple crafts. Calm and friendly."
           data-img="https://source.unsplash.com/featured/1200x800/?kids,craft"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="7"
+          data-needed="14">
           <img alt="Crafts" src="https://source.unsplash.com/featured/600x420/?kids,craft">
           <div class="card-body">
             <h3>Kids Craft Hour</h3>
             <p>Simple creative time.</p>
-            <div class="meta"><span>Community room</span><span>•</span><span>Initiated by Tom</span></div>
+            <div class="meta">
+              <span>Meet: Sendlinger Tor</span><span class="dot">•</span>
+              <span>Wed, 11 Feb • 16:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
+
       </div>
     </section>
 
@@ -870,20 +1135,28 @@
         <span class="hint">Easy • Fresh air</span>
       </div>
       <div class="slider-row">
+
         <article class="card"
           data-title="Easy Forest Walk"
-          data-location="Forest trail"
+          data-location="München Hbf — main hall info board"
+          data-datetime="Sat, 14 Feb 2026 • 09:15"
+          data-dtstart="2026-02-14T09:15"
+          data-dtend="2026-02-14T11:15"
           data-initiator="Initiated by Lea"
+          data-req="Comfortable shoes; warm layer"
           data-desc="Simple walk in nature. Beginner-friendly."
           data-img="https://source.unsplash.com/featured/1200x800/?forest,trail"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="6"
+          data-needed="12">
           <img alt="Forest trail" src="https://source.unsplash.com/featured/600x420/?forest,trail">
           <div class="card-body">
             <h3>Easy Forest Walk</h3>
             <p>Calm walk in a forest area.</p>
-            <div class="meta"><span>Forest trail</span><span>•</span><span>Initiated by Lea</span></div>
+            <div class="meta">
+              <span>Meet: München Hbf</span><span class="dot">•</span>
+              <span>Sat, 14 Feb • 09:15</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -891,18 +1164,25 @@
 
         <article class="card"
           data-title="Lakeside Walk"
-          data-location="Lake"
+          data-location="Ostbahnhof — by the main entrance"
+          data-datetime="Sun, 22 Feb 2026 • 10:00"
+          data-dtstart="2026-02-22T10:00"
+          data-dtend="2026-02-22T13:00"
           data-initiator="Initiated by Sam"
+          data-req="Comfortable shoes; MVV/DB ticket recommended"
           data-desc="Easy walk near a lake. Simple meetup."
           data-img="https://source.unsplash.com/featured/1200x800/?lake,walk"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="5"
+          data-needed="10">
           <img alt="Lake" src="https://source.unsplash.com/featured/600x420/?lake,walk">
           <div class="card-body">
             <h3>Lakeside Walk</h3>
             <p>Fresh air and calm view.</p>
-            <div class="meta"><span>Lake</span><span>•</span><span>Initiated by Sam</span></div>
+            <div class="meta">
+              <span>Meet: Ostbahnhof</span><span class="dot">•</span>
+              <span>Sun, 22 Feb • 10:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -910,18 +1190,25 @@
 
         <article class="card"
           data-title="Beginner Hike"
-          data-location="Trail"
+          data-location="München Hbf — main hall info board"
+          data-datetime="Sat, 21 Feb 2026 • 08:10"
+          data-dtstart="2026-02-21T08:10"
+          data-dtend="2026-02-21T16:30"
           data-initiator="Initiated by Noor"
+          data-req="Full-day availability; hiking shoes recommended; water + snack"
           data-desc="Short, beginner hike. Keep it simple."
           data-img="https://source.unsplash.com/featured/1200x800/?hiking,trail"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="7"
+          data-needed="10">
           <img alt="Hiking" src="https://source.unsplash.com/featured/600x420/?hiking,trail">
           <div class="card-body">
             <h3>Beginner Hike</h3>
             <p>Short hike, easy pace.</p>
-            <div class="meta"><span>Trail</span><span>•</span><span>Initiated by Noor</span></div>
+            <div class="meta">
+              <span>Meet: München Hbf</span><span class="dot">•</span>
+              <span>Sat, 21 Feb • 08:10</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -929,22 +1216,30 @@
 
         <article class="card"
           data-title="Sunset Viewpoint"
-          data-location="Viewpoint"
+          data-location="Odeonsplatz — at Feldherrnhalle"
+          data-datetime="Thu, 19 Feb 2026 • 17:15"
+          data-dtstart="2026-02-19T17:15"
+          data-dtend="2026-02-19T18:30"
           data-initiator="Initiated by Mia"
+          data-req="Warm layer; optional hot drink"
           data-desc="Meet to watch the sunset at a viewpoint."
           data-img="https://source.unsplash.com/featured/1200x800/?sunset,viewpoint"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="9"
+          data-needed="18">
           <img alt="Sunset" src="https://source.unsplash.com/featured/600x420/?sunset,viewpoint">
           <div class="card-body">
             <h3>Sunset Viewpoint</h3>
             <p>Calm sunset meetup.</p>
-            <div class="meta"><span>Viewpoint</span><span>•</span><span>Initiated by Mia</span></div>
+            <div class="meta">
+              <span>Meet: Odeonsplatz</span><span class="dot">•</span>
+              <span>Thu, 19 Feb • 17:15</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
+
       </div>
     </section>
 
@@ -954,20 +1249,28 @@
         <span class="hint">Create • Chill</span>
       </div>
       <div class="slider-row">
+
         <article class="card"
           data-title="Simple Painting Session"
-          data-location="Workshop space"
+          data-location="Karlsplatz (Stachus) — near the fountain"
+          data-datetime="Tue, 10 Feb 2026 • 18:00"
+          data-dtstart="2026-02-10T18:00"
+          data-dtend="2026-02-10T19:30"
           data-initiator="Initiated by Anna"
+          data-req="No requirements (materials provided)"
           data-desc="Paint together. No skills needed."
           data-img="https://source.unsplash.com/featured/1200x800/?painting,workshop"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="8"
+          data-needed="14">
           <img alt="Painting" src="https://source.unsplash.com/featured/600x420/?painting,workshop">
           <div class="card-body">
             <h3>Simple Painting Session</h3>
             <p>Relaxed painting time.</p>
-            <div class="meta"><span>Workshop space</span><span>•</span><span>Initiated by Anna</span></div>
+            <div class="meta">
+              <span>Meet: Stachus</span><span class="dot">•</span>
+              <span>Tue, 10 Feb • 18:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -975,18 +1278,25 @@
 
         <article class="card"
           data-title="Craft Table Meetup"
-          data-location="Community room"
+          data-location="Sendlinger Tor — outside the station"
+          data-datetime="Thu, 12 Feb 2026 • 18:15"
+          data-dtstart="2026-02-12T18:15"
+          data-dtend="2026-02-12T19:30"
           data-initiator="Initiated by Leo"
+          data-req="No requirements"
           data-desc="Simple crafts at a table. Chill vibe."
           data-img="https://source.unsplash.com/featured/1200x800/?crafts,workshop"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="6"
+          data-needed="12">
           <img alt="Crafts" src="https://source.unsplash.com/featured/600x420/?crafts,workshop">
           <div class="card-body">
             <h3>Craft Table Meetup</h3>
             <p>Easy crafts, friendly.</p>
-            <div class="meta"><span>Community room</span><span>•</span><span>Initiated by Leo</span></div>
+            <div class="meta">
+              <span>Meet: Sendlinger Tor</span><span class="dot">•</span>
+              <span>Thu, 12 Feb • 18:15</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -994,18 +1304,25 @@
 
         <article class="card"
           data-title="Photography Walk (Objects)"
-          data-location="City area"
+          data-location="Marienplatz — under the Rathaus"
+          data-datetime="Sun, 15 Feb 2026 • 14:30"
+          data-dtstart="2026-02-15T14:30"
+          data-dtend="2026-02-15T16:00"
           data-initiator="Initiated by Lina"
+          data-req="Phone camera is enough; dress for weather"
           data-desc="Take simple photos of buildings and objects — no people focus."
           data-img="https://source.unsplash.com/featured/1200x800/?photography,city"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="10"
+          data-needed="18">
           <img alt="Photography" src="https://source.unsplash.com/featured/600x420/?photography,city">
           <div class="card-body">
             <h3>Photography Walk (Objects)</h3>
             <p>Buildings, objects, calm pace.</p>
-            <div class="meta"><span>City area</span><span>•</span><span>Initiated by Lina</span></div>
+            <div class="meta">
+              <span>Meet: Marienplatz</span><span class="dot">•</span>
+              <span>Sun, 15 Feb • 14:30</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
@@ -1013,22 +1330,30 @@
 
         <article class="card"
           data-title="Music Listening Session"
-          data-location="Quiet space"
+          data-location="Odeonsplatz — at the U-Bahn entrance"
+          data-datetime="Fri, 13 Feb 2026 • 19:00"
+          data-dtstart="2026-02-13T19:00"
+          data-dtend="2026-02-13T20:15"
           data-initiator="Initiated by Omar"
+          data-req="No requirements (optional headphones)"
           data-desc="Listen to music and share favorites. Keep it simple."
           data-img="https://source.unsplash.com/featured/1200x800/?music,headphones"
           data-label="Participants"
-          data-signed="0"
-          data-needed="0">
+          data-signed="7"
+          data-needed="14">
           <img alt="Music" src="https://source.unsplash.com/featured/600x420/?music,headphones">
           <div class="card-body">
             <h3>Music Listening Session</h3>
             <p>Share songs, relaxed chat.</p>
-            <div class="meta"><span>Quiet space</span><span>•</span><span>Initiated by Omar</span></div>
+            <div class="meta">
+              <span>Meet: Odeonsplatz</span><span class="dot">•</span>
+              <span>Fri, 13 Feb • 19:00</span>
+            </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
           </div>
         </article>
+
       </div>
     </section>
   </main>
@@ -1042,18 +1367,43 @@
       <div class="modal-content">
         <div class="modal-top">
           <h3 class="modal-title" id="modalTitle">Title</h3>
-          <button class="close" id="modalClose" type="button" aria-label="Close">
-            ✕
-          </button>
+          <button class="close" id="modalClose" type="button" aria-label="Close">✕</button>
         </div>
 
         <p class="modal-desc" id="modalDesc"></p>
 
         <ul class="modal-facts">
-          <li class="fact" id="modalLocation"></li>
-          <li class="fact" id="modalInitiator"></li>
-          <!-- NEW: counter fact -->
-          <li class="fact" id="modalCount"></li>
+          <li class="fact" id="modalLocation">
+            <div class="fact-title">Meetup location</div>
+            <div class="fact-value" id="modalLocationValue"></div>
+          </li>
+
+          <li class="fact fact-link" id="modalDate" role="button" tabindex="0" aria-label="Add to calendar">
+            <div class="fact-title">Date & time</div>
+            <div class="fact-value" id="modalDateValue"></div>
+            <div class="calendar-hint">Click to add to calendar</div>
+          </li>
+
+          <li class="fact" id="modalReq">
+            <div class="fact-title">Requirements</div>
+            <div class="fact-value" id="modalReqValue"></div>
+          </li>
+
+          <li class="fact" id="modalParticipants">
+            <div class="fact-title">Participants</div>
+            <div class="bar-row">
+              <div class="fact-value" id="modalCountText"></div>
+              <small id="modalCountSmall"></small>
+            </div>
+            <div class="bar-wrap" aria-hidden="true">
+              <div class="bar-fill" id="modalBarFill"></div>
+            </div>
+          </li>
+
+          <li class="fact" id="modalInitiator" style="grid-column: 1 / -1;">
+            <div class="fact-title">Organizer</div>
+            <div class="fact-value" id="modalInitiatorValue"></div>
+          </li>
         </ul>
 
         <div class="modal-actions">
@@ -1067,31 +1417,129 @@
   </div>
 
   <script>
-    // Simple modal logic (prototype counter + modal)
+    // Simple modal logic + participant counter + calendar download
     const backdrop = document.getElementById("modalBackdrop");
     const closeBtn = document.getElementById("modalClose");
 
     const mTitle = document.getElementById("modalTitle");
     const mDesc = document.getElementById("modalDesc");
-    const mLoc  = document.getElementById("modalLocation");
-    const mInit = document.getElementById("modalInitiator");
-    const mCount = document.getElementById("modalCount");
     const mImg  = document.getElementById("modalImg");
+
+    const mLocVal = document.getElementById("modalLocationValue");
+    const mDate = document.getElementById("modalDate");
+    const mDateVal = document.getElementById("modalDateValue");
+
+    const mReqVal = document.getElementById("modalReqValue");
+    const mInitVal = document.getElementById("modalInitiatorValue");
+
+    const mCountText = document.getElementById("modalCountText");
+    const mCountSmall = document.getElementById("modalCountSmall");
+    const mBarFill = document.getElementById("modalBarFill");
+
+    let activeCard = null;
 
     function formatCount(card){
       const label = card.dataset.label || "Participants";
-      const signed = (card.dataset.signed ?? "0");
-      const needed = (card.dataset.needed ?? "0");
+      const signed = Number(card.dataset.signed ?? "0");
+      const needed = Number(card.dataset.needed ?? "0");
+      if (!needed || needed <= 0){
+        return `${label}: ${signed} (open)`;
+      }
       return `${label}: ${signed} / ${needed}`;
     }
 
+    function setModalParticipantBar(card){
+      const label = card.dataset.label || "Participants";
+      const signed = Number(card.dataset.signed ?? "0");
+      const needed = Number(card.dataset.needed ?? "0");
+
+      if (!needed || needed <= 0){
+        mCountText.textContent = `${label}: ${signed}`;
+        mCountSmall.textContent = "Open";
+        mBarFill.style.width = "100%";
+        return;
+      }
+
+      const pct = Math.max(0, Math.min(100, (signed / needed) * 100));
+      mCountText.textContent = label;
+      mCountSmall.textContent = `${signed} / ${needed}`;
+      mBarFill.style.width = pct + "%";
+    }
+
+    function pad2(n){ return String(n).padStart(2, "0"); }
+
+    function toICSDateTime(localISO){
+      // localISO: "YYYY-MM-DDTHH:MM"
+      const [datePart, timePart] = localISO.split("T");
+      const [y,m,d] = datePart.split("-");
+      const [hh,mm] = timePart.split(":");
+      return `${y}${m}${d}T${hh}${mm}00`;
+    }
+
+    function downloadICS({ title, description, location, dtStartISO, dtEndISO }){
+      const uid = `${Date.now()}-${Math.random().toString(16).slice(2)}@togetherhere`;
+      const dtstamp = (() => {
+        const now = new Date();
+        const y = now.getUTCFullYear();
+        const mo = pad2(now.getUTCMonth()+1);
+        const da = pad2(now.getUTCDate());
+        const hh = pad2(now.getUTCHours());
+        const mi = pad2(now.getUTCMinutes());
+        const ss = pad2(now.getUTCSeconds());
+        return `${y}${mo}${da}T${hh}${mi}${ss}Z`;
+      })();
+
+      const DTSTART = toICSDateTime(dtStartISO);
+      const DTEND  = toICSDateTime(dtEndISO);
+
+      const safe = (s="") => String(s).replace(/\r?\n/g, "\\n");
+
+      const ics =
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TogetherHere//Activities//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${dtstamp}
+SUMMARY:${safe(title)}
+DESCRIPTION:${safe(description)}
+LOCATION:${safe(location)}
+DTSTART;TZID=Europe/Berlin:${DTSTART}
+DTEND;TZID=Europe/Berlin:${DTEND}
+END:VEVENT
+END:VCALENDAR`;
+
+      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title.replace(/[^\w\- ]+/g, "").trim().slice(0,50) || "togetherhere-event"}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     function openModal(card){
+      activeCard = card;
+
       mTitle.textContent = card.dataset.title || "Activity";
       mDesc.textContent  = card.dataset.desc || "";
-      mLoc.textContent   = "Location: " + (card.dataset.location || "");
-      mInit.textContent  = card.dataset.initiator || "";
-      mCount.textContent = formatCount(card);
       mImg.src           = card.dataset.img || card.querySelector("img")?.src || "";
+
+      mLocVal.textContent = card.dataset.location || "";
+      mDateVal.textContent = card.dataset.datetime || "";
+
+      const req = (card.dataset.req || "").trim();
+      mReqVal.textContent = req.length ? req : "No requirements";
+
+      mInitVal.textContent = card.dataset.initiator || "—";
+
+      setModalParticipantBar(card);
 
       backdrop.style.display = "flex";
       document.body.style.overflow = "hidden";
@@ -1101,6 +1549,7 @@
     function closeModal(){
       backdrop.style.display = "none";
       document.body.style.overflow = "";
+      activeCard = null;
     }
 
     document.addEventListener("click", (e) => {
@@ -1113,11 +1562,41 @@
     });
 
     closeBtn.addEventListener("click", closeModal);
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && backdrop.style.display === "flex") closeModal();
     });
 
-    // NEW: Render the counter UI on each card
+    // Click date/time to add to calendar
+    function handleCalendarAdd(){
+      if (!activeCard) return;
+
+      const title = activeCard.dataset.title || "TogetherHere Activity";
+      const desc = activeCard.dataset.desc || "";
+      const location = activeCard.dataset.location || "Munich";
+      const dtStartISO = activeCard.dataset.dtstart || "";
+      const dtEndISO = activeCard.dataset.dtend || "";
+
+      if (!dtStartISO || !dtEndISO) return;
+
+      downloadICS({
+        title,
+        description: desc,
+        location,
+        dtStartISO,
+        dtEndISO
+      });
+    }
+
+    mDate.addEventListener("click", handleCalendarAdd);
+    mDate.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleCalendarAdd();
+      }
+    });
+
+    // Render the counter UI on each card
     document.querySelectorAll(".card").forEach(card => {
       const ui = card.querySelector("[data-count-ui]");
       if (ui) ui.textContent = formatCount(card);
