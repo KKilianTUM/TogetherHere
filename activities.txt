@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TogetherHere — Activities</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary-blue:#3A73FF;
+      --light-blue:#E8F0FF;
+      --text:#1C1F25;
+      --bg:#FFFFFF;
+
+      --r-card:16px;
+      --r-btn:22px;
+      --shadow: 0 8px 22px rgba(0,0,0,.08);
+      --shadow-hover: 0 12px 28px rgba(58,115,255,.18);
+      --border: 1px solid rgba(0,0,0,.06);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    h1,h2,h3{ font-family:Quicksand, Poppins, sans-serif; margin:0; }
+    button{ font-family:inherit; }
+
+    .container{ width:min(1180px, 92vw); margin:0 auto; }
+
+    /* Top Nav */
+    .nav{
+      position:sticky; top:0; z-index:20;
+      background:rgba(255,255,255,.9);
+      backdrop-filter: blur(10px);
+      border-bottom: var(--border);
+    }
+    .nav-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0;
+    }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:700; }
+    .logo-dot{
+      width:12px; height:12px; border-radius:999px; background:var(--primary-blue);
+      box-shadow:0 0 0 4px var(--light-blue);
+    }
+    .nav-actions{ display:flex; align-items:center; gap:10px; }
+    .icon-btn{
+      width:40px; height:40px;
+      border-radius:999px;
+      border: var(--border);
+      background:white;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .icon-btn:hover{
+      border-color: rgba(58,115,255,.35);
+      box-shadow:0 10px 24px rgba(58,115,255,.12);
+    }
+    .lang{
+      padding:0 12px;
+      height:40px;
+      border-radius:999px;
+      border: var(--border);
+      background:white;
+      cursor:pointer;
+      font-weight:500;
+    }
+    .lang:hover{ border-color: rgba(58,115,255,.35); }
+
+    /* Page header */
+    .page-head{
+      padding:22px 0 8px;
+    }
+    .page-head h1{
+      font-size:28px;
+      letter-spacing:-.2px;
+    }
+    .muted{ color:rgba(28,31,37,.72); font-size:14px; margin:6px 0 0; }
+
+    /* Category rows */
+    .category{ padding:18px 0; }
+    .category-title{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .category-title h2{ font-size:20px; }
+    .hint{ font-size:12px; color:rgba(28,31,37,.6); }
+
+    .slider-row{
+      display:flex;
+      gap:14px;
+      overflow-x:auto;
+      padding:6px 2px 14px;
+      scroll-behavior:smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .slider-row::-webkit-scrollbar{ height:8px; }
+    .slider-row::-webkit-scrollbar-thumb{
+      background: var(--light-blue);
+      border-radius: 999px;
+    }
+
+    /* Activity cards */
+    .card{
+      flex: 0 0 auto;
+      width: 240px;
+      background:white;
+      border-radius: var(--r-card);
+      border: var(--border);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      transition:.18s ease;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    .card img{
+      width:100%;
+      height:140px;
+      object-fit:cover;
+      display:block;
+      background:#eee;
+    }
+    .card-body{ padding:12px 12px 14px; }
+    .card h3{
+      font-size:15px;
+      line-height:1.25;
+      margin:0 0 6px;
+    }
+    .card p{
+      margin:0 0 10px;
+      font-size:13px;
+      color:rgba(28,31,37,.72);
+      line-height:1.35;
+      min-height: 34px;
+    }
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      font-size:12px;
+      color:rgba(28,31,37,.62);
+      margin-bottom:10px;
+    }
+    .more{
+      width:100%;
+      border:none;
+      cursor:pointer;
+      padding:10px 12px;
+      border-radius: var(--r-btn);
+      background: var(--primary-blue);
+      color:white;
+      font-weight:500;
+      transition:.18s ease;
+    }
+    .more:hover{ filter: brightness(.96); }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:50;
+    }
+    .modal{
+      width:min(920px, 96vw);
+      background:white;
+      border-radius: 18px;
+      overflow:hidden;
+      border: var(--border);
+      box-shadow: 0 28px 80px rgba(0,0,0,.30);
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      min-height: 420px;
+    }
+    @media (max-width: 860px){
+      .modal{ grid-template-columns: 1fr; }
+    }
+
+    .modal-media{
+      background:#f3f5f8;
+      min-height: 260px;
+    }
+    .modal-media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .modal-content{
+      padding:18px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .modal-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modal-title{
+      font-size:20px;
+      letter-spacing:-.2px;
+      margin:0;
+    }
+    .close{
+      width:40px; height:40px;
+      border-radius:999px;
+      border: var(--border);
+      background:white;
+      cursor:pointer;
+    }
+    .close:hover{ border-color: rgba(58,115,255,.35); }
+
+    .modal-desc{
+      margin:0;
+      font-size:14px;
+      color:rgba(28,31,37,.78);
+      line-height:1.5;
+    }
+    .modal-facts{
+      margin:0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:8px;
+      font-size:13px;
+      color:rgba(28,31,37,.72);
+    }
+    .fact{
+      background: rgba(232,240,255,.55);
+      border: 1px solid rgba(58,115,255,.14);
+      padding:10px 12px;
+      border-radius: 14px;
+    }
+    .modal-actions{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border-radius: var(--r-btn);
+      padding:10px 14px;
+      border:1.5px solid transparent;
+      cursor:pointer;
+      font-weight:500;
+    }
+    .btn-primary{ background: var(--primary-blue); color:white; }
+    .btn-ghost{
+      background:white;
+      color: var(--primary-blue);
+      border-color: rgba(58,115,255,.45);
+    }
+    .btn-primary:hover{ filter: brightness(.96); }
+    .btn-ghost:hover{ box-shadow:0 10px 24px rgba(58,115,255,.12); }
+
+    /* Small helper */
+    .sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <span class="logo-dot"></span>
+        <span>TogetherHere</span>
+      </div>
+
+      <div class="nav-actions">
+        <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
+        <button class="icon-btn" type="button" title="Profile (visual only)" aria-label="Profile">
+          <!-- simple user icon -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="#3A73FF" stroke-width="2"/>
+            <path d="M20 21a8 8 0 1 0-16 0" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <a class="icon-btn" href="index.html" title="Logout (prototype link)" aria-label="Logout">
+          <!-- simple logout icon -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10 17l5-5-5-5" stroke="#3A73FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 12H3" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
+            <path d="M21 21V3" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-head">
+      <h1>Activities</h1>
+      <p class="muted">Scroll categories horizontally. Click “More” to open details. (Prototype)</p>
+    </section>
+
+    <!-- Categories -->
+    <section class="category">
+      <div class="category-title">
+        <h2>Getting to Know the City</h2>
+        <span class="hint">Landmarks • Castles • Attractions</span>
+      </div>
+      <div class="slider-row">
+        <article class="card" data-title="Nymphenburg Palace Visit" data-location="Munich" data-initiator="Initiated by Lina"
+          data-desc="A simple meetup to visit a landmark together. Calm, easy, and beginner-friendly."
+          data-img="https://source.unsplash.com/featured/1200x800/?nymphenburg,palace">
+          <img alt="City landmark" src="https://source.unsplash.com/featured/600x420/?nymphenburg,palace">
+          <div class="card-body">
+            <h3>Nymphenburg Palace Visit</h3>
+            <p>Visit a famous palace and enjoy the gardens.</p>
+            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Lina</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Marienplatz Walk" data-location="Munich" data-initiator="Initiated by Omar"
+          data-desc="A short, relaxed walk around the city center — just to see the main square and surroundings."
+          data-img="https://source.unsplash.com/featured/1200x800/?marienplatz,munich">
+          <img alt="City attraction" src="https://source.unsplash.com/featured/600x420/?marienplatz,munich">
+          <div class="card-body">
+            <h3>Marienplatz Walk</h3>
+            <p>See the main square and nearby streets.</p>
+            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Omar</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Munich Residenz Courtyard" data-location="Munich" data-initiator="Initiated by Sara"
+          data-desc="A quiet visit to a historic building. Take photos, enjoy architecture, keep it simple."
+          data-img="https://source.unsplash.com/featured/1200x800/?munich,residenz">
+          <img alt="Historic building" src="https://source.unsplash.com/featured/600x420/?munich,residenz">
+          <div class="card-body">
+            <h3>Munich Residenz Courtyard</h3>
+            <p>Architecture-focused, calm and short.</p>
+            <div class="meta"><span>Munich</span><span>•</span><span>Initiated by Sara</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Castle / Landmark Photo Spot" data-location="Munich area" data-initiator="Initiated by Ali"
+          data-desc="Pick a well-known landmark and take a few photos. No pressure, just a simple meetup."
+          data-img="https://source.unsplash.com/featured/1200x800/?castle,bavaria">
+          <img alt="Castle" src="https://source.unsplash.com/featured/600x420/?castle,bavaria">
+          <div class="card-body">
+            <h3>Castle / Landmark Photo Spot</h3>
+            <p>Neutral landmark meetup — no people focus.</p>
+            <div class="meta"><span>Munich area</span><span>•</span><span>Initiated by Ali</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category">
+      <div class="category-title">
+        <h2>Sports</h2>
+        <span class="hint">Casual • Friendly</span>
+      </div>
+      <div class="slider-row">
+        <article class="card" data-title="Casual Football Kickabout" data-location="Local field" data-initiator="Initiated by Ben"
+          data-desc="A relaxed football meetup. All levels welcome. Keep it fun and friendly."
+          data-img="https://source.unsplash.com/featured/1200x800/?football,field">
+          <img alt="Football field" src="https://source.unsplash.com/featured/600x420/?football,field">
+          <div class="card-body">
+            <h3>Casual Football Kickabout</h3>
+            <p>Easy match — just join and play.</p>
+            <div class="meta"><span>Local field</span><span>•</span><span>Initiated by Ben</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Park Jog (Beginner)" data-location="City park" data-initiator="Initiated by Mia"
+          data-desc="Short easy jog. Beginner-friendly pace. No performance pressure."
+          data-img="https://source.unsplash.com/featured/1200x800/?running,park">
+          <img alt="Running" src="https://source.unsplash.com/featured/600x420/?running,park">
+          <div class="card-body">
+            <h3>Park Jog (Beginner)</h3>
+            <p>Short route, calm pace.</p>
+            <div class="meta"><span>City park</span><span>•</span><span>Initiated by Mia</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Table Tennis Meetup" data-location="Community spot" data-initiator="Initiated by Noor"
+          data-desc="Casual table tennis. Bring good mood. We keep it simple."
+          data-img="https://source.unsplash.com/featured/1200x800/?tabletennis,pingpong">
+          <img alt="Table tennis" src="https://source.unsplash.com/featured/600x420/?tabletennis,pingpong">
+          <div class="card-body">
+            <h3>Table Tennis Meetup</h3>
+            <p>Quick games, friendly vibe.</p>
+            <div class="meta"><span>Community spot</span><span>•</span><span>Initiated by Noor</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Basketball (Casual)" data-location="Outdoor court" data-initiator="Initiated by Leo"
+          data-desc="Casual shooting and short games. Everyone welcome."
+          data-img="https://source.unsplash.com/featured/1200x800/?basketball,court">
+          <img alt="Basketball court" src="https://source.unsplash.com/featured/600x420/?basketball,court">
+          <div class="card-body">
+            <h3>Basketball (Casual)</h3>
+            <p>Relaxed meetup at the court.</p>
+            <div class="meta"><span>Outdoor court</span><span>•</span><span>Initiated by Leo</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category">
+      <div class="category-title">
+        <h2>Language & Learning</h2>
+        <span class="hint">Practice • Support</span>
+      </div>
+      <div class="slider-row">
+        <article class="card" data-title="Language Exchange (Café)" data-location="Café" data-initiator="Initiated by Hanna"
+          data-desc="Relaxed language practice in a café setting. Short and simple."
+          data-img="https://source.unsplash.com/featured/1200x800/?cafe,conversation">
+          <img alt="Cafe" src="https://source.unsplash.com/featured/600x420/?cafe,conversation">
+          <div class="card-body">
+            <h3>Language Exchange (Café)</h3>
+            <p>Easy conversation practice.</p>
+            <div class="meta"><span>Café</span><span>•</span><span>Initiated by Hanna</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Homework / Study Session" data-location="Library" data-initiator="Initiated by Yusuf"
+          data-desc="Quiet study session. Bring your tasks. Help each other if needed."
+          data-img="https://source.unsplash.com/featured/1200x800/?library,study">
+          <img alt="Library" src="https://source.unsplash.com/featured/600x420/?library,study">
+          <div class="card-body">
+            <h3>Homework / Study Session</h3>
+            <p>Calm space for learning.</p>
+            <div class="meta"><span>Library</span><span>•</span><span>Initiated by Yusuf</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="CV Help (Basics)" data-location="Community space" data-initiator="Initiated by Elena"
+          data-desc="Simple CV basics. Clear tips. Keep it short and helpful."
+          data-img="https://source.unsplash.com/featured/1200x800/?resume,writing">
+          <img alt="Writing" src="https://source.unsplash.com/featured/600x420/?resume,writing">
+          <div class="card-body">
+            <h3>CV Help (Basics)</h3>
+            <p>Short help session.</p>
+            <div class="meta"><span>Community space</span><span>•</span><span>Initiated by Elena</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Beginner German (A1)" data-location="Meetup spot" data-initiator="Initiated by Karim"
+          data-desc="Simple beginner practice. Focus on basic phrases."
+          data-img="https://source.unsplash.com/featured/1200x800/?german,language">
+          <img alt="Learning" src="https://source.unsplash.com/featured/600x420/?language,learning">
+          <div class="card-body">
+            <h3>Beginner German (A1)</h3>
+            <p>Basic phrases and practice.</p>
+            <div class="meta"><span>Meetup spot</span><span>•</span><span>Initiated by Karim</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category">
+      <div class="category-title">
+        <h2>Culture & Events</h2>
+        <span class="hint">Local • Easy</span>
+      </div>
+      <div class="slider-row">
+        <article class="card" data-title="Museum Visit (Simple)" data-location="Museum" data-initiator="Initiated by Emma"
+          data-desc="Visit a museum together. No stress. Focus on exploring."
+          data-img="https://source.unsplash.com/featured/1200x800/?museum,interior">
+          <img alt="Museum" src="https://source.unsplash.com/featured/600x420/?museum,interior">
+          <div class="card-body">
+            <h3>Museum Visit (Simple)</h3>
+            <p>Explore a museum calmly.</p>
+            <div class="meta"><span>Museum</span><span>•</span><span>Initiated by Emma</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="City Event Walk-By" data-location="City center" data-initiator="Initiated by Adam"
+          data-desc="A short walk to check out a local event atmosphere."
+          data-img="https://source.unsplash.com/featured/1200x800/?festival,street">
+          <img alt="Event" src="https://source.unsplash.com/featured/600x420/?festival,street">
+          <div class="card-body">
+            <h3>City Event Walk-By</h3>
+            <p>Casual event vibe, no pressure.</p>
+            <div class="meta"><span>City center</span><span>•</span><span>Initiated by Adam</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Local Exhibition" data-location="Gallery" data-initiator="Initiated by Nina"
+          data-desc="Visit a small exhibition. Take it slow."
+          data-img="https://source.unsplash.com/featured/1200x800/?gallery,exhibition">
+          <img alt="Gallery" src="https://source.unsplash.com/featured/600x420/?gallery,exhibition">
+          <div class="card-body">
+            <h3>Local Exhibition</h3>
+            <p>Simple gallery visit.</p>
+            <div class="meta"><span>Gallery</span><span>•</span><span>Initiated by Nina</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Coffee After Event" data-location="Café" data-initiator="Initiated by Jonas"
+          data-desc="If you want, grab a coffee after. Calm chat."
+          data-img="https://source.unsplash.com/featured/1200x800/?coffee,cafe">
+          <img alt="Cafe" src="https://source.unsplash.com/featured/600x420/?coffee,cafe">
+          <div class="card-body">
+            <h3>Coffee After Event</h3>
+            <p>Short chat, friendly vibe.</p>
+            <div class="meta"><span>Café</span><span>•</span><span>Initiated by Jonas</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category">
+      <div class="category-title">
+        <h2>Family & Kids</h2>
+        <span class="hint">Safe • Calm</span>
+      </div>
+      <div class="slider-row">
+        <article class="card" data-title="Playground Meetup" data-location="Park" data-initiator="Initiated by Mariam"
+          data-desc="Meet at a playground, kids can play, parents can chat."
+          data-img="https://source.unsplash.com/featured/1200x800/?playground,park">
+          <img alt="Playground" src="https://source.unsplash.com/featured/600x420/?playground,park">
+          <div class="card-body">
+            <h3>Playground Meetup</h3>
+            <p>Simple park meetup for families.</p>
+            <div class="meta"><span>Park</span><span>•</span><span>Initiated by Mariam</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Picnic (Simple)" data-location="Green area" data-initiator="Initiated by Paul"
+          data-desc="Bring something small, enjoy a calm picnic."
+          data-img="https://source.unsplash.com/featured/1200x800/?picnic,park">
+          <img alt="Picnic" src="https://source.unsplash.com/featured/600x420/?picnic,park">
+          <div class="card-body">
+            <h3>Picnic (Simple)</h3>
+            <p>Relaxed picnic atmosphere.</p>
+            <div class="meta"><span>Green area</span><span>•</span><span>Initiated by Paul</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Family Walk" data-location="Nearby area" data-initiator="Initiated by Sofia"
+          data-desc="Short walk suitable for kids. Easy pace."
+          data-img="https://source.unsplash.com/featured/1200x800/?family,park">
+          <img alt="Family walk" src="https://source.unsplash.com/featured/600x420/?family,park">
+          <div class="card-body">
+            <h3>Family Walk</h3>
+            <p>Easy walk, kid-friendly.</p>
+            <div class="meta"><span>Nearby area</span><span>•</span><span>Initiated by Sofia</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Kids Craft Hour" data-location="Community room" data-initiator="Initiated by Tom"
+          data-desc="Simple crafts. Calm and friendly."
+          data-img="https://source.unsplash.com/featured/1200x800/?kids,craft">
+          <img alt="Crafts" src="https://source.unsplash.com/featured/600x420/?kids,craft">
+          <div class="card-body">
+            <h3>Kids Craft Hour</h3>
+            <p>Simple creative time.</p>
+            <div class="meta"><span>Community room</span><span>•</span><span>Initiated by Tom</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category">
+      <div class="category-title">
+        <h2>Nature & Outdoor</h2>
+        <span class="hint">Easy • Fresh air</span>
+      </div>
+      <div class="slider-row">
+        <article class="card" data-title="Easy Forest Walk" data-location="Forest trail" data-initiator="Initiated by Lea"
+          data-desc="Simple walk in nature. Beginner-friendly."
+          data-img="https://source.unsplash.com/featured/1200x800/?forest,trail">
+          <img alt="Forest trail" src="https://source.unsplash.com/featured/600x420/?forest,trail">
+          <div class="card-body">
+            <h3>Easy Forest Walk</h3>
+            <p>Calm walk in a forest area.</p>
+            <div class="meta"><span>Forest trail</span><span>•</span><span>Initiated by Lea</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Lakeside Walk" data-location="Lake" data-initiator="Initiated by Sam"
+          data-desc="Easy walk near a lake. Simple meetup."
+          data-img="https://source.unsplash.com/featured/1200x800/?lake,walk">
+          <img alt="Lake" src="https://source.unsplash.com/featured/600x420/?lake,walk">
+          <div class="card-body">
+            <h3>Lakeside Walk</h3>
+            <p>Fresh air and calm view.</p>
+            <div class="meta"><span>Lake</span><span>•</span><span>Initiated by Sam</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Beginner Hike" data-location="Trail" data-initiator="Initiated by Noor"
+          data-desc="Short, beginner hike. Keep it simple."
+          data-img="https://source.unsplash.com/featured/1200x800/?hiking,trail">
+          <img alt="Hiking" src="https://source.unsplash.com/featured/600x420/?hiking,trail">
+          <div class="card-body">
+            <h3>Beginner Hike</h3>
+            <p>Short hike, easy pace.</p>
+            <div class="meta"><span>Trail</span><span>•</span><span>Initiated by Noor</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Sunset Viewpoint" data-location="Viewpoint" data-initiator="Initiated by Mia"
+          data-desc="Meet to watch the sunset at a viewpoint."
+          data-img="https://source.unsplash.com/featured/1200x800/?sunset,viewpoint">
+          <img alt="Sunset" src="https://source.unsplash.com/featured/600x420/?sunset,viewpoint">
+          <div class="card-body">
+            <h3>Sunset Viewpoint</h3>
+            <p>Calm sunset meetup.</p>
+            <div class="meta"><span>Viewpoint</span><span>•</span><span>Initiated by Mia</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category" style="padding-bottom:44px;">
+      <div class="category-title">
+        <h2>Arts & Creativity</h2>
+        <span class="hint">Create • Chill</span>
+      </div>
+      <div class="slider-row">
+        <article class="card" data-title="Simple Painting Session" data-location="Workshop space" data-initiator="Initiated by Anna"
+          data-desc="Paint together. No skills needed."
+          data-img="https://source.unsplash.com/featured/1200x800/?painting,workshop">
+          <img alt="Painting" src="https://source.unsplash.com/featured/600x420/?painting,workshop">
+          <div class="card-body">
+            <h3>Simple Painting Session</h3>
+            <p>Relaxed painting time.</p>
+            <div class="meta"><span>Workshop space</span><span>•</span><span>Initiated by Anna</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Craft Table Meetup" data-location="Community room" data-initiator="Initiated by Leo"
+          data-desc="Simple crafts at a table. Chill vibe."
+          data-img="https://source.unsplash.com/featured/1200x800/?crafts,workshop">
+          <img alt="Crafts" src="https://source.unsplash.com/featured/600x420/?crafts,workshop">
+          <div class="card-body">
+            <h3>Craft Table Meetup</h3>
+            <p>Easy crafts, friendly.</p>
+            <div class="meta"><span>Community room</span><span>•</span><span>Initiated by Leo</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Photography Walk (Objects)" data-location="City area" data-initiator="Initiated by Lina"
+          data-desc="Take simple photos of buildings and objects — no people focus."
+          data-img="https://source.unsplash.com/featured/1200x800/?photography,city">
+          <img alt="Photography" src="https://source.unsplash.com/featured/600x420/?photography,city">
+          <div class="card-body">
+            <h3>Photography Walk (Objects)</h3>
+            <p>Buildings, objects, calm pace.</p>
+            <div class="meta"><span>City area</span><span>•</span><span>Initiated by Lina</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+
+        <article class="card" data-title="Music Listening Session" data-location="Quiet space" data-initiator="Initiated by Omar"
+          data-desc="Listen to music and share favorites. Keep it simple."
+          data-img="https://source.unsplash.com/featured/1200x800/?music,headphones">
+          <img alt="Music" src="https://source.unsplash.com/featured/600x420/?music,headphones">
+          <div class="card-body">
+            <h3>Music Listening Session</h3>
+            <p>Share songs, relaxed chat.</p>
+            <div class="meta"><span>Quiet space</span><span>•</span><span>Initiated by Omar</span></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-label="Activity details">
+    <div class="modal">
+      <div class="modal-media">
+        <img id="modalImg" alt="Activity image" src="">
+      </div>
+      <div class="modal-content">
+        <div class="modal-top">
+          <h3 class="modal-title" id="modalTitle">Title</h3>
+          <button class="close" id="modalClose" type="button" aria-label="Close">
+            ✕
+          </button>
+        </div>
+
+        <p class="modal-desc" id="modalDesc"></p>
+
+        <ul class="modal-facts">
+          <li class="fact" id="modalLocation"></li>
+          <li class="fact" id="modalInitiator"></li>
+        </ul>
+
+        <div class="modal-actions">
+          <button class="btn btn-primary" type="button">Participate</button>
+          <button class="btn btn-ghost" type="button">Save</button>
+        </div>
+
+        <span class="sr-only" id="modalHint">Press Escape to close</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple modal logic (no stats, no numbers)
+    const backdrop = document.getElementById("modalBackdrop");
+    const closeBtn = document.getElementById("modalClose");
+
+    const mTitle = document.getElementById("modalTitle");
+    const mDesc = document.getElementById("modalDesc");
+    const mLoc  = document.getElementById("modalLocation");
+    const mInit = document.getElementById("modalInitiator");
+    const mImg  = document.getElementById("modalImg");
+
+    function openModal(card){
+      mTitle.textContent = card.dataset.title || "Activity";
+      mDesc.textContent  = card.dataset.desc || "";
+      mLoc.textContent   = "Location: " + (card.dataset.location || "");
+      mInit.textContent  = card.dataset.initiator || "";
+      mImg.src           = card.dataset.img || card.querySelector("img")?.src || "";
+
+      backdrop.style.display = "flex";
+      document.body.style.overflow = "hidden";
+      closeBtn.focus();
+    }
+
+    function closeModal(){
+      backdrop.style.display = "none";
+      document.body.style.overflow = "";
+    }
+
+    document.addEventListener("click", (e) => {
+      const moreBtn = e.target.closest(".more");
+      if (moreBtn){
+        const card = moreBtn.closest(".card");
+        if (card) openModal(card);
+      }
+      if (e.target === backdrop) closeModal();
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && backdrop.style.display === "flex") closeModal();
+    });
+  </script>
+</body>
+</html>
