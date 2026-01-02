@@ -70,7 +70,10 @@
     .btn-ghost{
       background:white; border-color:rgba(0,0,0,.12);
     }
-    .btn-ghost:hover{ border-color:rgba(58,115,255,.4); box-shadow:0 6px 18px rgba(58,115,255,.12); }
+    .btn-ghost:hover{
+      border-color:rgba(58,115,255,.4);
+      box-shadow:0 6px 18px rgba(58,115,255,.12);
+    }
 
     .hero{
       padding:52px 0 24px;
@@ -102,7 +105,12 @@
       line-height:1.5;
       color:rgba(28,31,37,.82);
     }
-    .hero-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .hero-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
 
     .card{
       background:white;
@@ -121,7 +129,8 @@
     }
     .step b{ font-weight:600; }
     .dot{
-      width:10px; height:10px; border-radius:999px; background:var(--primary-blue);
+      width:10px; height:10px; border-radius:999px;
+      background:var(--primary-blue);
       margin-top:5px;
     }
 
@@ -130,9 +139,12 @@
       font-size:22px;
       margin:0 0 12px;
     }
-    .muted{ color:rgba(28,31,37,.74); font-size:14px; margin:0 0 16px; }
+    .muted{
+      color:rgba(28,31,37,.74);
+      font-size:14px;
+      margin:0 0 16px;
+    }
 
-    /* Preview rows (only 1 card per category) */
     .preview-grid{
       display:grid;
       grid-template-columns: repeat(2, minmax(0,1fr));
@@ -154,7 +166,7 @@
       width:92px; height:64px; border-radius:14px;
       background:#eee;
       object-fit:cover;
-      flex: 0 0 auto;
+      flex:0 0 auto;
     }
     .preview-item h3{ font-size:16px; margin:0 0 4px; }
     .preview-item p{ margin:0; font-size:13px; color:rgba(28,31,37,.72); }
@@ -184,8 +196,11 @@
         <span>TogetherHere</span>
       </div>
       <div class="nav-actions">
-        <a class="btn btn-ghost" href="activities.html" title="Prototype link">Log in</a>
-        <a class="btn btn-primary" href="activities.html" title="Prototype link">Register</a>
+        <a class="btn btn-ghost" href="activities.html">Log in</a>
+        <a class="btn btn-primary" href="activities.html">Register</a>
+        <a class="btn btn-ghost" href="volunteer-register.html">
+          Register as a volunteer
+        </a>
       </div>
     </div>
   </header>
@@ -201,7 +216,7 @@
             Browse categories, open an activity, and join.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="activities.html">Go to Activities (prototype)</a>
+            <a class="btn btn-primary" href="activities.html">Go to Activities</a>
             <a class="btn btn-ghost" href="#preview">See previews</a>
           </div>
         </div>
@@ -210,9 +225,27 @@
           <h3>How it works</h3>
           <p class="muted" style="margin-bottom:0;">Minimal first version — no clutter.</p>
           <div class="steps">
-            <div class="step"><span class="dot"></span><div><b>Sign up</b><div class="muted" style="margin:2px 0 0;">Create an account (later).</div></div></div>
-            <div class="step"><span class="dot"></span><div><b>Browse activities</b><div class="muted" style="margin:2px 0 0;">Scroll through categories.</div></div></div>
-            <div class="step"><span class="dot"></span><div><b>Join</b><div class="muted" style="margin:2px 0 0;">Open details and participate.</div></div></div>
+            <div class="step">
+              <span class="dot"></span>
+              <div>
+                <b>Sign up</b>
+                <div class="muted" style="margin:2px 0 0;">Create an account.</div>
+              </div>
+            </div>
+            <div class="step">
+              <span class="dot"></span>
+              <div>
+                <b>Browse activities</b>
+                <div class="muted" style="margin:2px 0 0;">Scroll through categories.</div>
+              </div>
+            </div>
+            <div class="step">
+              <span class="dot"></span>
+              <div>
+                <b>Join</b>
+                <div class="muted" style="margin:2px 0 0;">Open details and participate.</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -220,11 +253,13 @@
 
     <section id="preview" class="section">
       <h2>Category previews (locked until login)</h2>
-      <p class="muted">One preview per category — the full list is shown after login (prototype links go directly to activities).</p>
+      <p class="muted">
+        One preview per category — the full list is shown after login.
+      </p>
 
       <div class="preview-grid">
         <div class="preview-item">
-          <img class="thumb" alt="City attraction" src="/images/marienplatz-TH.jpeg" />
+          <img class="thumb" src="/images/marienplatz-TH.jpeg" alt="City attraction" />
           <div>
             <h3>Getting to Know the City</h3>
             <p>Landmarks, castles, attractions.</p>
@@ -233,7 +268,7 @@
         </div>
 
         <div class="preview-item">
-          <img class="thumb" alt="Sports" src="/images/football-TH.jpeg" />
+          <img class="thumb" src="/images/football-TH.jpeg" alt="Sports" />
           <div>
             <h3>Sports</h3>
             <p>Football, running, casual games.</p>
@@ -242,46 +277,10 @@
         </div>
 
         <div class="preview-item">
-          <img class="thumb" alt="Learning" src="/images/study-TH.jpeg" />
+          <img class="thumb" src="/images/study-TH.jpeg" alt="Learning" />
           <div>
             <h3>Language & Learning</h3>
             <p>Language exchange, study groups.</p>
-          </div>
-          <span class="lock">Locked</span>
-        </div>
-
-        <div class="preview-item">
-          <img class="thumb" alt="Culture" src="/images/football-TH.jpeg" />
-          <div>
-            <h3>Culture & Events</h3>
-            <p>Museums, local events.</p>
-          </div>
-          <span class="lock">Locked</span>
-        </div>
-
-        <div class="preview-item">
-          <img class="thumb" alt="Family" src="https://source.unsplash.com/featured/400x260/?park,family" />
-          <div>
-            <h3>Family & Kids</h3>
-            <p>Parks, safe meetups.</p>
-          </div>
-          <span class="lock">Locked</span>
-        </div>
-
-        <div class="preview-item">
-          <img class="thumb" alt="Outdoor" src="https://source.unsplash.com/featured/400x260/?forest,trail" />
-          <div>
-            <h3>Nature & Outdoor</h3>
-            <p>Walks, easy hikes.</p>
-          </div>
-          <span class="lock">Locked</span>
-        </div>
-
-        <div class="preview-item">
-          <img class="thumb" alt="Art" src="https://source.unsplash.com/featured/400x260/?art,workshop" />
-          <div>
-            <h3>Arts & Creativity</h3>
-            <p>Creative meetups.</p>
           </div>
           <span class="lock">Locked</span>
         </div>
