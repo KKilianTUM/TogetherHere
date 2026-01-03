@@ -21,6 +21,11 @@
       --r-btn:22px;
       --shadow: 0 8px 22px rgba(0,0,0,.08);
       --shadow-hover: 0 12px 28px rgba(58,115,255,.18);
+
+      /* NEW brand colors */
+      --brand-together:#A65F62;
+      --brand-here:#CBB888;
+      --logo-glow:#98B400;
     }
 
     *{ box-sizing:border-box; }
@@ -49,11 +54,49 @@
       font-weight:700;
       letter-spacing:.2px;
     }
-    .logo-dot{
-      width:12px; height:12px; border-radius:999px; background:var(--primary-blue);
-      box-shadow:0 0 0 4px var(--light-blue);
+
+    /* NEW: logo image (circular) + green glow behind */
+    .logo-img{
+      width:36px;
+      height:36px;
+      border-radius:999px;
+      object-fit:cover;
+      display:block;
+      box-shadow: 0 0 0 6px rgba(152,182,0,.28);
     }
+
+    /* NEW: split brand colors */
+    .brand-name{
+      font-family:Quicksand, Poppins, sans-serif;
+      font-weight:700;
+      letter-spacing:.2px;
+      display:inline-flex;
+      gap:0;
+      align-items:baseline;
+      line-height:1;
+    }
+    .brand-name .together{ color:var(--brand-together); }
+    .brand-name .here{ color:var(--brand-here); }
+
     .nav-actions{ display:flex; align-items:center; gap:10px; }
+
+    /* NEW: language button (same style idea as activities page) */
+    .lang{
+      padding:0 12px;
+      height:40px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.12);
+      background:white;
+      cursor:pointer;
+      font-weight:500;
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .lang:hover{
+      border-color: rgba(58,115,255,.35);
+      box-shadow:0 6px 18px rgba(58,115,255,.12);
+    }
+
     .btn{
       border-radius:var(--r-btn);
       padding:10px 14px;
@@ -192,15 +235,21 @@
   <header class="nav">
     <div class="container nav-inner">
       <div class="brand">
-        <span class="logo-dot"></span>
-        <span>TogetherHere</span>
+        <!-- CHANGED: logo-dot -> circular image logo -->
+        <img class="logo-img" src="/images/logo1-TH.jpeg" alt="TogetherHere logo" />
+        <!-- CHANGED: colored brand name -->
+        <span class="brand-name" aria-label="TogetherHere">
+          <span class="together">Together</span><span class="here">Here</span>
+        </span>
       </div>
+
       <div class="nav-actions">
+        <!-- NEW: language button -->
+        <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
+
         <a class="btn btn-ghost" href="activities.html">Log in</a>
         <a class="btn btn-primary" href="activities.html">Register</a>
-        <a class="btn btn-ghost" href="volunteer-register.html">
-          Register as a volunteer
-        </a>
+        <a class="btn btn-ghost" href="volunteer-register.html">Register as a volunteer</a>
       </div>
     </div>
   </header>
