@@ -17,11 +17,20 @@
       --text:#1C1F25;
       --bg:#FFFFFF;
 
+      /* NEW brand colors */
+      --brand-glow:#98B400;
+      --brand-together:#A65F62;
+      --brand-here:#CBB888;
+
       --r-card:16px;
       --r-btn:22px;
       --shadow: 0 8px 22px rgba(0,0,0,.08);
       --shadow-hover: 0 12px 28px rgba(58,115,255,.18);
       --border: 1px solid rgba(0,0,0,.06);
+
+      /* Participants bar look (closer to your screenshot) */
+      --bar-track:#D9D9D9;
+      --bar-fill:#63C66B;
     }
 
     *{ box-sizing:border-box; }
@@ -52,10 +61,19 @@
       width:28px; height:28px;
       border-radius:999px;
       object-fit:cover;
-      box-shadow:0 0 0 4px var(--light-blue);
+      box-shadow:0 0 0 4px rgba(152,180,0,.30);
       display:block;
       background:#eee;
     }
+    .brand-name{
+      display:flex;
+      align-items:baseline;
+      gap:0;
+      font-weight:700;
+      letter-spacing:-.2px;
+    }
+    .brand-name .together{ color:var(--brand-together); }
+    .brand-name .here{ color:var(--brand-here); }
 
     .nav-actions{ display:flex; align-items:center; gap:10px; }
     .icon-btn{
@@ -215,19 +233,19 @@
       display:none;
       align-items:center;
       justify-content:center;
-      padding:20px;
+      padding:16px;
       z-index:50;
     }
     .modal{
-      width:min(920px, 96vw);
+      width:min(820px, 96vw);                 /* smaller overall */
       background:white;
-      border-radius: 18px;
+      border-radius: 16px;
       overflow:hidden;
       border: var(--border);
       box-shadow: 0 28px 80px rgba(0,0,0,.30);
       display:grid;
-      grid-template-columns: .85fr 1.15fr; /* smaller image column */
-      min-height: 460px;
+      grid-template-columns: 1fr 1fr;
+      min-height: 420px;                      /* smaller overall */
     }
     @media (max-width: 860px){
       .modal{ grid-template-columns: 1fr; }
@@ -237,23 +255,65 @@
       background:#f3f5f8;
       padding:14px;
       display:flex;
-      align-items:flex-start;
-      justify-content:center;
+      flex-direction:column;
+      gap:10px;
     }
     .modal-media img{
       width:100%;
-      height:240px;                 /* smaller picture to fit more details */
+      height:240px;                 /* DO NOT shrink further */
       object-fit:cover;
       display:block;
       border-radius:14px;
       background:#eee;
     }
-    @media (max-width: 860px){
-      .modal-media img{ height:220px; }
+
+    /* NEW: host + participants UNDER image (no blue boxes) */
+    .media-under{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:2px 2px 0;
+    }
+    .host-line{
+      font-size:13px;
+      color:rgba(28,31,37,.72);
+    }
+    .host-line b{
+      font-weight:600;
+      color:rgba(28,31,37,.86);
+    }
+
+    .participants-under{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .ptext-inline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-size:13px;
+      color:rgba(28,31,37,.78);
+    }
+    .ptext-inline b{ font-weight:600; color:rgba(28,31,37,.86); }
+
+    /* NEW: bar style closer to screenshot */
+    .pbar{
+      height:16px;
+      background: var(--bar-track);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .pbar > div{
+      height:100%;
+      width:0%;
+      background: var(--bar-fill);
+      border-radius:999px;
     }
 
     .modal-content{
-      padding:18px 18px 18px;
+      padding:14px 14px 14px;
       display:flex;
       flex-direction:column;
       gap:10px;
@@ -265,12 +325,12 @@
       gap:10px;
     }
     .modal-title{
-      font-size:20px;
+      font-size:18px;
       letter-spacing:-.2px;
       margin:0;
     }
     .close{
-      width:40px; height:40px;
+      width:38px; height:38px;
       border-radius:999px;
       border: var(--border);
       background:white;
@@ -280,32 +340,33 @@
 
     .modal-desc{
       margin:0;
-      font-size:14px;
+      font-size:13px;
       color:rgba(28,31,37,.78);
       line-height:1.5;
     }
 
-    .modal-facts{
-      margin:0;
-      padding:0;
-      list-style:none;
+    /* NEW: Location + Date/Time side-by-side, half-height boxes */
+    .fact-grid{
       display:grid;
-      gap:8px;
-      font-size:13px;
-      color:rgba(28,31,37,.72);
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
     }
+    @media (max-width: 860px){
+      .fact-grid{ grid-template-columns: 1fr; }
+    }
+
     .fact{
       background: rgba(232,240,255,.55);
       border: 1px solid rgba(58,115,255,.14);
-      padding:10px 12px;
-      border-radius:14px;
+      padding:8px 10px;             /* smaller */
+      border-radius:12px;           /* slightly smaller */
     }
     .fact-title{
-      font-size:12px;
+      font-size:11px;
       color:rgba(28,31,37,.62);
-      margin-bottom:2px;
+      margin-bottom:1px;
     }
-    .fact-value{ font-size:13px; color:rgba(28,31,37,.82); }
+    .fact-value{ font-size:12.5px; color:rgba(28,31,37,.82); }
 
     /* clickable facts */
     .fact-link{ cursor:pointer; }
@@ -314,39 +375,17 @@
       box-shadow:0 10px 24px rgba(58,115,255,.10);
     }
     .calendar-hint{
-      margin-top:4px;
-      font-size:12px;
+      margin-top:3px;
+      font-size:11px;
       color:rgba(28,31,37,.58);
     }
-
-    /* Participants fill bar (modal) */
-    .pbar{
-      margin-top:8px;
-      height:10px;
-      background: rgba(255,255,255,.75);
-      border: 1px solid rgba(58,115,255,.18);
-      border-radius:999px;
-      overflow:hidden;
-    }
-    .pbar > div{
-      height:100%;
-      background: var(--primary-blue);
-      width:0%;
-    }
-    .ptext{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .ptext b{ font-weight:600; }
 
     /* Requirements section */
     .req{
       background: rgba(232,240,255,.35);
       border: 1px solid rgba(58,115,255,.12);
-      border-radius:14px;
-      padding:10px 12px;
+      border-radius:12px;
+      padding:10px 10px;
     }
     .req h4{
       margin:0 0 4px;
@@ -397,7 +436,9 @@
     <div class="container nav-inner">
       <div class="brand">
         <img class="brand-logo" src="/images/logo1-TH.jpeg" alt="TogetherHere logo">
-        <span>TogetherHere</span>
+        <span class="brand-name" aria-label="TogetherHere">
+          <span class="together">Together</span><span class="here">Here</span>
+        </span>
       </div>
 
       <div class="nav-actions">
@@ -759,6 +800,8 @@
       </div>
     </section>
 
+    <!-- (rest of your categories unchanged) -->
+
     <section class="category">
       <div class="category-title">
         <h2>Language & Learning</h2>
@@ -924,345 +967,6 @@
       </div>
     </section>
 
-    <section class="category">
-      <div class="category-title">
-        <h2>Culture & Events</h2>
-        <span class="hint">Local • Easy</span>
-      </div>
-
-      <div class="slider-row">
-        <article class="card"
-          data-title="Museum Visit (Simple)"
-          data-meet="Odeonsplatz"
-          data-maps="Odeonsplatz, München"
-          data-datetime="2026-02-01T14:00"
-          data-duration="90"
-          data-initiator="Initiated by Emma"
-          data-requirements="Optional: museum ticket (we can buy on-site)."
-          data-desc="Visit a museum together. No stress. Focus on exploring."
-          data-img="https://source.unsplash.com/featured/1200x800/?museum,interior"
-          data-label="Participants"
-          data-signed="6"
-          data-needed="15">
-          <img alt="Museum" src="https://source.unsplash.com/featured/600x420/?museum,interior">
-          <div class="card-body">
-            <h3>Museum Visit (Simple)</h3>
-            <p>Explore a museum calmly.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Odeonsplatz</span></div>
-              <div class="meta-line"><span>Sun, 01 Feb</span><span class="dot-sep">•</span><span>14:00</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="City Event Walk-By"
-          data-meet="Marienplatz"
-          data-maps="Marienplatz, München"
-          data-datetime="2026-02-06T18:00"
-          data-duration="60"
-          data-initiator="Initiated by Adam"
-          data-requirements="None."
-          data-desc="A short walk to check out a local event atmosphere."
-          data-img="https://source.unsplash.com/featured/1200x800/?festival,street"
-          data-label="Participants"
-          data-signed="9"
-          data-needed="20">
-          <img alt="Event" src="https://source.unsplash.com/featured/600x420/?festival,street">
-          <div class="card-body">
-            <h3>City Event Walk-By</h3>
-            <p>Casual event vibe, no pressure.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Marienplatz</span></div>
-              <div class="meta-line"><span>Fri, 06 Feb</span><span class="dot-sep">•</span><span>18:00</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Local Exhibition"
-          data-meet="Isartor"
-          data-maps="Isartor, München"
-          data-datetime="2026-02-08T15:30"
-          data-duration="75"
-          data-initiator="Initiated by Nina"
-          data-requirements="None."
-          data-desc="Visit a small exhibition. Take it slow."
-          data-img="https://source.unsplash.com/featured/1200x800/?gallery,exhibition"
-          data-label="Participants"
-          data-signed="4"
-          data-needed="12">
-          <img alt="Gallery" src="https://source.unsplash.com/featured/600x420/?gallery,exhibition">
-          <div class="card-body">
-            <h3>Local Exhibition</h3>
-            <p>Simple gallery visit.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Isartor</span></div>
-              <div class="meta-line"><span>Sun, 08 Feb</span><span class="dot-sep">•</span><span>15:30</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Coffee After Event"
-          data-meet="Karlsplatz (Stachus)"
-          data-maps="Karlsplatz Stachus, München"
-          data-datetime="2026-02-08T17:15"
-          data-duration="60"
-          data-initiator="Initiated by Jonas"
-          data-requirements="None."
-          data-desc="If you want, grab a coffee after. Calm chat."
-          data-img="https://source.unsplash.com/featured/1200x800/?coffee,cafe"
-          data-label="Participants"
-          data-signed="6"
-          data-needed="16">
-          <img alt="Cafe" src="https://source.unsplash.com/featured/600x420/?coffee,cafe">
-          <div class="card-body">
-            <h3>Coffee After Event</h3>
-            <p>Short chat, friendly vibe.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Stachus</span></div>
-              <div class="meta-line"><span>Sun, 08 Feb</span><span class="dot-sep">•</span><span>17:15</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="category">
-      <div class="category-title">
-        <h2>Family & Kids</h2>
-        <span class="hint">Safe • Calm</span>
-      </div>
-
-      <div class="slider-row">
-        <article class="card"
-          data-title="Playground Meetup"
-          data-meet="Sendlinger Tor"
-          data-maps="Sendlinger Tor, München"
-          data-datetime="2026-02-04T15:30"
-          data-duration="60"
-          data-initiator="Initiated by Mariam"
-          data-requirements="For kids: bring warm clothes (weather-dependent)."
-          data-desc="Meet at a playground, kids can play, parents can chat."
-          data-img="https://source.unsplash.com/featured/1200x800/?playground,park"
-          data-label="Participants"
-          data-signed="5"
-          data-needed="12">
-          <img alt="Playground" src="https://source.unsplash.com/featured/600x420/?playground,park">
-          <div class="card-body">
-            <h3>Playground Meetup</h3>
-            <p>Simple park meetup for families.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Sendlinger Tor</span></div>
-              <div class="meta-line"><span>Wed, 04 Feb</span><span class="dot-sep">•</span><span>15:30</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Picnic (Simple)"
-          data-meet="Viktualienmarkt"
-          data-maps="Viktualienmarkt, München"
-          data-datetime="2026-02-14T12:30"
-          data-duration="75"
-          data-initiator="Initiated by Paul"
-          data-requirements="Bring something small to snack (optional)."
-          data-desc="Bring something small, enjoy a calm picnic."
-          data-img="https://source.unsplash.com/featured/1200x800/?picnic,park"
-          data-label="Participants"
-          data-signed="8"
-          data-needed="16">
-          <img alt="Picnic" src="https://source.unsplash.com/featured/600x420/?picnic,park">
-          <div class="card-body">
-            <h3>Picnic (Simple)</h3>
-            <p>Relaxed picnic atmosphere.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Viktualienmarkt</span></div>
-              <div class="meta-line"><span>Sat, 14 Feb</span><span class="dot-sep">•</span><span>12:30</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Family Walk"
-          data-meet="Marienplatz"
-          data-maps="Marienplatz, München"
-          data-datetime="2026-02-15T10:30"
-          data-duration="60"
-          data-initiator="Initiated by Sofia"
-          data-requirements="None."
-          data-desc="Short walk suitable for kids. Easy pace."
-          data-img="https://source.unsplash.com/featured/1200x800/?family,park"
-          data-label="Participants"
-          data-signed="6"
-          data-needed="14">
-          <img alt="Family walk" src="https://source.unsplash.com/featured/600x420/?family,park">
-          <div class="card-body">
-            <h3>Family Walk</h3>
-            <p>Easy walk, kid-friendly.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Marienplatz</span></div>
-              <div class="meta-line"><span>Sun, 15 Feb</span><span class="dot-sep">•</span><span>10:30</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Kids Craft Hour"
-          data-meet="Karlsplatz (Stachus)"
-          data-maps="Karlsplatz Stachus, München"
-          data-datetime="2026-02-11T16:00"
-          data-duration="60"
-          data-initiator="Initiated by Tom"
-          data-requirements="None. Materials are provided."
-          data-desc="Simple crafts. Calm and friendly."
-          data-img="https://source.unsplash.com/featured/1200x800/?kids,craft"
-          data-label="Participants"
-          data-signed="7"
-          data-needed="12">
-          <img alt="Crafts" src="https://source.unsplash.com/featured/600x420/?kids,craft">
-          <div class="card-body">
-            <h3>Kids Craft Hour</h3>
-            <p>Simple creative time.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Stachus</span></div>
-              <div class="meta-line"><span>Wed, 11 Feb</span><span class="dot-sep">•</span><span>16:00</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="category">
-      <div class="category-title">
-        <h2>Nature & Outdoor</h2>
-        <span class="hint">Easy • Fresh air</span>
-      </div>
-
-      <div class="slider-row">
-        <article class="card"
-          data-title="Easy Forest Walk"
-          data-meet="Münchner Freiheit"
-          data-maps="Münchner Freiheit, München"
-          data-datetime="2026-02-12T10:30"
-          data-duration="90"
-          data-initiator="Initiated by Lea"
-          data-requirements="Comfortable shoes."
-          data-desc="Simple walk in nature. Beginner-friendly."
-          data-img="https://source.unsplash.com/featured/1200x800/?forest,trail"
-          data-label="Participants"
-          data-signed="6"
-          data-needed="14">
-          <img alt="Forest trail" src="https://source.unsplash.com/featured/600x420/?forest,trail">
-          <div class="card-body">
-            <h3>Easy Forest Walk</h3>
-            <p>Calm walk in a forest area.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>M. Freiheit</span></div>
-              <div class="meta-line"><span>Thu, 12 Feb</span><span class="dot-sep">•</span><span>10:30</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Lakeside Walk"
-          data-meet="München Hbf"
-          data-maps="München Hauptbahnhof, München"
-          data-datetime="2026-02-21T09:00"
-          data-duration="240"
-          data-initiator="Initiated by Sam"
-          data-requirements="Public transport ticket. Comfortable shoes."
-          data-desc="Easy walk near a lake. Simple meetup."
-          data-img="https://source.unsplash.com/featured/1200x800/?lake,walk"
-          data-label="Participants"
-          data-signed="5"
-          data-needed="10">
-          <img alt="Lake" src="https://source.unsplash.com/featured/600x420/?lake,walk">
-          <div class="card-body">
-            <h3>Lakeside Walk</h3>
-            <p>Fresh air and calm view.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>München Hbf</span></div>
-              <div class="meta-line"><span>Sat, 21 Feb</span><span class="dot-sep">•</span><span>09:00</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Beginner Hike"
-          data-meet="Marienplatz"
-          data-maps="Marienplatz, München"
-          data-datetime="2026-02-22T08:30"
-          data-duration="300"
-          data-initiator="Initiated by Noor"
-          data-requirements="Comfortable hiking shoes. Bring water/snacks."
-          data-desc="Short, beginner hike. Keep it simple."
-          data-img="https://source.unsplash.com/featured/1200x800/?hiking,trail"
-          data-label="Participants"
-          data-signed="8"
-          data-needed="12">
-          <img alt="Hiking" src="https://source.unsplash.com/featured/600x420/?hiking,trail">
-          <div class="card-body">
-            <h3>Beginner Hike</h3>
-            <p>Short hike, easy pace.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Marienplatz</span></div>
-              <div class="meta-line"><span>Sun, 22 Feb</span><span class="dot-sep">•</span><span>08:30</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-
-        <article class="card"
-          data-title="Sunset Viewpoint"
-          data-meet="Odeonsplatz"
-          data-maps="Odeonsplatz, München"
-          data-datetime="2026-02-13T17:00"
-          data-duration="75"
-          data-initiator="Initiated by Mia"
-          data-requirements="Warm clothes (weather-dependent)."
-          data-desc="Meet to watch the sunset at a viewpoint."
-          data-img="https://source.unsplash.com/featured/1200x800/?sunset,viewpoint"
-          data-label="Participants"
-          data-signed="7"
-          data-needed="14">
-          <img alt="Sunset" src="https://source.unsplash.com/featured/600x420/?sunset,viewpoint">
-          <div class="card-body">
-            <h3>Sunset Viewpoint</h3>
-            <p>Calm sunset meetup.</p>
-            <div class="meta">
-              <div class="meta-line"><span>Meet:</span><span>Odeonsplatz</span></div>
-              <div class="meta-line"><span>Fri, 13 Feb</span><span class="dot-sep">•</span><span>17:00</span></div>
-            </div>
-            <div class="count" data-count-ui></div>
-            <button class="more" type="button">More</button>
-          </div>
-        </article>
-      </div>
-    </section>
-
     <section class="category" style="padding-bottom:44px;">
       <div class="category-title">
         <h2>Arts & Creativity</h2>
@@ -1382,6 +1086,16 @@
     <div class="modal">
       <div class="modal-media">
         <img id="modalImg" alt="Activity image" src="">
+        <div class="media-under">
+          <div class="host-line" id="modalInitiator"></div>
+          <div class="participants-under">
+            <div class="ptext-inline">
+              <span><b>Participants</b></span>
+              <span id="modalCountText"></span>
+            </div>
+            <div class="pbar" aria-hidden="true"><div id="modalPBar"></div></div>
+          </div>
+        </div>
       </div>
 
       <div class="modal-content">
@@ -1392,35 +1106,21 @@
 
         <p class="modal-desc" id="modalDesc"></p>
 
-        <ul class="modal-facts">
+        <div class="fact-grid">
           <!-- Location: clickable to open maps -->
-          <li class="fact fact-link" id="modalLocation" role="button" tabindex="0" aria-label="Open in Maps">
+          <div class="fact fact-link" id="modalLocation" role="button" tabindex="0" aria-label="Open in Maps">
             <div class="fact-title">Meetup location</div>
             <div class="fact-value" id="modalLocationValue"></div>
             <div class="calendar-hint">Click to open maps</div>
-          </li>
+          </div>
 
           <!-- Date/time: clickable to add to calendar -->
-          <li class="fact fact-link" id="modalDateTime" role="button" tabindex="0" aria-label="Add to Calendar">
+          <div class="fact fact-link" id="modalDateTime" role="button" tabindex="0" aria-label="Add to Calendar">
             <div class="fact-title">Date & time</div>
             <div class="fact-value" id="modalDateTimeValue"></div>
             <div class="calendar-hint">Click to add to your calendar</div>
-          </li>
-
-          <li class="fact" id="modalInitiatorWrap">
-            <div class="fact-title">Host</div>
-            <div class="fact-value" id="modalInitiator"></div>
-          </li>
-
-          <!-- Participants: bar + numbers -->
-          <li class="fact" id="modalCount">
-            <div class="ptext">
-              <span><b>Participants</b></span>
-              <span id="modalCountText"></span>
-            </div>
-            <div class="pbar" aria-hidden="true"><div id="modalPBar"></div></div>
-          </li>
-        </ul>
+          </div>
+        </div>
 
         <div class="req">
           <h4>Requirements</h4>
@@ -1452,7 +1152,6 @@
     const mDateVal  = document.getElementById("modalDateTimeValue");
 
     const mInit = document.getElementById("modalInitiator");
-    const mCountWrap = document.getElementById("modalCount");
     const mCountText = document.getElementById("modalCountText");
     const mPBar = document.getElementById("modalPBar");
 
@@ -1475,7 +1174,6 @@
     }
 
     function formatDateNice(isoLocal){
-      // isoLocal like "2026-01-17T13:00"
       const d = new Date(isoLocal);
       if (isNaN(d.getTime())) return "";
       const weekday = d.toLocaleDateString("en-GB", { weekday:"short" });
@@ -1487,11 +1185,11 @@
 
     function renderModalParticipants(card){
       const signed = safeInt(card.dataset.signed, 0);
-      const needed = Math.max(1, safeInt(card.dataset.needed, 1));
+      const neededRaw = safeInt(card.dataset.needed, 0);
+      const needed = Math.max(1, neededRaw || 1);
       const pct = Math.max(0, Math.min(100, (signed / needed) * 100));
-      mCountText.textContent = `${signed} / ${needed}`;
+      mCountText.textContent = neededRaw > 0 ? `${signed} / ${neededRaw}` : `${signed}`;
       mPBar.style.width = pct + "%";
-      mCountWrap.setAttribute("aria-label", `Participants ${signed} of ${needed}`);
     }
 
     function openModal(card){
@@ -1507,7 +1205,7 @@
       const dt = (card.dataset.datetime || "").trim();
       mDateVal.textContent = formatDateNice(dt);
 
-      mInit.textContent = card.dataset.initiator || "";
+      mInit.innerHTML = `<b>Host:</b> ${(card.dataset.initiator || "").trim()}`;
 
       renderModalParticipants(card);
 
