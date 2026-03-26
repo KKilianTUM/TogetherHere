@@ -1289,6 +1289,12 @@ END:VCALENDAR`;
       });
     }
 
+    function safeOpenInNewTab(url){
+      const w = window.open(url, "_blank", "noopener,noreferrer");
+      if (w) w.opener = null;
+      return w;
+    }
+
     function openMapsForActiveCard(){
       if (!activeCard) return;
 
@@ -1305,11 +1311,11 @@ END:VCALENDAR`;
       const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
       if (isAppleDevice && isSafari) {
-        const w = window.open(appleMapsUrl, "_blank");
-        if (!w) window.open(appleMapsHttp, "_blank");
+        const w = safeOpenInNewTab(appleMapsUrl);
+        if (!w) safeOpenInNewTab(appleMapsHttp);
         return;
       }
-      window.open(googleMapsUrl, "_blank");
+      safeOpenInNewTab(googleMapsUrl);
     }
 
     // Events
