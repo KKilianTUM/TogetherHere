@@ -1205,7 +1205,11 @@
       const dt = (card.dataset.datetime || "").trim();
       mDateVal.textContent = formatDateNice(dt);
 
-      mInit.innerHTML = `<b>Host:</b> ${(card.dataset.initiator || "").trim()}`;
+      const initiator = (card.dataset.initiator || "").trim();
+      mInit.replaceChildren();
+      const hostLabel = document.createElement("b");
+      hostLabel.textContent = "Host:";
+      mInit.append(hostLabel, document.createTextNode(` ${initiator}`));
 
       renderModalParticipants(card);
 
