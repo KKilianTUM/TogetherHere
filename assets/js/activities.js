@@ -17,8 +17,10 @@ const mPBar = document.getElementById("modalPBar");
 
 const mReq = document.getElementById("modalReq");
 const mImg  = document.getElementById("modalImg");
+const modalContainer = backdrop?.querySelector(".modal");
 
 let activeCard = null;
+let lastFocusedElement = null;
 
 function safeInt(v, fallback=0){
   const n = parseInt(v, 10);
@@ -54,6 +56,7 @@ function renderModalParticipants(card){
 
 function openModal(card){
   activeCard = card;
+  lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
   mTitle.textContent = card.dataset.title || "Activity";
   mDesc.textContent  = card.dataset.desc || "";
@@ -65,21 +68,30 @@ function openModal(card){
   const dt = (card.dataset.datetime || "").trim();
   mDateVal.textContent = formatDateNice(dt);
 
-  mInit.innerHTML = `<b>Host:</b> ${(card.dataset.initiator || "").trim()}`;
+  mInit.replaceChildren();
+  const hostLabel = document.createElement("b");
+  hostLabel.textContent = "Host:";
+  mInit.append(hostLabel, ` ${(card.dataset.initiator || "").trim()}`);
 
   renderModalParticipants(card);
 
   mReq.textContent = (card.dataset.requirements || "None.").trim() || "None.";
 
   backdrop.style.display = "flex";
+  backdrop.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
-  closeBtn.focus();
+  closeBtn.focus({ preventScroll: true });
 }
 
 function closeModal(){
   backdrop.style.display = "none";
+  backdrop.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
   activeCard = null;
+  if (lastFocusedElement) {
+    lastFocusedElement.focus({ preventScroll: true });
+    lastFocusedElement = null;
+  }
 }
 
 // Calendar (.ics) download helper
@@ -164,12 +176,18 @@ function openMapsForActiveCard(){
   const appleMapsHttp = `https://maps.apple.com/?q=${encoded}`;
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
+  const safeOpenExternal = (url) => {
+    const win = window.open(url, "_blank", "noopener,noreferrer");
+    if (win) win.opener = null;
+    return win;
+  };
+
   if (isAppleDevice && isSafari) {
-    const w = window.open(appleMapsUrl, "_blank");
-    if (!w) window.open(appleMapsHttp, "_blank");
+    const w = safeOpenExternal(appleMapsUrl);
+    if (!w) safeOpenExternal(appleMapsHttp);
     return;
   }
-  window.open(googleMapsUrl, "_blank");
+  safeOpenExternal(googleMapsUrl);
 }
 
 // Events
@@ -185,6 +203,31 @@ document.addEventListener("click", (e) => {
 closeBtn.addEventListener("click", closeModal);
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && backdrop.style.display === "flex") closeModal();
+  if (e.key !== "Tab" || backdrop.style.display !== "flex" || !modalContainer) return;
+
+  const focusableSelectors = [
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "[tabindex]:not([tabindex='-1'])"
+  ];
+  const focusables = Array.from(modalContainer.querySelectorAll(focusableSelectors.join(",")))
+    .filter((el) => el instanceof HTMLElement && !el.hasAttribute("hidden"));
+  if (!focusables.length) return;
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+
+  if (e.shiftKey && active === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && active === last) {
+    e.preventDefault();
+    first.focus();
+  }
 });
 
 // Clickable Date/Time -> Calendar
