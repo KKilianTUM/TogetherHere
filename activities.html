@@ -1082,8 +1082,14 @@
   </main>
 
   <!-- Modal -->
-  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-label="Activity details">
-    <div class="modal">
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+      aria-describedby="modalDesc"
+    >
       <div class="modal-media">
         <img id="modalImg" alt="Activity image" src="">
         <div class="media-under">
@@ -1141,6 +1147,8 @@
     // Simple modal logic (prototype counter + modal)
     const backdrop = document.getElementById("modalBackdrop");
     const closeBtn = document.getElementById("modalClose");
+    const modalDialog = backdrop.querySelector(".modal");
+    const backgroundSiblings = [...document.body.children].filter((el) => el !== backdrop);
 
     const mTitle = document.getElementById("modalTitle");
     const mDesc  = document.getElementById("modalDesc");
@@ -1159,6 +1167,7 @@
     const mImg  = document.getElementById("modalImg");
 
     let activeCard = null;
+    let lastTriggerElement = null;
 
     function safeInt(v, fallback=0){
       const n = parseInt(v, 10);
@@ -1192,8 +1201,48 @@
       mPBar.style.width = pct + "%";
     }
 
-    function openModal(card){
+    function getFocusableElements(container){
+      return [...container.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )].filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+    }
+
+    function handleModalTabTrap(e){
+      if (e.key !== "Tab" || backdrop.style.display !== "flex") return;
+
+      const focusable = getFocusableElements(modalDialog);
+      if (focusable.length === 0){
+        e.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const isShift = e.shiftKey;
+
+      if (isShift && document.activeElement === first){
+        e.preventDefault();
+        last.focus();
+      } else if (!isShift && document.activeElement === last){
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
+    function setBackgroundInert(isInert){
+      backgroundSiblings.forEach((el) => {
+        el.inert = isInert;
+        if (isInert){
+          el.setAttribute("aria-hidden", "true");
+        } else {
+          el.removeAttribute("aria-hidden");
+        }
+      });
+    }
+
+    function openModal(card, triggerElement){
       activeCard = card;
+      lastTriggerElement = triggerElement || document.activeElement;
 
       mTitle.textContent = card.dataset.title || "Activity";
       mDesc.textContent  = card.dataset.desc || "";
@@ -1212,14 +1261,22 @@
       mReq.textContent = (card.dataset.requirements || "None.").trim() || "None.";
 
       backdrop.style.display = "flex";
+      backdrop.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      setBackgroundInert(true);
       closeBtn.focus();
     }
 
     function closeModal(){
       backdrop.style.display = "none";
+      backdrop.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      setBackgroundInert(false);
+      if (lastTriggerElement && typeof lastTriggerElement.focus === "function"){
+        lastTriggerElement.focus();
+      }
       activeCard = null;
+      lastTriggerElement = null;
     }
 
     // Calendar (.ics) download helper
@@ -1317,7 +1374,7 @@ END:VCALENDAR`;
       const moreBtn = e.target.closest(".more");
       if (moreBtn){
         const card = moreBtn.closest(".card");
-        if (card) openModal(card);
+        if (card) openModal(card, moreBtn);
       }
       if (e.target === backdrop) closeModal();
     });
@@ -1326,6 +1383,7 @@ END:VCALENDAR`;
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && backdrop.style.display === "flex") closeModal();
     });
+    modalDialog.addEventListener("keydown", handleModalTabTrap);
 
     // Clickable Date/Time -> Calendar
     mDateWrap.addEventListener("click", handleCalendarAdd);
