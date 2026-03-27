@@ -27,12 +27,30 @@
       </div>
 
       <div class="nav-actions">
-        <!-- NEW: language button -->
         <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
 
-        <a class="btn btn-ghost" href="activities.html">Log in</a>
-        <a class="btn btn-primary" href="activities.html">Register</a>
-        <a class="btn btn-ghost" href="volunteer-register.html">Register as a volunteer</a>
+        <div class="auth-links" aria-label="Authentication links">
+          <a class="btn btn-ghost" href="activities.html">Log in</a>
+          <a class="btn btn-primary" href="activities.html">Register</a>
+          <a class="btn btn-ghost" href="volunteer-register.html">Register as a volunteer</a>
+        </div>
+
+        <div class="mobile-menu-wrap">
+          <button
+            class="icon-btn menu-toggle"
+            id="mobileMenuToggle"
+            type="button"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="mobileHeaderMenu">
+            ☰
+          </button>
+          <div class="mobile-header-menu" id="mobileHeaderMenu" hidden>
+            <a class="mobile-menu-link" href="activities.html">Log in</a>
+            <a class="mobile-menu-link" href="activities.html">Register</a>
+            <a class="mobile-menu-link" href="volunteer-register.html">Register as a volunteer</a>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -140,5 +158,6 @@
       TogetherHere prototype • Minimal concept demo • Replace images & text later
     </footer>
   </main>
+  <script src="assets/js/main-nav.js" defer></script>
 </body>
 </html>
