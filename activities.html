@@ -687,27 +687,29 @@
           <button class="close" id="modalClose" type="button" aria-label="Close">✕</button>
         </div>
 
-        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-scroll">
+          <p class="modal-desc" id="modalDesc"></p>
 
-        <div class="fact-grid">
-          <!-- Location: clickable to open maps -->
-          <div class="fact fact-link" id="modalLocation" role="button" tabindex="0" aria-label="Open in Maps">
-            <div class="fact-title">Meetup location</div>
-            <div class="fact-value" id="modalLocationValue"></div>
-            <div class="calendar-hint">Click to open maps</div>
+          <div class="fact-grid">
+            <!-- Location: clickable to open maps -->
+            <div class="fact fact-link" id="modalLocation" role="button" tabindex="0" aria-label="Open in Maps">
+              <div class="fact-title">Meetup location</div>
+              <div class="fact-value" id="modalLocationValue"></div>
+              <div class="calendar-hint">Click to open maps</div>
+            </div>
+
+            <!-- Date/time: clickable to add to calendar -->
+            <div class="fact fact-link" id="modalDateTime" role="button" tabindex="0" aria-label="Add to Calendar">
+              <div class="fact-title">Date & time</div>
+              <div class="fact-value" id="modalDateTimeValue"></div>
+              <div class="calendar-hint">Click to add to your calendar</div>
+            </div>
           </div>
 
-          <!-- Date/time: clickable to add to calendar -->
-          <div class="fact fact-link" id="modalDateTime" role="button" tabindex="0" aria-label="Add to Calendar">
-            <div class="fact-title">Date & time</div>
-            <div class="fact-value" id="modalDateTimeValue"></div>
-            <div class="calendar-hint">Click to add to your calendar</div>
+          <div class="req">
+            <h4>Requirements</h4>
+            <p id="modalReq"></p>
           </div>
-        </div>
-
-        <div class="req">
-          <h4>Requirements</h4>
-          <p id="modalReq"></p>
         </div>
 
         <div class="modal-actions">

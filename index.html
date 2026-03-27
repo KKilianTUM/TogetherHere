@@ -27,12 +27,31 @@
       </div>
 
       <div class="nav-actions">
-        <!-- NEW: language button -->
         <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
 
-        <a class="btn btn-ghost" href="activities.html">Log in</a>
-        <a class="btn btn-primary" href="activities.html">Register</a>
-        <a class="btn btn-ghost" href="volunteer-register.html">Register as a volunteer</a>
+        <div class="auth-links" aria-label="Authentication links">
+          <a class="btn btn-ghost auth-login-btn" href="activities.html">Log in</a>
+          <div class="register-wrap">
+            <a class="btn btn-primary auth-register-btn" href="activities.html">Register</a>
+            <div class="register-submenu">
+              <a class="register-submenu-link" href="volunteer-register.html">Register as a volunteer</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="mobile-menu-wrap">
+          <button
+            class="lang menu-toggle-btn"
+            type="button"
+            aria-label="Open login menu">
+            Log in ▾
+          </button>
+          <div class="mobile-header-menu" id="mobileHeaderMenu">
+            <a class="mobile-menu-link" href="activities.html">Log in</a>
+            <a class="mobile-menu-link" href="activities.html">Register</a>
+            <a class="mobile-menu-link" href="volunteer-register.html">Register as a volunteer</a>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -140,5 +159,6 @@
       TogetherHere prototype • Minimal concept demo • Replace images & text later
     </footer>
   </main>
+  <script src="assets/js/mobile-menu-delay.js" defer></script>
 </body>
 </html>
