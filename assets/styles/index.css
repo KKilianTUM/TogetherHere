@@ -46,7 +46,8 @@
   transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
 }
 
-.mobile-menu-wrap:hover .mobile-header-menu{
+.mobile-menu-wrap:hover .mobile-header-menu,
+.mobile-menu-wrap.is-open .mobile-header-menu{
   opacity:1;
   transform:translateY(0);
   visibility:visible;
