@@ -1,6 +1,9 @@
-const mobileMenuWrap = document.querySelector('.mobile-menu-wrap');
+const delayMs = 2000;
 
-if (mobileMenuWrap) {
+const attachDelayedCollapse = (selector) => {
+  const menuWrap = document.querySelector(selector);
+  if (!menuWrap) return;
+
   let closeTimer = null;
 
   const cancelClose = () => {
@@ -12,20 +15,22 @@ if (mobileMenuWrap) {
 
   const openMenu = () => {
     cancelClose();
-    mobileMenuWrap.classList.add('is-open');
+    menuWrap.classList.add('is-open');
   };
 
   const closeMenuWithDelay = () => {
     cancelClose();
     closeTimer = setTimeout(() => {
-      mobileMenuWrap.classList.remove('is-open');
+      menuWrap.classList.remove('is-open');
       closeTimer = null;
-    }, 2000);
+    }, delayMs);
   };
 
-  mobileMenuWrap.addEventListener('mouseenter', openMenu);
-  mobileMenuWrap.addEventListener('mouseleave', closeMenuWithDelay);
+  menuWrap.addEventListener('mouseenter', openMenu);
+  menuWrap.addEventListener('mouseleave', closeMenuWithDelay);
+  menuWrap.addEventListener('focusin', openMenu);
+  menuWrap.addEventListener('focusout', closeMenuWithDelay);
+};
 
-  mobileMenuWrap.addEventListener('focusin', openMenu);
-  mobileMenuWrap.addEventListener('focusout', closeMenuWithDelay);
-}
+attachDelayedCollapse('.mobile-menu-wrap');
+attachDelayedCollapse('.register-wrap');

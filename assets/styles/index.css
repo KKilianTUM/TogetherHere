@@ -16,15 +16,27 @@
   align-items:center;
 }
 
+.auth-login-btn{ width:96px; }
+.auth-register-btn{ width:116px; }
+
 .register-wrap{
   position:relative;
   display:flex;
   align-items:center;
 }
 
+.register-wrap::after{
+  content:"";
+  position:absolute;
+  top:100%;
+  left:-20px;
+  right:-20px;
+  height:24px;
+}
+
 .register-submenu{
   position:absolute;
-  top:calc(100% + 10px);
+  top:calc(100% + 6px);
   right:0;
   min-width:230px;
   background:#fff;
@@ -41,6 +53,7 @@
 }
 
 .register-wrap:hover .register-submenu,
+.register-wrap.is-open .register-submenu,
 .register-wrap:focus-within .register-submenu{
   opacity:1;
   transform:translateY(0);
