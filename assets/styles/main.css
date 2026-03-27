@@ -86,7 +86,6 @@ button{ font-family:inherit; }
 .lang:hover{
   border-color: rgba(58,115,255,.35);
   box-shadow:0 6px 18px rgba(58,115,255,.12);
-  font-weight:600;
 }
 
 .btn{
@@ -114,9 +113,4 @@ button{ font-family:inherit; }
 .btn-ghost:hover{
   border-color:rgba(58,115,255,.4);
   box-shadow:0 6px 18px rgba(58,115,255,.12);
-}
-
-.nav a:hover,
-.nav button:hover{
-  font-weight:600;
 }
