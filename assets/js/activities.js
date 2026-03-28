@@ -361,9 +361,34 @@ mLocWrap.addEventListener("keydown", (e) => {
   if (!button) return;
   button.addEventListener("click", () => {
     openCreateForm();
-    creatorAnchor?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (button === heroPlusBtn) {
+      heroPlusBtn.classList.add("is-hidden");
+      return;
+    }
+    quickScrollToCreator();
   });
 });
+
+function quickScrollToCreator() {
+  if (!creatorAnchor) return;
+  const startY = window.scrollY;
+  const targetY = Math.max(
+    0,
+    creatorAnchor.getBoundingClientRect().top + window.scrollY - 72
+  );
+  const duration = 160;
+  const startTime = performance.now();
+
+  const step = (currentTime) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    window.scrollTo(0, startY + (targetY - startY) * eased);
+    if (progress < 1) requestAnimationFrame(step);
+  };
+
+  requestAnimationFrame(step);
+}
 
 if (creatorAnchor && headerPlusBtn) {
   const toggleHeaderPlus = () => {
