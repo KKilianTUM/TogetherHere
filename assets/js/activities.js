@@ -239,6 +239,48 @@ function getWordCount(text){
   return String(text || "").trim().split(/\s+/).filter(Boolean).length;
 }
 
+function hasAtLeastTwoRealWords(text){
+  const words = String(text || "").trim().split(/\s+/).filter(Boolean);
+  const realWords = words.filter((word) => /\p{L}/u.test(word));
+  return realWords.length >= 2;
+}
+
+function combineDateAndTimeInput(dateInput, timeInput){
+  const dateRaw = String(dateInput || "").trim();
+  const timeRaw = String(timeInput || "").trim();
+  if (!dateRaw || !timeRaw) return null;
+  const parsed = new Date(`${dateRaw}T${timeRaw}`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function generateUniquePlaceholderImage(){
+  const usedImages = new Set(
+    Array.from(document.querySelectorAll(".card")).flatMap((card) => {
+      const imgEl = card.querySelector("img");
+      return [card.dataset.img, imgEl?.getAttribute("src")].filter(Boolean);
+    })
+  );
+
+  let candidate = "";
+  do {
+    const hue = Math.floor(Math.random() * 360);
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 480 280'>
+      <defs>
+        <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+          <stop offset='0%' stop-color='hsl(${hue} 85% 78%)'/>
+          <stop offset='100%' stop-color='hsl(${(hue + 50) % 360} 88% 56%)'/>
+        </linearGradient>
+      </defs>
+      <rect width='480' height='280' rx='26' fill='url(#g)'/>
+      <circle cx='92' cy='74' r='34' fill='rgba(255,255,255,.32)'/>
+      <path d='M30 230 L170 120 L250 198 L330 150 L450 230' stroke='rgba(255,255,255,.68)' stroke-width='16' fill='none' stroke-linecap='round' stroke-linejoin='round'/>
+    </svg>`;
+    candidate = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  } while (usedImages.has(candidate));
+
+  return candidate;
+}
+
 function buildDateForCard(dateObj){
   const y = dateObj.getFullYear();
   const m = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -260,7 +302,7 @@ function buildCardFromForm(formData, dateObj){
   const title = formData.title.trim();
   const location = formData.location.trim();
   const description = formData.description.trim();
-  const img = uploadedImageUrl || "/images/imageblank";
+  const img = uploadedImageUrl || generateUniquePlaceholderImage();
   const dateISO = buildDateForCard(dateObj);
   const dateLabel = dateObj.toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" });
   const timeLabel = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
@@ -411,15 +453,17 @@ if (createForm) {
     createFormError.textContent = "";
     const titleInput = createForm.querySelector("input[name='title']");
     const locationInput = createForm.querySelector("input[name='location']");
-    const datetimeInput = createForm.querySelector("input[name='datetime']");
+    const dateInput = createForm.querySelector("input[name='date']");
+    const timeInput = createForm.querySelector("input[name='time']");
     const neededInput = createForm.querySelector("input[name='needed']");
     const descriptionInput = createForm.querySelector("textarea[name='description']");
-    if (!titleInput || !locationInput || !datetimeInput || !neededInput || !descriptionInput) return;
+    if (!titleInput || !locationInput || !dateInput || !timeInput || !neededInput || !descriptionInput) return;
 
     const formData = {
       title: titleInput.value,
       location: locationInput.value,
-      datetime: datetimeInput.value,
+      date: dateInput.value,
+      time: timeInput.value,
       needed: safeInt(neededInput.value, 0),
       description: descriptionInput.value
     };
@@ -428,18 +472,22 @@ if (createForm) {
       createFormError.textContent = "Please add a location.";
       return;
     }
-    if (!formData.datetime) {
+    if (!formData.date || !formData.time) {
       createFormError.textContent = "Please add date and time.";
       return;
     }
 
-    const parsedDate = normalizeDateTimeInput(formData.datetime);
+    const parsedDate = combineDateAndTimeInput(formData.date, formData.time);
     if (!parsedDate) {
-      createFormError.textContent = "Please enter a valid date and time (for example: next monday 12:00).";
+      createFormError.textContent = "Please enter a valid date and a valid time.";
       return;
     }
     if (!formData.title.trim()) {
       createFormError.textContent = "Please add a title.";
+      return;
+    }
+    if (!hasAtLeastTwoRealWords(formData.title)) {
+      createFormError.textContent = "Title must contain at least two real words.";
       return;
     }
     if (formData.needed < 1) {
@@ -456,6 +504,7 @@ if (createForm) {
     uploadedImageUrl = "";
     createFormError.textContent = "";
     createForm.hidden = true;
+    heroPlusBtn?.classList.remove("is-hidden");
     heroPlusBtn?.setAttribute("aria-expanded", "false");
   });
 }

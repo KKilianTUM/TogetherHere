@@ -67,9 +67,12 @@
             <span>Location</span>
             <input type="text" name="location" placeholder="add a location" required>
           </label>
-          <label class="line-field">
+          <label class="line-field line-field-split">
             <span>Date & time</span>
-            <input type="text" name="datetime" placeholder="add date and time (e.g. next monday 12:00)" required>
+            <div class="split-inputs">
+              <input type="date" name="date" required>
+              <input type="time" name="time" required>
+            </div>
           </label>
           <label class="line-field">
             <span>Participants needed</span>
