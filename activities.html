@@ -43,10 +43,54 @@
           </svg>
         </a>
       </div>
+      <button class="header-plus-btn" id="headerPlusBtn" type="button" aria-label="Create new activity">
+        <span aria-hidden="true">+</span>
+      </button>
     </div>
   </header>
 
   <main class="container">
+    <section class="activity-creator" id="activityCreatorAnchor">
+      <button class="hero-plus-btn" id="heroPlusBtn" type="button" aria-expanded="false" aria-controls="activityCreateForm">
+        <span aria-hidden="true">+</span>
+      </button>
+      <p class="hero-plus-subtitle">What do you want to do ?</p>
+
+      <form class="create-form" id="activityCreateForm" novalidate hidden>
+        <h2>Create a new activity</h2>
+        <div class="create-grid">
+          <label class="line-field">
+            <span>Title</span>
+            <input type="text" name="title" placeholder="add a title" required>
+          </label>
+          <label class="line-field">
+            <span>Location</span>
+            <input type="text" name="location" placeholder="add a location" required>
+          </label>
+          <label class="line-field">
+            <span>Date & time</span>
+            <input type="text" name="datetime" placeholder="add date and time (e.g. next monday 12:00)" required>
+          </label>
+          <label class="line-field">
+            <span>Participants needed</span>
+            <input type="number" name="needed" min="1" step="1" placeholder="add participant count" required>
+          </label>
+          <label class="line-field full">
+            <span>Description</span>
+            <textarea name="description" rows="3" placeholder="add a description (minimum 20 words)" required></textarea>
+          </label>
+          <label class="line-field full upload-field">
+            <span>Image upload</span>
+            <input type="file" name="image" accept="image/*">
+          </label>
+        </div>
+        <p class="form-error" id="createFormError" aria-live="polite"></p>
+        <div class="create-actions">
+          <button class="btn btn-primary" type="submit">Add activity</button>
+        </div>
+      </form>
+    </section>
+
     <section class="page-head">
       <h1>Activities</h1>
       <p class="muted">Scroll categories horizontally. Click “More” to open details.</p>
