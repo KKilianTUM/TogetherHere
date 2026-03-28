@@ -249,6 +249,63 @@
   border-radius:999px;
 }
 
+.comic-certificate{
+  width:min(760px, 100%);
+  margin:0 auto 0 0;
+  border:3px solid #1f2b4d;
+  border-radius:18px;
+  background:linear-gradient(180deg, #fffdf4 0%, #ffe8d1 100%);
+  box-shadow:6px 7px 0 rgba(31,43,77,.22);
+  position:relative;
+  transform:rotate(-.4deg);
+}
+
+.comic-certificate::before,
+.comic-certificate::after{
+  content:"";
+  position:absolute;
+  width:26px;
+  height:26px;
+  border:3px solid #1f2b4d;
+  background:#fff;
+  transform:rotate(45deg);
+}
+
+.comic-certificate::before{
+  top:-14px;
+  left:18px;
+}
+
+.comic-certificate::after{
+  right:20px;
+  bottom:-14px;
+}
+
+.certificate-inner{
+  padding:20px 26px;
+  border:2px dashed rgba(31,43,77,.55);
+  margin:10px;
+  border-radius:12px;
+}
+
+.comic-certificate h2{
+  font-family:"Comic Sans MS", "Comic Neue", Quicksand, Poppins, sans-serif;
+  letter-spacing:.2px;
+  margin-bottom:8px;
+}
+
+.comic-certificate .muted{
+  margin:0;
+  font-size:15px;
+  line-height:1.55;
+}
+
+@media (max-width: 860px){
+  .comic-certificate{
+    transform:none;
+  }
+}
+
 .footer{
   padding:24px 0 34px;
   border-top:1px solid rgba(0,0,0,.06);
