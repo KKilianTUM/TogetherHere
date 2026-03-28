@@ -18,9 +18,16 @@ const mPBar = document.getElementById("modalPBar");
 const mReq = document.getElementById("modalReq");
 const mImg  = document.getElementById("modalImg");
 const modalContainer = backdrop?.querySelector(".modal");
+const heroPlusBtn = document.getElementById("heroPlusBtn");
+const headerPlusBtn = document.getElementById("headerPlusBtn");
+const createForm = document.getElementById("activityCreateForm");
+const creatorAnchor = document.getElementById("activityCreatorAnchor");
+const createFormError = document.getElementById("createFormError");
+const firstCategoryRow = document.querySelector(".category .slider-row");
 
 let activeCard = null;
 let lastFocusedElement = null;
+let uploadedImageUrl = "";
 
 function safeInt(v, fallback=0){
   const n = parseInt(v, 10);
@@ -190,6 +197,108 @@ function openMapsForActiveCard(){
   safeOpenExternal(googleMapsUrl);
 }
 
+function normalizeDateTimeInput(input){
+  const raw = String(input || "").trim();
+  if (!raw) return null;
+
+  const compact = raw.replace(/\./g, ":").replace(/\s+/g, " ").trim();
+  const lower = compact.toLowerCase();
+  const weekdays = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+  const match = lower.match(/^next\s+(sunday|monday|tuesday|wednesday|thursday|friday|saturday)(?:\s+(\d{1,2}:\d{2}))?$/i);
+
+  if (match){
+    const dayIdx = weekdays.indexOf(match[1]);
+    const now = new Date();
+    const result = new Date(now);
+    const delta = (dayIdx - now.getDay() + 7) % 7 || 7;
+    result.setDate(now.getDate() + delta);
+
+    if (match[2]){
+      const [hh, mm] = match[2].split(":").map((x) => parseInt(x, 10));
+      if (hh > 23 || mm > 59) return null;
+      result.setHours(hh, mm, 0, 0);
+    } else {
+      result.setHours(12, 0, 0, 0);
+    }
+    return result;
+  }
+
+  const parsed = new Date(compact);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function openCreateForm(){
+  if (!createForm || !heroPlusBtn) return;
+  createForm.hidden = false;
+  heroPlusBtn.setAttribute("aria-expanded", "true");
+  const firstInput = createForm.querySelector("input[name='title']");
+  if (firstInput instanceof HTMLElement) firstInput.focus({ preventScroll: false });
+}
+
+function getWordCount(text){
+  return String(text || "").trim().split(/\s+/).filter(Boolean).length;
+}
+
+function buildDateForCard(dateObj){
+  const y = dateObj.getFullYear();
+  const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const d = String(dateObj.getDate()).padStart(2, "0");
+  const hh = String(dateObj.getHours()).padStart(2, "0");
+  const mm = String(dateObj.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${d}T${hh}:${mm}`;
+}
+
+function buildCardFromForm(formData, dateObj){
+  if (!firstCategoryRow) return;
+  const escapeHtml = (text) => String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+  const card = document.createElement("article");
+  const title = formData.title.trim();
+  const location = formData.location.trim();
+  const description = formData.description.trim();
+  const img = uploadedImageUrl || "/images/imageblank";
+  const dateISO = buildDateForCard(dateObj);
+  const dateLabel = dateObj.toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" });
+  const timeLabel = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+
+  card.className = "card";
+  card.dataset.title = title;
+  card.dataset.meet = location;
+  card.dataset.maps = location;
+  card.dataset.datetime = dateISO;
+  card.dataset.duration = "60";
+  card.dataset.initiator = "Initiated by You";
+  card.dataset.requirements = "None.";
+  card.dataset.desc = description;
+  card.dataset.img = img;
+  card.dataset.label = "Participants";
+  card.dataset.signed = "1";
+  card.dataset.needed = String(formData.needed);
+  const safeTitle = escapeHtml(title);
+  const safeLocation = escapeHtml(location);
+  const safeDescription = escapeHtml(description.slice(0, 80));
+  card.innerHTML = `
+    <img alt="User created activity" src="${img}" width="240" height="140" loading="lazy" decoding="async">
+    <div class="card-body">
+      <h3>${safeTitle}</h3>
+      <p>${safeDescription}${description.length > 80 ? "…" : ""}</p>
+      <div class="meta">
+        <div class="meta-line"><span>Meet:</span><span>${safeLocation}</span></div>
+        <div class="meta-line"><span>${dateLabel}</span><span class="dot-sep">•</span><span>${timeLabel}</span></div>
+      </div>
+      <div class="count" data-count-ui></div>
+      <button class="more" type="button">More</button>
+    </div>`;
+
+  firstCategoryRow.prepend(card);
+  const ui = card.querySelector("[data-count-ui]");
+  if (ui) ui.textContent = formatCardCount(card);
+}
+
 // Events
 document.addEventListener("click", (e) => {
   const moreBtn = e.target.closest(".more");
@@ -247,6 +356,84 @@ mLocWrap.addEventListener("keydown", (e) => {
     openMapsForActiveCard();
   }
 });
+
+[heroPlusBtn, headerPlusBtn].forEach((button) => {
+  if (!button) return;
+  button.addEventListener("click", () => {
+    openCreateForm();
+    creatorAnchor?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+if (creatorAnchor && headerPlusBtn) {
+  const toggleHeaderPlus = () => {
+    const markerBottom = creatorAnchor.getBoundingClientRect().bottom;
+    headerPlusBtn.classList.toggle("is-visible", markerBottom < 0);
+  };
+  document.addEventListener("scroll", toggleHeaderPlus, { passive: true });
+  toggleHeaderPlus();
+}
+
+if (createForm) {
+  const imageInput = createForm.querySelector("input[name='image']");
+  imageInput?.addEventListener("change", (e) => {
+    const file = e.target.files?.[0];
+    uploadedImageUrl = file ? URL.createObjectURL(file) : "";
+  });
+
+  createForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    createFormError.textContent = "";
+    const titleInput = createForm.querySelector("input[name='title']");
+    const locationInput = createForm.querySelector("input[name='location']");
+    const datetimeInput = createForm.querySelector("input[name='datetime']");
+    const neededInput = createForm.querySelector("input[name='needed']");
+    const descriptionInput = createForm.querySelector("textarea[name='description']");
+    if (!titleInput || !locationInput || !datetimeInput || !neededInput || !descriptionInput) return;
+
+    const formData = {
+      title: titleInput.value,
+      location: locationInput.value,
+      datetime: datetimeInput.value,
+      needed: safeInt(neededInput.value, 0),
+      description: descriptionInput.value
+    };
+
+    if (!formData.location) {
+      createFormError.textContent = "Please add a location.";
+      return;
+    }
+    if (!formData.datetime) {
+      createFormError.textContent = "Please add date and time.";
+      return;
+    }
+
+    const parsedDate = normalizeDateTimeInput(formData.datetime);
+    if (!parsedDate) {
+      createFormError.textContent = "Please enter a valid date and time (for example: next monday 12:00).";
+      return;
+    }
+    if (!formData.title.trim()) {
+      createFormError.textContent = "Please add a title.";
+      return;
+    }
+    if (formData.needed < 1) {
+      createFormError.textContent = "Please add at least 1 participant.";
+      return;
+    }
+    if (getWordCount(formData.description) < 20) {
+      createFormError.textContent = "Description must be at least 20 words.";
+      return;
+    }
+
+    buildCardFromForm(formData, parsedDate);
+    createForm.reset();
+    uploadedImageUrl = "";
+    createFormError.textContent = "";
+    createForm.hidden = true;
+    heroPlusBtn?.setAttribute("aria-expanded", "false");
+  });
+}
 
 // Render the counter UI on each card
 document.querySelectorAll(".card").forEach(card => {
