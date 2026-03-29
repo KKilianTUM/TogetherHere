@@ -10,6 +10,11 @@ export default {
   corsAllowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   sessionCookieSecure: false,
   sessionCookieSameSite: 'Lax',
+  sessionCookiePath: '/',
+  sessionCookieDomain: '',
   csrfCookieSecure: false,
-  csrfCookieSameSite: 'Strict'
+  csrfCookieSameSite: 'Strict',
+  csrfCookiePath: '/',
+  csrfCookieDomain: '',
+  csrfCookieMaxAgeSeconds: 60 * 60 * 12
 };

@@ -5,12 +5,16 @@ import { createHttpError } from '../middleware/httpError.js';
 function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${encodeURIComponent(value)}`];
 
-  if (options.maxAgeSeconds) {
+  if (options.maxAgeSeconds !== undefined) {
     parts.push(`Max-Age=${options.maxAgeSeconds}`);
   }
 
   if (options.path) {
     parts.push(`Path=${options.path}`);
+  }
+
+  if (options.domain) {
+    parts.push(`Domain=${options.domain}`);
   }
 
   if (options.httpOnly) {
@@ -46,7 +50,8 @@ export async function login(req, res, next) {
 
     res.append('Set-Cookie', serializeCookie(config.sessionCookieName, sessionToken, {
       maxAgeSeconds: config.sessionMaxAgeSeconds,
-      path: '/',
+      path: config.sessionCookiePath,
+      domain: config.sessionCookieDomain,
       httpOnly: true,
       secure: config.sessionCookieSecure,
       sameSite: config.sessionCookieSameSite
@@ -65,7 +70,8 @@ export async function logout(req, res, next) {
 
     res.append('Set-Cookie', serializeCookie(config.sessionCookieName, '', {
       maxAgeSeconds: 0,
-      path: '/',
+      path: config.sessionCookiePath,
+      domain: config.sessionCookieDomain,
       httpOnly: true,
       secure: config.sessionCookieSecure,
       sameSite: config.sessionCookieSameSite

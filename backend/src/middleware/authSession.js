@@ -37,10 +37,9 @@ function parseBearerToken(authorizationHeader) {
 
 function getSessionTokenFromRequest(req) {
   const cookies = parseCookies(req.headers.cookie || '');
-  const cookieToken = cookies[config.sessionCookieName];
 
-  if (cookieToken) {
-    return cookieToken;
+  if (config.authTransportStrategy === 'cookie-session') {
+    return cookies[config.sessionCookieName] || null;
   }
 
   return parseBearerToken(req.headers.authorization);

@@ -25,12 +25,16 @@ function parseCookies(cookieHeader = '') {
 function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${encodeURIComponent(value)}`];
 
-  if (options.maxAgeSeconds) {
+  if (options.maxAgeSeconds !== undefined) {
     parts.push(`Max-Age=${options.maxAgeSeconds}`);
   }
 
   if (options.path) {
     parts.push(`Path=${options.path}`);
+  }
+
+  if (options.domain) {
+    parts.push(`Domain=${options.domain}`);
   }
 
   if (options.httpOnly) {
@@ -52,15 +56,22 @@ function createCsrfToken(secret) {
   return crypto.createHmac('sha256', secret).update('togetherhere-csrf-v1').digest('hex');
 }
 
+function isOriginAllowed(origin) {
+  return origin && config.corsAllowedOrigins.includes(origin);
+}
+
 export function corsMiddleware(req, res, next) {
   const origin = req.headers.origin;
 
-  if (origin && config.corsAllowedOrigins.includes(origin)) {
+  if (isOriginAllowed(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', config.corsAllowedMethods.join(', '));
     res.setHeader('Access-Control-Allow-Headers', config.corsAllowedHeaders.join(', '));
+
+    if (config.authTransportStrategy === 'cookie-session') {
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
   }
 
   if (req.method === 'OPTIONS') {
@@ -75,6 +86,10 @@ export function securityHeaders(req, res, next) {
     'Content-Security-Policy',
     "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'"
   );
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-site');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
@@ -94,8 +109,9 @@ export function csrfProtection(req, res, next) {
         httpOnly: true,
         secure: config.csrfCookieSecure,
         sameSite: config.csrfCookieSameSite,
-        path: '/',
-        maxAgeSeconds: 60 * 60 * 12
+        path: config.csrfCookiePath,
+        domain: config.csrfCookieDomain,
+        maxAgeSeconds: config.csrfCookieMaxAgeSeconds
       })
     );
   }
