@@ -253,6 +253,52 @@ function combineDateAndTimeInput(dateInput, timeInput){
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function formatDateInputValue(dateObj){
+  const y = dateObj.getFullYear();
+  const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const d = String(dateObj.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function formatTimeInputValue(dateObj){
+  const hh = String(dateObj.getHours()).padStart(2, "0");
+  const mm = String(dateObj.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+function getMaxAllowedDate(){
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() + 9);
+  return maxDate;
+}
+
+function syncDateTimeConstraints(dateInput, timeInput){
+  if (!dateInput || !timeInput) return;
+  const now = new Date();
+  const today = formatDateInputValue(now);
+  const maxAllowedDate = getMaxAllowedDate();
+  const maxDate = formatDateInputValue(maxAllowedDate);
+
+  dateInput.min = today;
+  dateInput.max = maxDate;
+
+  if (dateInput.value && dateInput.value < today) {
+    dateInput.value = today;
+  } else if (dateInput.value && dateInput.value > maxDate) {
+    dateInput.value = maxDate;
+  }
+
+  if (dateInput.value === today) {
+    const nowTime = formatTimeInputValue(now);
+    timeInput.min = nowTime;
+    if (timeInput.value && timeInput.value < nowTime) {
+      timeInput.value = nowTime;
+    }
+  } else {
+    timeInput.removeAttribute("min");
+  }
+}
+
 function generateUniquePlaceholderImage(){
   const usedImages = new Set(
     Array.from(document.querySelectorAll(".card")).flatMap((card) => {
@@ -461,6 +507,15 @@ if (creatorAnchor && headerPlusBtn) {
 
 if (createForm) {
   const imageInput = createForm.querySelector("input[name='image']");
+  const dateInput = createForm.querySelector("input[name='date']");
+  const timeInput = createForm.querySelector("input[name='time']");
+
+  if (dateInput && timeInput) {
+    syncDateTimeConstraints(dateInput, timeInput);
+    dateInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput));
+    timeInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput));
+  }
+
   imageInput?.addEventListener("change", (e) => {
     const file = e.target.files?.[0];
     uploadedImageUrl = file ? URL.createObjectURL(file) : "";
@@ -500,8 +555,9 @@ if (createForm) {
       createFormError.textContent = "Please enter a valid date and a valid time.";
       return;
     }
-    if (parsedDate.getTime() < Date.now()) {
-      createFormError.textContent = "Event date/time cannot be in the past.";
+    const maxAllowedDate = getMaxAllowedDate();
+    if (parsedDate.getTime() < Date.now() || parsedDate.getTime() > maxAllowedDate.getTime()) {
+      createFormError.textContent = "Please choose a date/time from now up to 9 years ahead.";
       return;
     }
     if (!formData.title.trim()) {
