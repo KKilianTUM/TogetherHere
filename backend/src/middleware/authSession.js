@@ -43,6 +43,20 @@ function getSessionTokenFromRequest(req) {
   return parseBearerToken(req.headers.authorization);
 }
 
+export function createAuthError(statusCode, message) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
+
+export function requireAuthenticated(req, res, next) {
+  if (!req.auth?.user) {
+    return next(createAuthError(401, 'Authentication required.'));
+  }
+
+  next();
+}
+
 export async function attachAuthIdentity(req, res, next) {
   const sessionToken = getSessionTokenFromRequest(req);
 
