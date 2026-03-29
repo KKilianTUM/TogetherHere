@@ -66,3 +66,14 @@ export async function attachAuthIdentity(req, res, next) {
     next(error);
   }
 }
+
+export function requireAuthenticated(req, res, next) {
+  if (req.auth?.user) {
+    return next();
+  }
+
+  return res.status(401).json({
+    error: 'Request Error',
+    message: 'No authenticated session.'
+  });
+}
