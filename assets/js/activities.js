@@ -271,7 +271,7 @@ function generateUniquePlaceholderImage(){
           <stop offset='100%' stop-color='hsl(${(hue + 50) % 360} 88% 56%)'/>
         </linearGradient>
       </defs>
-      <rect width='480' height='280' rx='26' fill='url(#g)'/>
+      <path d='M0 26 Q0 0 26 0 H454 Q480 0 480 26 V280 H0 Z' fill='url(#g)'/>
       <circle cx='92' cy='74' r='34' fill='rgba(255,255,255,.32)'/>
       <path d='M30 230 L170 120 L250 198 L330 150 L450 230' stroke='rgba(255,255,255,.68)' stroke-width='16' fill='none' stroke-linecap='round' stroke-linejoin='round'/>
     </svg>`;
