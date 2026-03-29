@@ -35,17 +35,40 @@ function parseCsv(input, fallback = []) {
     .filter(Boolean);
 }
 
+function parseBoolean(input, fallback) {
+  if (typeof input !== 'string') {
+    return fallback;
+  }
+
+  if (input.toLowerCase() === 'true') {
+    return true;
+  }
+
+  if (input.toLowerCase() === 'false') {
+    return false;
+  }
+
+  return fallback;
+}
+
 const config = {
   env: nodeEnv,
   port: Number(process.env.PORT || 3000),
   ...selectedConfig,
   databaseUrl: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/togetherhere',
+  authTransportStrategy: process.env.AUTH_TRANSPORT_STRATEGY || selectedConfig.authTransportStrategy || 'cookie-session',
+  frontendOriginAllowlistSource:
+    process.env.FRONTEND_ORIGIN_ALLOWLIST_SOURCE || selectedConfig.frontendOriginAllowlistSource || 'CORS_ALLOWED_ORIGINS',
   corsAllowedOrigins: parseCsv(process.env.CORS_ALLOWED_ORIGINS, selectedConfig.corsAllowedOrigins || []),
   corsAllowedMethods: parseCsv(process.env.CORS_ALLOWED_METHODS, selectedConfig.corsAllowedMethods || ['GET']),
   corsAllowedHeaders: parseCsv(process.env.CORS_ALLOWED_HEADERS, selectedConfig.corsAllowedHeaders || ['Content-Type']),
   sessionMaxAgeSeconds: Number(process.env.SESSION_MAX_AGE_SECONDS || 60 * 60 * 24 * 7),
   sessionCookieName: process.env.SESSION_COOKIE_NAME || '__Host-th_session',
+  sessionCookieSecure: parseBoolean(process.env.SESSION_COOKIE_SECURE, selectedConfig.sessionCookieSecure ?? true),
+  sessionCookieSameSite: process.env.SESSION_COOKIE_SAMESITE || selectedConfig.sessionCookieSameSite || 'Lax',
   csrfCookieName: process.env.CSRF_COOKIE_NAME || '__Host-th_csrf',
+  csrfCookieSecure: parseBoolean(process.env.CSRF_COOKIE_SECURE, selectedConfig.csrfCookieSecure ?? true),
+  csrfCookieSameSite: process.env.CSRF_COOKIE_SAMESITE || selectedConfig.csrfCookieSameSite || 'Strict',
   csrfHeaderName: (process.env.CSRF_HEADER_NAME || 'x-csrf-token').toLowerCase(),
   authRateLimitWindowMs: Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
   authRateLimitBaseBackoffMs: Number(process.env.AUTH_RATE_LIMIT_BASE_BACKOFF_MS || 1000),

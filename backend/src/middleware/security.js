@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import config from '../config/index.js';
+import { createHttpError } from './httpError.js';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
@@ -91,8 +92,8 @@ export function csrfProtection(req, res, next) {
       'Set-Cookie',
       serializeCookie(config.csrfCookieName, csrfSecret, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
+        secure: config.csrfCookieSecure,
+        sameSite: config.csrfCookieSameSite,
         path: '/',
         maxAgeSeconds: 60 * 60 * 12
       })
@@ -109,10 +110,7 @@ export function csrfProtection(req, res, next) {
   const headerToken = req.headers[config.csrfHeaderName];
 
   if (typeof headerToken !== 'string') {
-    return res.status(403).json({
-      error: 'Request Error',
-      message: 'Invalid CSRF token.'
-    });
+    return next(createHttpError(403, 'Invalid CSRF token.'));
   }
 
   const csrfTokenBuffer = Buffer.from(csrfToken, 'utf8');
@@ -122,10 +120,7 @@ export function csrfProtection(req, res, next) {
     headerTokenBuffer.length !== csrfTokenBuffer.length ||
     !crypto.timingSafeEqual(headerTokenBuffer, csrfTokenBuffer)
   ) {
-    return res.status(403).json({
-      error: 'Request Error',
-      message: 'Invalid CSRF token.'
-    });
+    return next(createHttpError(403, 'Invalid CSRF token.'));
   }
 
   next();

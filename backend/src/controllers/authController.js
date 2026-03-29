@@ -1,5 +1,6 @@
 import config from '../config/index.js';
 import { loginUser, registerUser, revokeSessionByToken } from '../services/authService.js';
+import { createHttpError } from '../middleware/httpError.js';
 
 function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${encodeURIComponent(value)}`];
@@ -47,8 +48,8 @@ export async function login(req, res, next) {
       maxAgeSeconds: config.sessionMaxAgeSeconds,
       path: '/',
       httpOnly: true,
-      secure: true,
-      sameSite: 'Lax'
+      secure: config.sessionCookieSecure,
+      sameSite: config.sessionCookieSameSite
     }));
 
     res.status(200).json({ user });
@@ -66,8 +67,8 @@ export async function logout(req, res, next) {
       maxAgeSeconds: 0,
       path: '/',
       httpOnly: true,
-      secure: true,
-      sameSite: 'Lax'
+      secure: config.sessionCookieSecure,
+      sameSite: config.sessionCookieSameSite
     }));
 
     res.status(204).send();
@@ -80,9 +81,7 @@ export async function me(req, res, next) {
   try {
     const user = req.auth?.user;
     if (!user) {
-      const error = new Error('No authenticated session.');
-      error.statusCode = 401;
-      throw error;
+      throw createHttpError(401, 'No authenticated session.');
     }
 
     res.status(200).json({ user });

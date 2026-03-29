@@ -1,12 +1,4 @@
 function getErrorLabel(statusCode) {
-  if (statusCode === 401) {
-    return 'Unauthorized';
-  }
-
-  if (statusCode === 403) {
-    return 'Forbidden';
-  }
-
   if (statusCode >= 500) {
     return 'Internal Server Error';
   }
@@ -16,7 +8,7 @@ function getErrorLabel(statusCode) {
 
 export function notFoundHandler(req, res) {
   res.status(404).json({
-    error: 'Not Found',
+    error: getErrorLabel(404),
     message: `Route ${req.method} ${req.originalUrl} not found`
   });
 }
