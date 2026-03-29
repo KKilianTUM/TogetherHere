@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import pool from '../db/pool.js';
 
 const BCRYPT_COST_FACTOR = 12;
+const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
 
 export class AuthValidationError extends Error {
   constructor(message) {
@@ -54,17 +55,35 @@ function validateDisplayName(displayName) {
   return /^[A-Za-z0-9 _-]+$/.test(trimmed);
 }
 
+function ensureOnlyAllowedFields(input) {
+  for (const field of Object.keys(input)) {
+    if (!ALLOWED_REGISTER_FIELDS.has(field)) {
+      throw new AuthValidationError('Invalid registration input.');
+    }
+  }
+}
+
 function validateRegistrationInput(input) {
-  if (!input || typeof input !== 'object') {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new AuthValidationError('Invalid registration input.');
   }
+
+  ensureOnlyAllowedFields(input);
 
   const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
   const password = input.password;
   const displayName = input.displayName;
 
-  if (!isValidEmail(email) || !validatePassword(password) || !validateDisplayName(displayName)) {
-    throw new AuthValidationError('Unable to process registration input.');
+  if (!isValidEmail(email)) {
+    throw new AuthValidationError('Invalid registration input.');
+  }
+
+  if (!validatePassword(password)) {
+    throw new AuthValidationError('Invalid registration input.');
+  }
+
+  if (!validateDisplayName(displayName)) {
+    throw new AuthValidationError('Invalid registration input.');
   }
 
   return {
@@ -76,6 +95,7 @@ function validateRegistrationInput(input) {
 
 export async function registerUser(input) {
   const { email, password, displayName } = validateRegistrationInput(input);
+
   const passwordHash = await bcrypt.hash(password, BCRYPT_COST_FACTOR);
 
   try {
@@ -89,7 +109,7 @@ export async function registerUser(input) {
     return result.rows[0];
   } catch (error) {
     if (error?.code === '23505') {
-      throw new AuthConflictError('Unable to register account with provided credentials.');
+      throw new AuthConflictError('Account already exists for this email.');
     }
 
     throw error;
