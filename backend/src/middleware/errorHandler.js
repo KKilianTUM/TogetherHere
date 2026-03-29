@@ -1,3 +1,19 @@
+function getErrorLabel(statusCode) {
+  if (statusCode === 401) {
+    return 'Unauthorized';
+  }
+
+  if (statusCode === 403) {
+    return 'Forbidden';
+  }
+
+  if (statusCode >= 500) {
+    return 'Internal Server Error';
+  }
+
+  return 'Request Error';
+}
+
 export function notFoundHandler(req, res) {
   res.status(404).json({
     error: 'Not Found',
@@ -14,7 +30,7 @@ export function errorHandler(err, req, res, next) {
   }
 
   res.status(statusCode).json({
-    error: statusCode >= 500 ? 'Internal Server Error' : 'Request Error',
+    error: getErrorLabel(statusCode),
     message
   });
 }

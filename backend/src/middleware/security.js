@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import config from '../config/index.js';
+import { createAuthError } from './authSession.js';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
@@ -109,10 +110,7 @@ export function csrfProtection(req, res, next) {
   const headerToken = req.headers[config.csrfHeaderName];
 
   if (!headerToken || headerToken !== csrfToken) {
-    return res.status(403).json({
-      error: 'Request Error',
-      message: 'Invalid CSRF token'
-    });
+    return next(createAuthError(403, 'Invalid CSRF token.'));
   }
 
   next();
