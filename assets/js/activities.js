@@ -500,6 +500,10 @@ if (createForm) {
       createFormError.textContent = "Please enter a valid date and a valid time.";
       return;
     }
+    if (parsedDate.getTime() < Date.now()) {
+      createFormError.textContent = "Event date/time cannot be in the past.";
+      return;
+    }
     if (!formData.title.trim()) {
       createFormError.textContent = "Please add a title.";
       return;
