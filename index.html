@@ -30,7 +30,7 @@
         <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
 
         <div class="auth-links" aria-label="Authentication links">
-          <div data-auth-guest>
+          <div data-auth-guest hidden>
             <a class="btn btn-ghost auth-login-btn" href="login.html">Log in</a>
             <div class="register-wrap">
               <a class="btn btn-primary auth-register-btn" href="register.html">Register</a>
@@ -45,6 +45,9 @@
             <a class="btn btn-ghost" href="activities.html">Activities</a>
             <a class="btn btn-primary" href="index.html" data-auth-logout>Log out</a>
           </div>
+          <div data-auth-loading>
+            <span class="muted">Checking session…</span>
+          </div>
         </div>
 
         <div class="mobile-menu-wrap">
@@ -55,7 +58,7 @@
             Log in ▾
           </button>
           <div class="mobile-header-menu" id="mobileHeaderMenu">
-            <div data-auth-guest>
+            <div data-auth-guest hidden>
               <a class="mobile-menu-link" href="login.html">Log in</a>
               <a class="mobile-menu-link" href="register.html">Register</a>
               <a class="mobile-menu-link" href="register.html">Create standard account</a>
@@ -64,6 +67,9 @@
               <span class="mobile-menu-link" data-auth-user-label></span>
               <a class="mobile-menu-link" href="activities.html">Activities</a>
               <a class="mobile-menu-link" href="index.html" data-auth-logout>Log out</a>
+            </div>
+            <div data-auth-loading>
+              <span class="mobile-menu-link muted">Checking session…</span>
             </div>
           </div>
         </div>

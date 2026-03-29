@@ -15,8 +15,14 @@ function redirectWithReturn(targetPath) {
   window.location.replace(destination.toString());
 }
 
-export async function requireAuthenticated({ redirectTo = "login.html" } = {}) {
+export async function requireAuthenticated({ redirectTo = "login.html", onError } = {}) {
   await bootstrapAuthState();
+  const authState = getAuthState();
+
+  if (authState.status === "error") {
+    onError?.(authState.error);
+    return false;
+  }
 
   if (!isAuthenticated()) {
     redirectWithReturn(redirectTo);
@@ -26,9 +32,14 @@ export async function requireAuthenticated({ redirectTo = "login.html" } = {}) {
   return true;
 }
 
-export async function requireGuest({ redirectTo = "activities.html" } = {}) {
+export async function requireGuest({ redirectTo = "activities.html", onError } = {}) {
   await bootstrapAuthState();
   const authState = getAuthState();
+
+  if (authState.status === "error") {
+    onError?.(authState.error);
+    return false;
+  }
 
   if (authState.status === "authenticated") {
     window.location.replace(redirectTo);

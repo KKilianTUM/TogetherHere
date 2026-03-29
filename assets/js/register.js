@@ -103,8 +103,27 @@ async function handleRegisterSubmit(event) {
 }
 
 async function initRegisterPage() {
-  const canRender = await requireGuest({ redirectTo: "activities.html" });
-  if (!canRender || !registerForm) return;
+  if (!registerForm) return;
+
+  const fields = Array.from(registerForm.elements || []);
+  fields.forEach((field) => {
+    field.disabled = true;
+  });
+  setFormMessage(formState, "is-loading", "Checking your session…");
+
+  const canRender = await requireGuest({
+    redirectTo: "activities.html",
+    onError: (message) => {
+      setFormMessage(formState, "is-error", `${message} Please refresh and try again.`);
+    }
+  });
+
+  if (!canRender) return;
+
+  fields.forEach((field) => {
+    field.disabled = false;
+  });
+  setFormMessage(formState, "", "");
 
   ["displayName", "email", "password"].forEach((fieldName) => {
     const field = fieldMap[fieldName];

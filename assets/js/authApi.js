@@ -35,6 +35,13 @@ export async function authApiRequest(path, body, options = {}) {
   };
 }
 
+export function meRequest() {
+  return authApiRequest("/auth/me", undefined, {
+    method: "GET",
+    fallbackMessage: "Unable to verify your session right now."
+  });
+}
+
 export function loginRequest(credentials) {
   return authApiRequest("/auth/login", credentials, {
     fallbackMessage: "Login failed. Please try again."
