@@ -74,7 +74,7 @@
               <input type="time" name="time" required>
             </div>
           </label>
-          <label class="line-field">
+          <label class="line-field participant-field">
             <span>Participants needed</span>
             <input type="number" name="needed" min="1" step="1" placeholder="add participant count" required>
           </label>
@@ -88,10 +88,18 @@
               <button type="button" class="category-pill" data-category-target="other-activities" role="radio" aria-checked="false">Other Activities</button>
             </div>
           </fieldset>
-          <label class="line-field full">
-            <span>Description</span>
-            <textarea name="description" rows="3" placeholder="add a description (minimum 20 words)" required></textarea>
-          </label>
+          <div class="line-field full description-requirements-field">
+            <div class="description-requirements-grid">
+              <label class="line-field">
+                <span>Description</span>
+                <textarea name="description" rows="3" placeholder="add a description (minimum 20 words)" required></textarea>
+              </label>
+              <label class="line-field">
+                <span>Requirements</span>
+                <textarea name="requirements" rows="3" placeholder="one requirement per line"></textarea>
+              </label>
+            </div>
+          </div>
           <label class="line-field full upload-field">
             <span>Image upload</span>
             <input type="file" name="image" accept="image/*">
