@@ -78,6 +78,16 @@
             <span>Participants needed</span>
             <input type="number" name="needed" min="1" step="1" placeholder="add participant count" required>
           </label>
+          <fieldset class="line-field full category-select-field">
+            <legend>Category</legend>
+            <div class="category-picker" id="categoryPicker" role="radiogroup" aria-label="Choose a category for your activity">
+              <button type="button" class="category-pill" data-category-target="getting-to-know-the-city" role="radio" aria-checked="false">Getting to Know the City</button>
+              <button type="button" class="category-pill" data-category-target="sports" role="radio" aria-checked="false">Sports</button>
+              <button type="button" class="category-pill" data-category-target="language-learning" role="radio" aria-checked="false">Language &amp; Learning</button>
+              <button type="button" class="category-pill" data-category-target="creative-social" role="radio" aria-checked="false">Creative &amp; Social</button>
+              <button type="button" class="category-pill" data-category-target="other-activities" role="radio" aria-checked="false">Other Activities</button>
+            </div>
+          </fieldset>
           <label class="line-field full">
             <span>Description</span>
             <textarea name="description" rows="3" placeholder="add a description (minimum 20 words)" required></textarea>
@@ -100,7 +110,7 @@
     </section>
 
     <!-- Categories -->
-    <section class="category">
+    <section class="category" data-category-key="getting-to-know-the-city">
       <div class="category-title">
         <h2>Getting to Know the City</h2>
         <span class="hint">Landmarks • Castles • Attractions</span>
@@ -265,7 +275,7 @@
       </div>
     </section>
 
-    <section class="category">
+    <section class="category" data-category-key="sports">
       <div class="category-title">
         <h2>Sports</h2>
         <span class="hint">Casual • Friendly</span>
@@ -432,7 +442,7 @@
 
     <!-- (rest of your categories unchanged) -->
 
-    <section class="category">
+    <section class="category" data-category-key="language-learning">
       <div class="category-title">
         <h2>Language & Learning</h2>
         <span class="hint">Practice • Support</span>
@@ -625,7 +635,7 @@
     </section>
 
 
-    <section class="category">
+    <section class="category" data-category-key="creative-social">
       <div class="category-title">
         <h2>Daily Life Support</h2>
         <span class="hint">Practical • Everyday • Helpful</span>
@@ -1888,6 +1898,41 @@
             <div class="meta">
               <div class="meta-line"><span>Meet:</span><span>Isartor</span></div>
               <div class="meta-line"><span>Fri, 27 Feb</span><span class="dot-sep">•</span><span>17:00</span></div>
+            </div>
+            <div class="count" data-count-ui></div>
+            <button class="more" type="button">More</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category" data-category-key="other-activities">
+      <div class="category-title">
+        <h2>Other Activities</h2>
+        <span class="hint">Everything else</span>
+      </div>
+
+      <div class="slider-row">
+        <article class="card"
+          data-title="Board Game Free Play"
+          data-meet="München Hauptbahnhof"
+          data-maps="München Hauptbahnhof, München"
+          data-datetime="2026-03-03T18:00"
+          data-duration="90"
+          data-initiator="Initiated by Eva"
+          data-requirements="None. Beginner-friendly."
+          data-desc="Join a simple board game meetup where we pick one easy game and play in small groups. You can join for one round or stay longer. This is a relaxed activity made for people who just want to connect and have a low-pressure evening together."
+          data-img="https://source.unsplash.com/featured/1200x800/?boardgame,table"
+          data-label="Participants"
+          data-signed="4"
+          data-needed="10">
+          <img alt="Board game meetup" src="https://source.unsplash.com/featured/600x420/?boardgame,friends" width="240" height="140" loading="lazy" decoding="async">
+          <div class="card-body">
+            <h3>Board Game Free Play</h3>
+            <p>Easy social evening with one simple game.</p>
+            <div class="meta">
+              <div class="meta-line"><span>Meet:</span><span>München Hbf</span></div>
+              <div class="meta-line"><span>Tue, 03 Mar</span><span class="dot-sep">•</span><span>18:00</span></div>
             </div>
             <div class="count" data-count-ui></div>
             <button class="more" type="button">More</button>
