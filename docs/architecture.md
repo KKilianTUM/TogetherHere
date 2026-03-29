@@ -20,7 +20,7 @@ flowchart LR
 
 ## Secrets & Key Management
 
-- Application secrets (database URL, token signing keys, SMTP credentials) are stored in a managed secret manager, not in repository files or container images.
+- Application secrets (database URL, token signing keys, SMTP credentials) are stored in a managed secret manager and referenced by secret IDs, not stored in repository files or container images.
 - The API service reads secrets at runtime via IAM role in `eu-central-1`.
 - Signing/encryption keys are managed as versioned keys (`kid`) with active and grace-period states to support zero-downtime rotation.
 - For runbook-level detail, refer to `docs/security-secrets-and-key-rotation.md`.

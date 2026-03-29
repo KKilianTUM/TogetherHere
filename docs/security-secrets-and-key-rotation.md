@@ -7,10 +7,10 @@ Use a managed secret store and short-lived runtime access.
 
 Store these items only in your secret manager (for example: AWS Secrets Manager + KMS):
 
-- `DATABASE_URL` (or split DB host/user/password)
-- JWT/signing material (`ACCESS_TOKEN_PRIVATE_KEY_PEM`, `REFRESH_TOKEN_PRIVATE_KEY_PEM`)
-- Encryption keys / key references (`ENCRYPTION_ACTIVE_KEY_ID`, keyset metadata)
-- SMTP credentials (`SMTP_USERNAME`, `SMTP_PASSWORD`)
+- Database credentials (`DATABASE_URL` or split DB host/user/password) behind `DATABASE_SECRET_ID`
+- JWT signing material in KMS/HSM or secret manager, referenced by `TOKEN_KEYS_SECRET_ID`
+- Encryption keys / key references (`ENCRYPTION_ACTIVE_KEY_ID`, keyset metadata, `ENCRYPTION_KEYS_SECRET_ID`)
+- SMTP credentials referenced through `SMTP_SECRET_ID`
 - Any API tokens and integration credentials
 
 ### Recommended AWS layout (eu-central-1)
@@ -45,8 +45,8 @@ Adopt multi-key verification/decryption with one active key for new operations.
 ### Token signing rotation (JWT example)
 
 1. Generate new keypair in KMS/HSM or secure key pipeline.
-2. Publish public key in JWKS and add `kid` to allowed verification set.
-3. Switch signer to the new `TOKEN_ACTIVE_KID`.
+2. Publish public key in JWKS and add `kid` to `TOKEN_ALLOWED_KIDS`.
+3. Switch signer to the new `TOKEN_ACTIVE_KID` and update `TOKEN_KEYS_SECRET_ID` version/reference.
 4. Keep previous key(s) verify-only for at least `max_token_ttl + clock_skew`.
 5. Retire old key by removing from JWKS after grace period.
 
@@ -76,5 +76,5 @@ Adopt multi-key verification/decryption with one active key for new operations.
 
 - CI pipelines fetch secrets at runtime using workload identity/OIDC where possible.
 - Do not print secrets in build logs.
-- `.env.example` contains placeholders only.
+- `.env.example` contains placeholders and secret *references* only (not raw key material).
 - Developers use a personal `.env` (gitignored) or local secret-sync tooling.
