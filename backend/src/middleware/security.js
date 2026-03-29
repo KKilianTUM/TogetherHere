@@ -3,6 +3,12 @@ import config from '../config/index.js';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
+function createRequestError(statusCode, message) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
+
 function parseCookies(cookieHeader = '') {
   return cookieHeader
     .split(';')
@@ -68,16 +74,10 @@ export function corsMiddleware(req, res, next) {
 
   if (!isAllowedOrigin(origin)) {
     if (req.method === 'OPTIONS') {
-      return res.status(403).json({
-        error: 'Request Error',
-        message: 'Origin is not allowed by CORS policy'
-      });
+      return next(createRequestError(403, 'Origin is not allowed by CORS policy'));
     }
 
-    return res.status(403).json({
-      error: 'Request Error',
-      message: 'Origin is not allowed by CORS policy'
-    });
+    return next(createRequestError(403, 'Origin is not allowed by CORS policy'));
   }
 
   res.setHeader('Access-Control-Allow-Origin', origin);
@@ -133,20 +133,14 @@ export function csrfProtection(req, res, next) {
   const headerToken = req.headers[config.csrfHeaderName];
 
   if (typeof headerToken !== 'string') {
-    return res.status(403).json({
-      error: 'Request Error',
-      message: 'Invalid CSRF token'
-    });
+    return next(createRequestError(403, 'Invalid CSRF token'));
   }
 
   const providedToken = Buffer.from(headerToken, 'utf8');
   const expectedToken = Buffer.from(csrfToken, 'utf8');
 
   if (providedToken.length !== expectedToken.length || !crypto.timingSafeEqual(providedToken, expectedToken)) {
-    return res.status(403).json({
-      error: 'Request Error',
-      message: 'Invalid CSRF token'
-    });
+    return next(createRequestError(403, 'Invalid CSRF token'));
   }
 
   next();
