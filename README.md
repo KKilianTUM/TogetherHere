@@ -17,3 +17,9 @@ This project standardizes on **Node.js + Express + PostgreSQL** for future backe
 - Node.js/Express keeps API development fast and straightforward.
 - PostgreSQL provides reliable relational modeling for users, activities, and participation data.
 - AWS eu-central-1 keeps hosting in an EU region suitable for data residency planning.
+
+## Database migrations
+
+Schema is migration-driven under `db/migrations` and applied with `./scripts/db-migrate.sh`.
+See `db/README.md` for usage details and reproducibility guarantees.
+
