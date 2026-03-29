@@ -286,3 +286,79 @@
   .hero-grid{ grid-template-columns: 1fr; }
   .preview-grid{ grid-template-columns: 1fr; }
 }
+
+.register-section{
+  padding-top:14px;
+}
+
+.register-form{
+  margin-top:10px;
+  padding:18px;
+}
+
+.register-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:14px;
+}
+
+.register-grid .full{
+  grid-column:1 / -1;
+}
+
+.line-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.line-field span{
+  font-size:14px;
+  font-weight:600;
+}
+
+.line-field input{
+  width:100%;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:10px;
+  padding:10px 12px;
+  font:inherit;
+}
+
+.line-field input:focus{
+  outline:none;
+  border-color:rgba(58,115,255,.55);
+  box-shadow:0 0 0 4px rgba(58,115,255,.14);
+}
+
+.register-hints{
+  margin:14px 0 0;
+  padding-left:18px;
+  color:rgba(28,31,37,.76);
+  font-size:13px;
+  display:grid;
+  gap:6px;
+}
+
+.register-feedback{
+  min-height:22px;
+  margin:14px 0 0;
+  font-size:14px;
+  font-weight:500;
+}
+
+.register-feedback.is-error{
+  color:#b42318;
+}
+
+.register-feedback.is-success{
+  color:#067647;
+}
+
+.register-actions{
+  margin-top:6px;
+}
+
+@media (max-width: 860px){
+  .register-grid{ grid-template-columns:1fr; }
+}
