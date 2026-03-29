@@ -6,6 +6,8 @@ import pool from '../db/pool.js';
 const BCRYPT_COST_FACTOR = 12;
 const SESSION_TOKEN_BYTES = 48;
 const ACTIVE_ACCOUNT_STATUS = 'active';
+const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
+const ALLOWED_LOGIN_FIELDS = new Set(['email', 'password']);
 
 export class AuthValidationError extends Error {
   constructor(message) {
@@ -71,6 +73,11 @@ function validateRegistrationInput(input) {
     throw new AuthValidationError('Invalid registration input.');
   }
 
+  const hasUnexpectedFields = Object.keys(input).some((field) => !ALLOWED_REGISTER_FIELDS.has(field));
+  if (hasUnexpectedFields) {
+    throw new AuthValidationError('Unable to process registration input.');
+  }
+
   const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
   const password = input.password;
   const displayName = input.displayName;
@@ -89,6 +96,11 @@ function validateRegistrationInput(input) {
 function validateLoginInput(input) {
   if (!input || typeof input !== 'object') {
     throw new AuthValidationError('Invalid login input.');
+  }
+
+  const hasUnexpectedFields = Object.keys(input).some((field) => !ALLOWED_LOGIN_FIELDS.has(field));
+  if (hasUnexpectedFields) {
+    throw new AuthValidationError('Unable to process login input.');
   }
 
   const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
