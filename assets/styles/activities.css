@@ -28,6 +28,13 @@
   box-shadow:0 10px 24px rgba(58,115,255,.12);
 }
 
+.nav-account-actions,
+.auth-links{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
 .page-head{ padding:22px 0 8px; }
 .page-head h1{ font-size:28px; letter-spacing:-.2px; }
 .muted{ color:rgba(28,31,37,.72); font-size:14px; margin:6px 0 0; }

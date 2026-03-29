@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="assets/styles/activities.css" />
 </head>
 
-<body>
+<body data-protected-route="true">
   <header class="nav">
     <div class="container nav-inner">
       <div class="brand">
@@ -28,20 +28,27 @@
         <button class="lang" type="button" aria-label="Region selector">Munich ▾</button>
         <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
 
-        <button class="icon-btn" type="button" title="Profile (visual only)" aria-label="Profile">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="#3A73FF" stroke-width="2"/>
-            <path d="M20 21a8 8 0 1 0-16 0" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+        <div class="nav-account-actions" data-auth-visible="authenticated">
+          <button class="icon-btn" type="button" title="Profile" aria-label="Profile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="#3A73FF" stroke-width="2"/>
+              <path d="M20 21a8 8 0 1 0-16 0" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
 
-        <a class="icon-btn" href="index.html" title="Logout (prototype link)" aria-label="Logout">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M10 17l5-5-5-5" stroke="#3A73FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M15 12H3" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
-            <path d="M21 21V3" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </a>
+          <a class="icon-btn" href="index.html" title="Logout" aria-label="Logout" data-auth-action="logout">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M10 17l5-5-5-5" stroke="#3A73FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 12H3" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M21 21V3" stroke="#3A73FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="auth-links" data-auth-visible="unauthenticated" hidden>
+          <a class="btn btn-ghost" href="index.html">Log in</a>
+          <a class="btn btn-primary" href="index.html">Register</a>
+        </div>
       </div>
       <button class="header-plus-btn" id="headerPlusBtn" type="button" aria-label="Create new activity">
         <span aria-hidden="true">+</span>
@@ -2008,6 +2015,7 @@
     </div>
   </div>
 
+    <script src="assets/js/auth-state.js" defer></script>
     <script src="assets/js/activities.js" defer></script>
 </body>
 </html>

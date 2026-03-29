@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="assets/styles/index.css" />
 </head>
 
-<body>
+<body data-protected-route="false">
   <header class="nav">
     <div class="container nav-inner">
       <div class="brand">
@@ -29,7 +29,7 @@
       <div class="nav-actions">
         <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
 
-        <div class="auth-links" aria-label="Authentication links">
+        <div class="auth-links" data-auth-visible="unauthenticated" aria-label="Authentication links">
           <a class="btn btn-ghost auth-login-btn" href="activities.html">Log in</a>
           <div class="register-wrap">
             <a class="btn btn-primary auth-register-btn" href="activities.html">Register</a>
@@ -39,7 +39,12 @@
           </div>
         </div>
 
-        <div class="mobile-menu-wrap">
+        <div class="auth-links" data-auth-visible="authenticated" aria-label="Account actions" hidden>
+          <a class="btn btn-ghost" href="activities.html">Profile</a>
+          <button class="btn btn-primary" type="button" data-auth-action="logout">Log out</button>
+        </div>
+
+        <div class="mobile-menu-wrap" data-auth-visible="unauthenticated">
           <button
             class="lang menu-toggle-btn"
             type="button"
@@ -50,6 +55,19 @@
             <a class="mobile-menu-link" href="activities.html">Log in</a>
             <a class="mobile-menu-link" href="activities.html">Register</a>
             <a class="mobile-menu-link" href="volunteer-register.html">Register as a volunteer</a>
+          </div>
+        </div>
+
+        <div class="mobile-menu-wrap" data-auth-visible="authenticated" hidden>
+          <button
+            class="lang menu-toggle-btn"
+            type="button"
+            aria-label="Open account menu">
+            Account ▾
+          </button>
+          <div class="mobile-header-menu">
+            <a class="mobile-menu-link" href="activities.html">Profile</a>
+            <a class="mobile-menu-link" href="index.html" data-auth-action="logout">Log out</a>
           </div>
         </div>
       </div>
@@ -160,6 +178,7 @@
       TogetherHere prototype • Minimal concept demo • Replace images & text later
     </footer>
   </main>
+  <script src="assets/js/auth-state.js" defer></script>
   <script src="assets/js/mobile-menu-delay.js" defer></script>
   <script src="assets/js/index-preview-glow.js" defer></script>
 </body>
