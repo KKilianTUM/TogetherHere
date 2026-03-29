@@ -1,8 +1,14 @@
+import { sendError } from '../utils/apiResponse.js';
+
 export function notFoundHandler(req, res) {
-  res.status(404).json({
-    error: 'Not Found',
-    message: `Route ${req.method} ${req.originalUrl} not found`
-  });
+  sendError(
+    res,
+    {
+      code: 'NOT_FOUND',
+      message: `Route ${req.method} ${req.originalUrl} not found`
+    },
+    { statusCode: 404 }
+  );
 }
 
 export function errorHandler(err, req, res, next) {
@@ -13,8 +19,12 @@ export function errorHandler(err, req, res, next) {
     console.error(err);
   }
 
-  res.status(statusCode).json({
-    error: statusCode >= 500 ? 'Internal Server Error' : 'Request Error',
-    message
-  });
+  sendError(
+    res,
+    {
+      code: err.code || (statusCode >= 500 ? 'INTERNAL_SERVER_ERROR' : 'REQUEST_ERROR'),
+      message
+    },
+    { statusCode }
+  );
 }
