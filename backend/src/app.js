@@ -1,5 +1,7 @@
 import express from 'express';
 import healthRoutes from './routes/healthRoutes.js';
+import activityRoutes from './routes/activityRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
@@ -9,6 +11,8 @@ app.use(express.json());
 app.use(requestLogger);
 
 app.use(healthRoutes);
+app.use(activityRoutes);
+app.use(profileRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
