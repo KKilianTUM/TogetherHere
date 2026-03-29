@@ -64,6 +64,10 @@
   box-shadow:0 8px 22px rgba(0,0,0,.12);
 }
 
+.hero-plus-btn.is-hidden{
+  display:none;
+}
+
 .hero-plus-subtitle{
   margin:10px 0 0;
   color:#9a9a9a;
@@ -150,6 +154,12 @@
 
 .line-field.full{
   grid-column:1 / -1;
+}
+
+.line-field-split .split-inputs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
 
 .upload-field input{
