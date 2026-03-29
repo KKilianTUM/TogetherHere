@@ -4,6 +4,7 @@ import pool from '../db/pool.js';
 
 const BCRYPT_COST_FACTOR = 12;
 const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
+const INVALID_REGISTRATION_INPUT_MESSAGE = 'Invalid registration input.';
 
 function hashSessionToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -71,14 +72,14 @@ function validateDisplayName(displayName) {
 function ensureOnlyAllowedFields(input) {
   for (const field of Object.keys(input)) {
     if (!ALLOWED_REGISTER_FIELDS.has(field)) {
-      throw new AuthValidationError('Invalid registration input.');
+      throw new AuthValidationError(INVALID_REGISTRATION_INPUT_MESSAGE);
     }
   }
 }
 
 function validateRegistrationInput(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    throw new AuthValidationError('Invalid registration input.');
+    throw new AuthValidationError(INVALID_REGISTRATION_INPUT_MESSAGE);
   }
 
   ensureOnlyAllowedFields(input);
@@ -88,15 +89,15 @@ function validateRegistrationInput(input) {
   const displayName = input.displayName;
 
   if (!isValidEmail(email)) {
-    throw new AuthValidationError('Invalid registration input.');
+    throw new AuthValidationError(INVALID_REGISTRATION_INPUT_MESSAGE);
   }
 
   if (!validatePassword(password)) {
-    throw new AuthValidationError('Invalid registration input.');
+    throw new AuthValidationError(INVALID_REGISTRATION_INPUT_MESSAGE);
   }
 
   if (!validateDisplayName(displayName)) {
-    throw new AuthValidationError('Invalid registration input.');
+    throw new AuthValidationError(INVALID_REGISTRATION_INPUT_MESSAGE);
   }
 
   return {
