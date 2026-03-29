@@ -207,6 +207,15 @@
   margin-left:auto;
 }
 
+.participant-field{
+  align-items:flex-end;
+}
+
+.participant-field span{
+  width:50%;
+  text-align:left;
+}
+
 .description-requirements-field{
   gap:0;
 }
@@ -215,6 +224,10 @@
   display:grid;
   grid-template-columns:2fr 1fr;
   gap:12px;
+}
+
+.description-requirements-grid textarea{
+  resize:none;
 }
 
 .upload-field input{
