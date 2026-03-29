@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TogetherHere — Log in</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/styles/main.css" />
+  <link rel="stylesheet" href="assets/styles/login.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="Go to home page">
+        <img class="logo-img" src="/images/logo1-TH.jpeg" alt="TogetherHere logo" width="36" height="36" loading="eager" decoding="async" />
+        <span class="brand-name" aria-label="TogetherHere">
+          <span class="together">Together</span><span class="here">Here</span>
+        </span>
+      </a>
+      <a class="btn btn-ghost" href="index.html">Back to Home</a>
+    </div>
+  </header>
+
+  <main class="container login-main">
+    <section class="login-layout">
+      <div class="login-copy card">
+        <h1>Welcome back</h1>
+        <p>Log in to unlock all activities and start joining events around you.</p>
+      </div>
+
+      <form class="login-form card" id="loginForm" novalidate>
+        <h2>Log in</h2>
+
+        <label class="line-field" for="emailInput">
+          <span>Email</span>
+          <input id="emailInput" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+        </label>
+
+        <label class="line-field" for="passwordInput">
+          <span>Password</span>
+          <input id="passwordInput" name="password" type="password" autocomplete="current-password" required minlength="8" placeholder="Enter your password" />
+        </label>
+
+        <p class="form-state" id="loginFormState" aria-live="polite"></p>
+
+        <button class="btn btn-primary login-submit" id="loginSubmitBtn" type="submit">Log in</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="assets/js/login.js" defer></script>
+</body>
+</html>

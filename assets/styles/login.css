@@ -1,0 +1,99 @@
+.container{ width:min(1000px, 92vw); margin:0 auto; }
+
+.logo-img{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  object-fit:cover;
+  display:block;
+  box-shadow:0 0 0 6px rgba(152,182,0,.28);
+}
+
+.login-main{
+  padding:56px 0;
+}
+
+.login-layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  align-items:start;
+}
+
+.card{
+  background:white;
+  border-radius:var(--r-card);
+  box-shadow:var(--shadow);
+  border:1px solid rgba(0,0,0,.06);
+}
+
+.login-copy{
+  padding:24px;
+}
+
+.login-copy h1{
+  font-size:clamp(28px, 4.5vw, 42px);
+  margin-bottom:12px;
+}
+
+.login-copy p{
+  margin:0;
+  color:rgba(28,31,37,.78);
+}
+
+.login-form{
+  padding:24px;
+  display:grid;
+  gap:14px;
+}
+
+.login-form h2{
+  font-size:24px;
+}
+
+.line-field{
+  display:grid;
+  gap:8px;
+}
+
+.line-field span{
+  font-size:14px;
+  font-weight:500;
+}
+
+.line-field input{
+  height:44px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.16);
+  padding:0 12px;
+  font:inherit;
+}
+
+.line-field input:focus{
+  outline:2px solid rgba(58,115,255,.24);
+  border-color:rgba(58,115,255,.5);
+}
+
+.form-state{
+  min-height:22px;
+  margin:0;
+  font-size:14px;
+}
+
+.form-state.is-error{ color:#b00020; }
+.form-state.is-loading{ color:#355fbf; }
+.form-state.is-success{ color:#1f8a3b; }
+
+.login-submit{
+  width:100%;
+  min-height:44px;
+}
+
+.login-submit[disabled]{
+  opacity:.72;
+  cursor:wait;
+}
+
+@media (max-width: 860px){
+  .login-layout{ grid-template-columns:1fr; }
+}
