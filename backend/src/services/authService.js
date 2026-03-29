@@ -1,7 +1,11 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import config from '../config/index.js';
 import pool from '../db/pool.js';
 
 const BCRYPT_COST_FACTOR = 12;
+const SESSION_TOKEN_BYTES = 48;
+const ACTIVE_ACCOUNT_STATUS = 'active';
 
 export class AuthValidationError extends Error {
   constructor(message) {
@@ -16,6 +20,14 @@ export class AuthConflictError extends Error {
     super(message);
     this.name = 'AuthConflictError';
     this.statusCode = 409;
+  }
+}
+
+export class AuthUnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'AuthUnauthorizedError';
+    this.statusCode = 401;
   }
 }
 
@@ -74,6 +86,29 @@ function validateRegistrationInput(input) {
   };
 }
 
+function validateLoginInput(input) {
+  if (!input || typeof input !== 'object') {
+    throw new AuthValidationError('Invalid login input.');
+  }
+
+  const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+  const password = input.password;
+
+  if (!isValidEmail(email) || typeof password !== 'string' || password.length === 0) {
+    throw new AuthValidationError('Unable to process login input.');
+  }
+
+  return { email, password };
+}
+
+function hashSessionToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+function generateSessionToken() {
+  return crypto.randomBytes(SESSION_TOKEN_BYTES).toString('base64url');
+}
+
 export async function registerUser(input) {
   const { email, password, displayName } = validateRegistrationInput(input);
   const passwordHash = await bcrypt.hash(password, BCRYPT_COST_FACTOR);
@@ -94,4 +129,49 @@ export async function registerUser(input) {
 
     throw error;
   }
+}
+
+export async function loginUser(input) {
+  const { email, password } = validateLoginInput(input);
+
+  const userResult = await pool.query(
+    `SELECT id, email, display_name AS "displayName", password_hash AS "passwordHash", status
+     FROM users
+     WHERE LOWER(email) = LOWER($1)
+     LIMIT 1`,
+    [email]
+  );
+
+  const user = userResult.rows[0];
+
+  if (!user) {
+    throw new AuthUnauthorizedError('Invalid email or password.');
+  }
+
+  const isPasswordMatch = await bcrypt.compare(password, user.passwordHash);
+  if (!isPasswordMatch) {
+    throw new AuthUnauthorizedError('Invalid email or password.');
+  }
+
+  if (user.status !== ACTIVE_ACCOUNT_STATUS) {
+    throw new AuthUnauthorizedError('Account is not active.');
+  }
+
+  const sessionToken = generateSessionToken();
+  const sessionTokenHash = hashSessionToken(sessionToken);
+
+  await pool.query(
+    `INSERT INTO sessions (user_id, token_hash, expires_at)
+     VALUES ($1, $2, NOW() + ($3 * INTERVAL '1 second'))`,
+    [user.id, sessionTokenHash, config.sessionTtlSeconds]
+  );
+
+  return {
+    sessionToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName
+    }
+  };
 }
