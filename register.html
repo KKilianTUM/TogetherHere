@@ -21,7 +21,7 @@
           <span class="together">Together</span><span class="here">Here</span>
         </span>
       </a>
-      <a class="btn btn-ghost" href="login.html">Already have an account?</a>
+      <a class="btn btn-ghost" href="login.html">Already have account? Log in</a>
     </div>
   </header>
 
@@ -29,25 +29,29 @@
     <section class="login-layout">
       <div class="login-copy card">
         <h1>Create your account</h1>
-        <p>This foundational form is now wired to shared auth helpers and backend payload keys.</p>
+        <p>Use your email and a strong password to create an account. You can log in right away after successful registration.</p>
       </div>
 
-      <form class="login-form card" id="registerForm" novalidate>
+      <form class="login-form card" id="registerForm" novalidate aria-describedby="registerFormState">
         <h2>Register</h2>
 
         <label class="line-field" for="registerDisplayNameInput">
           <span>Display name</span>
-          <input id="registerDisplayNameInput" name="displayName" type="text" autocomplete="name" required placeholder="Your name" />
+          <input id="registerDisplayNameInput" name="displayName" type="text" autocomplete="name" required minlength="2" maxlength="50" placeholder="Your name" aria-describedby="registerDisplayNameError" />
+          <span class="field-error" id="registerDisplayNameError" role="alert"></span>
         </label>
 
         <label class="line-field" for="registerEmailInput">
           <span>Email</span>
-          <input id="registerEmailInput" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+          <input id="registerEmailInput" name="email" type="email" autocomplete="email" required placeholder="you@example.com" aria-describedby="registerEmailError" />
+          <span class="field-error" id="registerEmailError" role="alert"></span>
         </label>
 
         <label class="line-field" for="registerPasswordInput">
           <span>Password</span>
-          <input id="registerPasswordInput" name="password" type="password" autocomplete="new-password" required minlength="8" placeholder="Create a password" />
+          <input id="registerPasswordInput" name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="128" placeholder="Create a password" aria-describedby="registerPasswordHint registerPasswordError" />
+          <span class="field-hint" id="registerPasswordHint">12-128 chars with uppercase, lowercase, number, and symbol.</span>
+          <span class="field-error" id="registerPasswordError" role="alert"></span>
         </label>
 
         <p class="form-state" id="registerFormState" aria-live="polite"></p>
