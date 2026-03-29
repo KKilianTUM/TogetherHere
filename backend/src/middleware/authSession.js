@@ -1,6 +1,8 @@
 import config from '../config/index.js';
 import { getSessionUserByToken } from '../services/authService.js';
 
+const AUTH_REQUIRED_MESSAGE = 'No authenticated session.';
+
 function parseCookies(cookieHeader = '') {
   return cookieHeader
     .split(';')
@@ -43,18 +45,15 @@ function getSessionTokenFromRequest(req) {
   return parseBearerToken(req.headers.authorization);
 }
 
-export function createAuthError(statusCode, message) {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  return error;
-}
-
 export function requireAuthenticated(req, res, next) {
-  if (!req.auth?.user) {
-    return next(createAuthError(401, 'Authentication required.'));
+  if (req.auth?.user) {
+    return next();
   }
 
-  next();
+  return res.status(401).json({
+    error: 'Request Error',
+    message: AUTH_REQUIRED_MESSAGE
+  });
 }
 
 export async function attachAuthIdentity(req, res, next) {
@@ -79,15 +78,4 @@ export async function attachAuthIdentity(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
-
-export function requireAuthenticated(req, res, next) {
-  if (req.auth?.user) {
-    return next();
-  }
-
-  return res.status(401).json({
-    error: 'Request Error',
-    message: 'No authenticated session.'
-  });
 }
