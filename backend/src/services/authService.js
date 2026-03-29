@@ -1,8 +1,13 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import pool from '../db/pool.js';
 
 const BCRYPT_COST_FACTOR = 12;
 const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
+
+function hashSessionToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
 
 export class AuthValidationError extends Error {
   constructor(message) {
@@ -17,6 +22,14 @@ export class AuthConflictError extends Error {
     super(message);
     this.name = 'AuthConflictError';
     this.statusCode = 409;
+  }
+}
+
+export class AuthUnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'AuthUnauthorizedError';
+    this.statusCode = 401;
   }
 }
 
@@ -114,4 +127,48 @@ export async function registerUser(input) {
 
     throw error;
   }
+}
+
+export async function getSessionUserByToken(sessionToken) {
+  if (typeof sessionToken !== 'string' || !sessionToken.trim()) {
+    return null;
+  }
+
+  const tokenHash = hashSessionToken(sessionToken.trim());
+  const result = await pool.query(
+    `SELECT u.id, u.email, u.display_name AS "displayName"
+     FROM sessions s
+     INNER JOIN users u ON u.id = s.user_id
+     WHERE s.token_hash = $1
+       AND s.revoked_at IS NULL
+       AND s.expires_at > NOW()
+     LIMIT 1`,
+    [tokenHash]
+  );
+
+  return result.rows[0] || null;
+}
+
+export async function revokeSessionByToken(sessionToken, revokeReason = 'logout') {
+  if (typeof sessionToken !== 'string' || !sessionToken.trim()) {
+    throw new AuthUnauthorizedError('No authenticated session.');
+  }
+
+  const tokenHash = hashSessionToken(sessionToken.trim());
+  const result = await pool.query(
+    `UPDATE sessions
+     SET revoked_at = NOW(),
+         updated_at = NOW()
+     WHERE token_hash = $1
+       AND revoked_at IS NULL
+       AND expires_at > NOW()
+     RETURNING id`,
+    [tokenHash]
+  );
+
+  if (result.rowCount === 0) {
+    throw new AuthUnauthorizedError('No authenticated session.');
+  }
+
+  return { revoked: true, reason: revokeReason };
 }
