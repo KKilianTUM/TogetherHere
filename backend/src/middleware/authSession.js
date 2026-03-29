@@ -1,5 +1,6 @@
 import config from '../config/index.js';
 import { getSessionUserByToken } from '../services/authService.js';
+import { createHttpError } from './httpError.js';
 
 const AUTH_REQUIRED_MESSAGE = 'No authenticated session.';
 
@@ -50,10 +51,7 @@ export function requireAuthenticated(req, res, next) {
     return next();
   }
 
-  return res.status(401).json({
-    error: 'Request Error',
-    message: AUTH_REQUIRED_MESSAGE
-  });
+  return next(createHttpError(401, AUTH_REQUIRED_MESSAGE));
 }
 
 export async function attachAuthIdentity(req, res, next) {
