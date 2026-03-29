@@ -4,17 +4,30 @@
 
   const feedback = document.getElementById('registerFeedback');
   const submitBtn = document.getElementById('registerSubmitBtn');
+  const emailInput = form.querySelector('input[name="email"]');
+  const passwordInput = form.querySelector('input[name="password"]');
+  const displayNameInput = form.querySelector('input[name="displayName"]');
+
+  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const DISPLAY_NAME_PATTERN = /^[A-Za-z0-9 _-]+$/;
 
   function setFeedback(message, type) {
     if (!feedback) return;
+
     feedback.textContent = message;
     feedback.classList.remove('is-error', 'is-success');
-    if (type === 'error') feedback.classList.add('is-error');
-    if (type === 'success') feedback.classList.add('is-success');
+
+    if (type === 'error') {
+      feedback.classList.add('is-error');
+    }
+
+    if (type === 'success') {
+      feedback.classList.add('is-success');
+    }
   }
 
   function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    return EMAIL_PATTERN.test(email);
   }
 
   function isValidPassword(password) {
@@ -39,44 +52,77 @@
       return false;
     }
 
-    return /^[A-Za-z0-9 _-]+$/.test(displayName);
+    return DISPLAY_NAME_PATTERN.test(displayName);
   }
 
-  function getValidationError({ email, password, displayName }) {
+  function clearFieldErrors() {
+    emailInput?.setCustomValidity('');
+    passwordInput?.setCustomValidity('');
+    displayNameInput?.setCustomValidity('');
+  }
+
+  function validateInput(input) {
+    const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+    const password = typeof input.password === 'string' ? input.password : '';
+    const displayName = typeof input.displayName === 'string' ? input.displayName.trim() : '';
+
     if (!isValidEmail(email)) {
-      return 'Please enter a valid email address.';
+      emailInput?.setCustomValidity('Please enter a valid email address.');
+      return { message: 'Please enter a valid email address.', field: emailInput };
     }
 
     if (!isValidPassword(password)) {
-      return 'Password must be 12-128 chars and include uppercase, lowercase, number, and symbol.';
+      passwordInput?.setCustomValidity('Password must be 12-128 chars with upper, lower, number, and symbol.');
+      return {
+        message: 'Password must be 12-128 chars and include uppercase, lowercase, number, and symbol.',
+        field: passwordInput
+      };
     }
 
     if (!isValidDisplayName(displayName)) {
-      return 'Display name must be 2-50 chars and only use letters, numbers, spaces, underscores, or hyphens.';
+      displayNameInput?.setCustomValidity('Display name must be 2-50 chars with letters, numbers, spaces, _ or -.');
+      return {
+        message: 'Display name must be 2-50 chars and only use letters, numbers, spaces, underscores, or hyphens.',
+        field: displayNameInput
+      };
     }
 
-    return null;
+    return {
+      value: {
+        email,
+        password,
+        displayName
+      }
+    };
   }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    clearFieldErrors();
     setFeedback('', null);
 
-    const formData = new FormData(form);
-    const email = String(formData.get('email') || '').trim().toLowerCase();
-    const password = String(formData.get('password') || '');
-    const displayName = String(formData.get('displayName') || '').trim();
+    const data = new FormData(form);
+    const validation = validateInput({
+      email: String(data.get('email') || ''),
+      password: String(data.get('password') || ''),
+      displayName: String(data.get('displayName') || '')
+    });
 
-    const validationError = getValidationError({ email, password, displayName });
-    if (validationError) {
-      setFeedback(validationError, 'error');
+    if (!validation.value) {
+      if (validation.field) {
+        validation.field.reportValidity();
+        validation.field.focus();
+      }
+      setFeedback(validation.message || 'Please verify your details and try again.', 'error');
       return;
     }
 
-    const payload = { email, password };
-    if (displayName.length > 0) {
-      payload.displayName = displayName;
-    }
+    const payload = {
+      email: validation.value.email,
+      password: validation.value.password,
+      ...(validation.value.displayName.length > 0 ? { displayName: validation.value.displayName } : {})
+    };
 
     submitBtn.disabled = true;
 
@@ -90,12 +136,16 @@
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json().catch(() => ({}));
+      const responseBody = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        const message = typeof data?.message === 'string' && data.message.trim().length > 0
-          ? data.message
+        const fallback = response.status === 409
+          ? 'An account already exists for this email.'
           : 'Registration failed. Please verify your details and try again.';
+        const message = typeof responseBody?.message === 'string' && responseBody.message.trim().length > 0
+          ? responseBody.message
+          : fallback;
+
         setFeedback(message, 'error');
         return;
       }

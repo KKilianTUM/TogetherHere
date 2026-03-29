@@ -113,11 +113,11 @@
           </label>
           <label class="line-field">
             <span>Password</span>
-            <input id="registerPassword" name="password" type="password" autocomplete="new-password" required placeholder="At least 12 chars with upper, lower, number, symbol">
+            <input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required placeholder="At least 12 chars with upper, lower, number, symbol">
           </label>
           <label class="line-field full">
             <span>Display name <small>(optional)</small></span>
-            <input id="registerDisplayName" name="displayName" type="text" maxlength="50" placeholder="2-50 chars: letters, numbers, spaces, _ or -">
+            <input id="registerDisplayName" name="displayName" type="text" autocomplete="nickname" minlength="2" maxlength="50" pattern="[A-Za-z0-9 _-]+" placeholder="2-50 chars: letters, numbers, spaces, _ or -">
           </label>
         </div>
         <ul class="register-hints" aria-label="Password and profile requirements">
