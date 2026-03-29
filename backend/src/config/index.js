@@ -24,11 +24,27 @@ const configByEnv = {
 
 const selectedConfig = configByEnv[nodeEnv] || developmentConfig;
 
+function parseCsv(input, fallback = []) {
+  if (!input) {
+    return fallback;
+  }
+
+  return input
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 const config = {
   env: nodeEnv,
   port: Number(process.env.PORT || 3000),
   ...selectedConfig,
-  databaseUrl: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/togetherhere'
+  databaseUrl: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/togetherhere',
+  corsAllowedOrigins: parseCsv(process.env.CORS_ALLOWED_ORIGINS, selectedConfig.corsAllowedOrigins || []),
+  corsAllowedMethods: parseCsv(process.env.CORS_ALLOWED_METHODS, selectedConfig.corsAllowedMethods || ['GET']),
+  corsAllowedHeaders: parseCsv(process.env.CORS_ALLOWED_HEADERS, selectedConfig.corsAllowedHeaders || ['Content-Type']),
+  csrfCookieName: process.env.CSRF_COOKIE_NAME || '__Host-th_csrf',
+  csrfHeaderName: (process.env.CSRF_HEADER_NAME || 'x-csrf-token').toLowerCase()
 };
 
 export default config;
