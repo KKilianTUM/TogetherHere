@@ -1,74 +1,54 @@
+import { loginRequest } from "./authApi.js";
+import { setButtonLoadingState, setFormMessage } from "./authFeedback.js";
+import { readRaw, readTrimmed, validateLoginInput } from "./authValidation.js";
+
 const loginForm = document.getElementById("loginForm");
 const submitBtn = document.getElementById("loginSubmitBtn");
 const formState = document.getElementById("loginFormState");
 
-function setFormState(type, message){
-  if (!formState) return;
-  formState.classList.remove("is-error", "is-loading", "is-success");
-  if (type) formState.classList.add(type);
-  formState.textContent = message || "";
-}
-
-function setLoadingState(isLoading){
-  if (!submitBtn) return;
-  submitBtn.disabled = isLoading;
-  submitBtn.textContent = isLoading ? "Logging in…" : "Log in";
-}
-
-function normalizeErrorMessage(status, payload){
-  if (payload && typeof payload.message === "string" && payload.message.trim()) {
-    return payload.message.trim();
-  }
-
+function loginErrorMessage(status, payloadMessage) {
+  if (payloadMessage) return payloadMessage;
   if (status === 401) return "Invalid email or password.";
   if (status === 400) return "Please check your email and password format.";
   return "Login failed. Please try again.";
 }
 
-async function handleLoginSubmit(event){
+async function handleLoginSubmit(event) {
   event.preventDefault();
   if (!(loginForm instanceof HTMLFormElement)) return;
 
   const formData = new FormData(loginForm);
-  const email = String(formData.get("email") || "").trim();
-  const password = String(formData.get("password") || "");
+  const email = readTrimmed(formData, "email");
+  const password = readRaw(formData, "password");
 
-  if (!email || !password) {
-    setFormState("is-error", "Email and password are required.");
+  const validationMessage = validateLoginInput({ email, password });
+  if (validationMessage) {
+    setFormMessage(formState, "is-error", validationMessage);
     return;
   }
 
-  setLoadingState(true);
-  setFormState("is-loading", "Signing you in…");
+  setButtonLoadingState(submitBtn, true, "Log in", "Logging in…");
+  setFormMessage(formState, "is-loading", "Signing you in…");
 
   try {
-    const response = await fetch("/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password })
-    });
+    const result = await loginRequest({ email, password });
 
-    const payload = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      setFormState("is-error", normalizeErrorMessage(response.status, payload));
+    if (!result.ok) {
+      setFormMessage(formState, "is-error", loginErrorMessage(result.status, result.message));
       return;
     }
 
-    const displayName = payload?.user?.displayName ? `, ${payload.user.displayName}` : "";
-    setFormState("is-success", `Success${displayName}! Redirecting to activities…`);
+    const displayName = result.payload?.user?.displayName ? `, ${result.payload.user.displayName}` : "";
+    setFormMessage(formState, "is-success", `Success${displayName}! Redirecting to activities…`);
     loginForm.reset();
 
     window.setTimeout(() => {
       window.location.assign("activities.html");
     }, 700);
   } catch {
-    setFormState("is-error", "Unable to reach the server. Please try again.");
+    setFormMessage(formState, "is-error", "Unable to reach the server. Please try again.");
   } finally {
-    setLoadingState(false);
+    setButtonLoadingState(submitBtn, false, "Log in", "Logging in…");
   }
 }
 

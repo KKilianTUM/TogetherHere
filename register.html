@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TogetherHere — Log in</title>
+  <title>TogetherHere — Register</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,39 +21,42 @@
           <span class="together">Together</span><span class="here">Here</span>
         </span>
       </a>
-      <a class="btn btn-ghost" href="index.html">Back to Home</a>
+      <a class="btn btn-ghost" href="login.html">Already have an account?</a>
     </div>
   </header>
 
   <main class="container login-main">
     <section class="login-layout">
       <div class="login-copy card">
-        <h1>Welcome back</h1>
-        <p>Log in to unlock all activities and start joining events around you.</p>
+        <h1>Create your account</h1>
+        <p>This foundational form is now wired to shared auth helpers and backend payload keys.</p>
       </div>
 
-      <form class="login-form card" id="loginForm" novalidate>
-        <h2>Log in</h2>
+      <form class="login-form card" id="registerForm" novalidate>
+        <h2>Register</h2>
 
-        <label class="line-field" for="emailInput">
+        <label class="line-field" for="registerDisplayNameInput">
+          <span>Display name</span>
+          <input id="registerDisplayNameInput" name="displayName" type="text" autocomplete="name" required placeholder="Your name" />
+        </label>
+
+        <label class="line-field" for="registerEmailInput">
           <span>Email</span>
-          <input id="emailInput" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+          <input id="registerEmailInput" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
         </label>
 
-        <label class="line-field" for="passwordInput">
+        <label class="line-field" for="registerPasswordInput">
           <span>Password</span>
-          <input id="passwordInput" name="password" type="password" autocomplete="current-password" required minlength="8" placeholder="Enter your password" />
+          <input id="registerPasswordInput" name="password" type="password" autocomplete="new-password" required minlength="8" placeholder="Create a password" />
         </label>
 
-        <p class="form-state" id="loginFormState" aria-live="polite"></p>
+        <p class="form-state" id="registerFormState" aria-live="polite"></p>
 
-        <button class="btn btn-primary login-submit" id="loginSubmitBtn" type="submit">Log in</button>
-
-        <p class="muted" style="margin-top: 12px;">No account yet? <a href="register.html">Register</a></p>
+        <button class="btn btn-primary login-submit" id="registerSubmitBtn" type="submit">Create account</button>
       </form>
     </section>
   </main>
 
-  <script src="assets/js/login.js" type="module"></script>
+  <script src="assets/js/register.js" type="module"></script>
 </body>
 </html>
