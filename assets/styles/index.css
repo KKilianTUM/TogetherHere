@@ -249,60 +249,49 @@
   border-radius:999px;
 }
 
-.comic-certificate{
-  width:min(760px, 100%);
+.certificate-panel{
+  width:min(860px, 100%);
   margin:0 auto 0 0;
-  border:3px solid #1f2b4d;
-  border-radius:18px;
-  background:linear-gradient(180deg, #fffdf4 0%, #ffe8d1 100%);
-  box-shadow:6px 7px 0 rgba(31,43,77,.22);
   position:relative;
-  transform:rotate(-.4deg);
 }
 
-.comic-certificate::before,
-.comic-certificate::after{
-  content:"";
+.certificate-bg{
+  width:100%;
+  display:block;
+  height:auto;
+}
+
+.certificate-copy{
   position:absolute;
-  width:26px;
-  height:26px;
-  border:3px solid #1f2b4d;
-  background:#fff;
-  transform:rotate(45deg);
+  left:7%;
+  right:26%;
+  top:20%;
+  bottom:18%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
 
-.comic-certificate::before{
-  top:-14px;
-  left:18px;
-}
-
-.comic-certificate::after{
-  right:20px;
-  bottom:-14px;
-}
-
-.certificate-inner{
-  padding:20px 26px;
-  border:2px dashed rgba(31,43,77,.55);
-  margin:10px;
-  border-radius:12px;
-}
-
-.comic-certificate h2{
+.certificate-copy h2{
   font-family:"Comic Sans MS", "Comic Neue", Quicksand, Poppins, sans-serif;
   letter-spacing:.2px;
   margin-bottom:8px;
+  font-size:clamp(22px, 2.4vw, 34px);
 }
 
-.comic-certificate .muted{
+.certificate-copy .muted{
   margin:0;
-  font-size:15px;
-  line-height:1.55;
+  font-size:clamp(13px, 1.2vw, 18px);
+  line-height:1.45;
+  color:rgba(28,31,37,.82);
 }
 
 @media (max-width: 860px){
-  .comic-certificate{
-    transform:none;
+  .certificate-copy{
+    left:9%;
+    right:28%;
+    top:14%;
+    bottom:16%;
   }
 }
 
