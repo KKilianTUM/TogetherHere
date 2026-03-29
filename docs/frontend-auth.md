@@ -1,5 +1,36 @@
 # Frontend Auth Flows
 
+## Auth bootstrap foundation (S14.1)
+
+The frontend now relies on a single auth-state module (`assets/js/authState.js`) as the source of truth for authentication status across pages.
+
+### Bootstrap behavior
+
+- Auth bootstrap uses `GET /auth/me` with `credentials: include`.
+- Bootstrap is **deduplicated**: parallel calls share one in-flight request to prevent race conditions.
+- Until `/auth/me` resolves, auth state is `loading`; once resolved it becomes either:
+  - `authenticated` with `user`
+  - `guest` with `user = null`
+- Legacy token storage remnants (`token`, `authToken`, `sessionToken`, `user`, `currentUser`) are cleared from `localStorage` and `sessionStorage` during bootstrap to enforce cookie-session-only behavior.
+
+### Route guards
+
+Reusable route guards now standardize page-level access decisions:
+
+- `requireAuthenticated()` for protected pages (e.g. `activities.html`)
+  - redirects unauthenticated users to `login.html`
+  - appends `returnTo=<current page>` for post-login navigation continuity
+- `requireGuest()` for guest-only pages (`login.html`, `register.html`)
+  - redirects authenticated users to `activities.html`
+
+### Shared nav rendering contract
+
+`mountAuthNavigation()` in `assets/js/navAuth.js` is used to normalize nav rendering:
+
+- guest navigation actions are shown only when auth state is `guest`
+- authenticated actions (`Hi, <name>`, activities shortcut, logout) are shown only when auth state is `authenticated`
+- logout uses `POST /auth/logout` and then transitions to guest state + `index.html`
+
 ## Registration (`register.html`)
 
 The registration screen is implemented as a progressive enhancement form that submits through shared auth utilities.
@@ -60,4 +91,4 @@ The registration form includes explicit states:
 
 ## Login (`login.html`)
 
-The login flow remains wired through `loginRequest`, preserving success redirect behavior to `activities.html`.
+The login flow remains wired through `loginRequest` and now applies guest-only guarding before rendering.

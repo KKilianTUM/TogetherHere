@@ -30,12 +30,20 @@
         <button class="lang" type="button" aria-label="Language selector">EN ▾</button>
 
         <div class="auth-links" aria-label="Authentication links">
-          <a class="btn btn-ghost auth-login-btn" href="login.html">Log in</a>
-          <div class="register-wrap">
-            <a class="btn btn-primary auth-register-btn" href="register.html">Register</a>
-            <div class="register-submenu">
-              <a class="register-submenu-link" href="register.html">Create standard account</a>
+          <div data-auth-guest>
+            <a class="btn btn-ghost auth-login-btn" href="login.html">Log in</a>
+            <div class="register-wrap">
+              <a class="btn btn-primary auth-register-btn" href="register.html">Register</a>
+              <div class="register-submenu">
+                <a class="register-submenu-link" href="register.html">Create standard account</a>
+              </div>
             </div>
+          </div>
+
+          <div data-auth-user hidden>
+            <span class="muted" data-auth-user-label></span>
+            <a class="btn btn-ghost" href="activities.html">Activities</a>
+            <a class="btn btn-primary" href="index.html" data-auth-logout>Log out</a>
           </div>
         </div>
 
@@ -47,9 +55,16 @@
             Log in ▾
           </button>
           <div class="mobile-header-menu" id="mobileHeaderMenu">
-            <a class="mobile-menu-link" href="login.html">Log in</a>
-            <a class="mobile-menu-link" href="register.html">Register</a>
-            <a class="mobile-menu-link" href="register.html">Create standard account</a>
+            <div data-auth-guest>
+              <a class="mobile-menu-link" href="login.html">Log in</a>
+              <a class="mobile-menu-link" href="register.html">Register</a>
+              <a class="mobile-menu-link" href="register.html">Create standard account</a>
+            </div>
+            <div data-auth-user hidden>
+              <span class="mobile-menu-link" data-auth-user-label></span>
+              <a class="mobile-menu-link" href="activities.html">Activities</a>
+              <a class="mobile-menu-link" href="index.html" data-auth-logout>Log out</a>
+            </div>
           </div>
         </div>
       </div>
@@ -161,6 +176,7 @@
     </footer>
   </main>
   <script src="assets/js/mobile-menu-delay.js" defer></script>
+  <script src="assets/js/index.js" type="module"></script>
   <script src="assets/js/index-preview-glow.js" defer></script>
 </body>
 </html>

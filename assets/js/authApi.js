@@ -14,11 +14,15 @@ function normalizeMessage(status, payload, fallbackMessage = DEFAULT_ERROR_MESSA
 }
 
 export async function authApiRequest(path, body, options = {}) {
+  const method = options.method || "POST";
+  const hasBody = body !== undefined;
+  const headers = hasBody ? { "Content-Type": "application/json" } : undefined;
+
   const response = await fetch(path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method,
+    headers,
     credentials: "include",
-    body: JSON.stringify(body)
+    body: hasBody ? JSON.stringify(body) : undefined
   });
 
   const payload = normalizePayload(await response.json().catch(() => null));
@@ -40,5 +44,12 @@ export function loginRequest(credentials) {
 export function registerRequest(registrationPayload) {
   return authApiRequest("/auth/register", registrationPayload, {
     fallbackMessage: "Registration failed. Please review the form and try again."
+  });
+}
+
+export function logoutRequest() {
+  return authApiRequest("/auth/logout", undefined, {
+    method: "POST",
+    fallbackMessage: "Logout failed. Please try again."
   });
 }

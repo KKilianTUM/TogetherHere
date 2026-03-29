@@ -1,4 +1,6 @@
 import { loginRequest } from "./authApi.js";
+import { requireGuest } from "./routeGuards.js";
+import { setAuthenticatedUser } from "./authState.js";
 import { setButtonLoadingState, setFormMessage } from "./authFeedback.js";
 import { readRaw, readTrimmed, validateLoginInput } from "./authValidation.js";
 
@@ -48,12 +50,16 @@ async function handleLoginSubmit(event) {
       return;
     }
 
+    setAuthenticatedUser(result.payload?.user || null);
     const displayName = result.payload?.user?.displayName ? `, ${result.payload.user.displayName}` : "";
     setFormMessage(formState, "is-success", `Success${displayName}! Redirecting to activities…`);
     loginForm.reset();
 
+    const returnTo = new URL(window.location.href).searchParams.get("returnTo");
+
     window.setTimeout(() => {
-      window.location.assign("activities.html");
+      const target = returnTo && /\.html(?:$|\?)/.test(returnTo) ? returnTo : "activities.html";
+      window.location.assign(target);
     }, 700);
   } catch {
     setFormMessage(formState, "is-error", "Unable to reach the server. Please try again.");
@@ -62,7 +68,12 @@ async function handleLoginSubmit(event) {
   }
 }
 
-if (loginForm) {
+async function initLoginPage() {
+  const canRender = await requireGuest({ redirectTo: "activities.html" });
+  if (!canRender || !loginForm) return;
+
   renderPostRegistrationHint();
   loginForm.addEventListener("submit", handleLoginSubmit);
 }
+
+initLoginPage();
