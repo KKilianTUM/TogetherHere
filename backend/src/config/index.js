@@ -43,6 +43,7 @@ const config = {
   corsAllowedOrigins: parseCsv(process.env.CORS_ALLOWED_ORIGINS, selectedConfig.corsAllowedOrigins || []),
   corsAllowedMethods: parseCsv(process.env.CORS_ALLOWED_METHODS, selectedConfig.corsAllowedMethods || ['GET']),
   corsAllowedHeaders: parseCsv(process.env.CORS_ALLOWED_HEADERS, selectedConfig.corsAllowedHeaders || ['Content-Type']),
+  sessionMaxAgeSeconds: Number(process.env.SESSION_MAX_AGE_SECONDS || 60 * 60 * 24 * 7),
   sessionCookieName: process.env.SESSION_COOKIE_NAME || '__Host-th_session',
   csrfCookieName: process.env.CSRF_COOKIE_NAME || '__Host-th_csrf',
   csrfHeaderName: (process.env.CSRF_HEADER_NAME || 'x-csrf-token').toLowerCase()

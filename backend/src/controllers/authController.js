@@ -1,5 +1,5 @@
 import config from '../config/index.js';
-import { registerUser, revokeSessionByToken } from '../services/authService.js';
+import { loginUser, registerUser, revokeSessionByToken } from '../services/authService.js';
 
 function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${encodeURIComponent(value)}`];
@@ -27,12 +27,6 @@ function serializeCookie(name, value, options = {}) {
   return parts.join('; ');
 }
 
-function notImplemented(endpoint) {
-  const error = new Error(`${endpoint} is not implemented yet.`);
-  error.statusCode = 501;
-  return error;
-}
-
 export async function register(req, res, next) {
   try {
     const user = await registerUser(req.body);
@@ -46,7 +40,21 @@ export async function register(req, res, next) {
 }
 
 export async function login(req, res, next) {
-  next(notImplemented('POST /auth/login'));
+  try {
+    const { sessionToken, user } = await loginUser(req.body);
+
+    res.append('Set-Cookie', serializeCookie(config.sessionCookieName, sessionToken, {
+      maxAgeSeconds: config.sessionMaxAgeSeconds,
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax'
+    }));
+
+    res.status(200).json({ user });
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function logout(req, res, next) {
