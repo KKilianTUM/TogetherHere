@@ -1,4 +1,5 @@
 import { registerRequest } from "./authApi.js";
+import { requireGuest } from "./routeGuards.js";
 import { setButtonLoadingState, setFormMessage } from "./authFeedback.js";
 import { readRaw, readTrimmed, validateRegisterFields } from "./authValidation.js";
 
@@ -101,7 +102,10 @@ async function handleRegisterSubmit(event) {
   }
 }
 
-if (registerForm) {
+async function initRegisterPage() {
+  const canRender = await requireGuest({ redirectTo: "activities.html" });
+  if (!canRender || !registerForm) return;
+
   ["displayName", "email", "password"].forEach((fieldName) => {
     const field = fieldMap[fieldName];
     field?.input?.addEventListener("blur", () => {
@@ -113,3 +117,5 @@ if (registerForm) {
 
   registerForm.addEventListener("submit", handleRegisterSubmit);
 }
+
+initRegisterPage();

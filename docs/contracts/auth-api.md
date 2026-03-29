@@ -8,6 +8,13 @@ This file defines the canonical auth endpoint payloads and error codes. Any chan
 
 All endpoints are served from the backend API host.
 
+## Session model assumptions
+
+- Authentication is cookie-session based.
+- Frontend clients must send `credentials: include` for auth endpoints.
+- Frontend must not rely on bearer tokens in `localStorage`/`sessionStorage`.
+- `GET /auth/me` is the canonical bootstrap endpoint to determine initial auth state.
+
 ## Endpoints
 
 ### `POST /auth/register`
@@ -118,7 +125,6 @@ All non-2xx responses from auth endpoints use:
 ```
 
 For server failures (`5xx`), `error` is always `Internal Server Error`.
-
 
 ## Frontend UI payload mapping (stabilization)
 
