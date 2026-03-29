@@ -290,6 +290,23 @@ function buildDateForCard(dateObj){
   return `${y}-${m}-${d}T${hh}:${mm}`;
 }
 
+function getCardDateMs(card){
+  const raw = card.dataset.datetime || "";
+  const parsed = new Date(raw);
+  return Number.isNaN(parsed.getTime()) ? Number.POSITIVE_INFINITY : parsed.getTime();
+}
+
+function sortCategoryCardsByDate(categoryRow){
+  if (!categoryRow) return;
+  const sortedCards = Array.from(categoryRow.querySelectorAll(".card"))
+    .sort((a, b) => getCardDateMs(a) - getCardDateMs(b));
+  sortedCards.forEach((card) => categoryRow.append(card));
+}
+
+function sortAllCategoriesByDate(){
+  document.querySelectorAll(".category .slider-row").forEach(sortCategoryCardsByDate);
+}
+
 function buildCardFromForm(formData, dateObj){
   if (!firstCategoryRow) return;
   const escapeHtml = (text) => String(text)
@@ -336,7 +353,8 @@ function buildCardFromForm(formData, dateObj){
       <button class="more" type="button">More</button>
     </div>`;
 
-  firstCategoryRow.prepend(card);
+  firstCategoryRow.append(card);
+  sortCategoryCardsByDate(firstCategoryRow);
   const ui = card.querySelector("[data-count-ui]");
   if (ui) ui.textContent = formatCardCount(card);
 }
@@ -514,3 +532,5 @@ document.querySelectorAll(".card").forEach(card => {
   const ui = card.querySelector("[data-count-ui]");
   if (ui) ui.textContent = formatCardCount(card);
 });
+
+sortAllCategoriesByDate();
