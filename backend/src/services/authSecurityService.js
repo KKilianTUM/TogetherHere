@@ -117,11 +117,11 @@ function calculateLockoutSeconds(failureCount) {
   return Math.min(15 * 60, 2 ** (failureCount - 5) * 30);
 }
 
-function getFailureState(accountIdentifier) {
+function getFailureState(accountIdentifier, { createIfMissing = false } = {}) {
   const existing = loginFailuresByAccount.get(accountIdentifier);
 
-  if (existing) {
-    return existing;
+  if (existing || !createIfMissing) {
+    return existing || null;
   }
 
   const created = {
@@ -141,6 +141,9 @@ export function checkLoginLockout({ accountIdentifier, ipAddress }) {
   }
 
   const state = getFailureState(normalized);
+  if (!state) {
+    return { blocked: false, retryAfterSeconds: 0 };
+  }
 
   const now = Date.now();
   if (state.lockedUntil > now) {
@@ -203,7 +206,7 @@ export function registerLoginFailure({ accountIdentifier, ipAddress }) {
     return { retryAfterSeconds: 0 };
   }
 
-  const state = getFailureState(normalized);
+  const state = getFailureState(normalized, { createIfMissing: true });
   state.failureCount += 1;
   state.lastFailedAt = Date.now();
 
