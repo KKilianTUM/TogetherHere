@@ -1,6 +1,32 @@
 import config from '../config/index.js';
 import { registerUser, revokeSessionByToken } from '../services/authService.js';
 
+function serializeCookie(name, value, options = {}) {
+  const parts = [`${name}=${encodeURIComponent(value)}`];
+
+  if (options.maxAgeSeconds) {
+    parts.push(`Max-Age=${options.maxAgeSeconds}`);
+  }
+
+  if (options.path) {
+    parts.push(`Path=${options.path}`);
+  }
+
+  if (options.httpOnly) {
+    parts.push('HttpOnly');
+  }
+
+  if (options.secure) {
+    parts.push('Secure');
+  }
+
+  if (options.sameSite) {
+    parts.push(`SameSite=${options.sameSite}`);
+  }
+
+  return parts.join('; ');
+}
+
 function notImplemented(endpoint) {
   const error = new Error(`${endpoint} is not implemented yet.`);
   error.statusCode = 501;
@@ -28,10 +54,13 @@ export async function logout(req, res, next) {
     const sessionToken = req.auth?.sessionToken;
     await revokeSessionByToken(sessionToken);
 
-    res.append(
-      'Set-Cookie',
-      `${config.sessionCookieName}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`
-    );
+    res.append('Set-Cookie', serializeCookie(config.sessionCookieName, '', {
+      maxAgeSeconds: 0,
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax'
+    }));
 
     res.status(204).send();
   } catch (error) {
