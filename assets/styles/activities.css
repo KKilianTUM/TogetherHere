@@ -202,6 +202,25 @@
   gap:10px;
 }
 
+.participant-field input{
+  width:50%;
+  margin-left:0;
+}
+
+.description-requirements-field{
+  gap:0;
+}
+
+.description-requirements-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:12px;
+}
+
+.description-requirements-grid textarea{
+  resize:none;
+}
+
 .upload-field input{
   padding-top:6px;
 }
@@ -540,6 +559,9 @@
     font-size:20px;
   }
   .create-grid{
+    grid-template-columns:1fr;
+  }
+  .description-requirements-grid{
     grid-template-columns:1fr;
   }
 }

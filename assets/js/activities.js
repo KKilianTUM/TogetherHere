@@ -255,6 +255,14 @@ function hasAtLeastTwoRealWords(text){
   return realWords.length >= 2;
 }
 
+function normalizeRequirementsInput(text){
+  const lines = String(text || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return lines.length ? lines.join(" • ") : "None.";
+}
+
 function combineDateAndTimeInput(dateInput, timeInput){
   const dateRaw = String(dateInput || "").trim();
   const timeRaw = String(timeInput || "").trim();
@@ -391,6 +399,7 @@ function buildCardFromForm(formData, dateObj){
   const title = formData.title.trim();
   const location = formData.location.trim();
   const description = formData.description.trim();
+  const requirements = normalizeRequirementsInput(formData.requirements);
   const img = uploadedImageUrl || generateUniquePlaceholderImage();
   const dateISO = buildDateForCard(dateObj);
   const dateLabel = dateObj.toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" });
@@ -403,7 +412,7 @@ function buildCardFromForm(formData, dateObj){
   card.dataset.datetime = dateISO;
   card.dataset.duration = "60";
   card.dataset.initiator = "Initiated by You";
-  card.dataset.requirements = "None.";
+  card.dataset.requirements = requirements;
   card.dataset.desc = description;
   card.dataset.img = img;
   card.dataset.label = "Participants";
@@ -565,7 +574,8 @@ if (createForm) {
     const timeInput = createForm.querySelector("input[name='time']");
     const neededInput = createForm.querySelector("input[name='needed']");
     const descriptionInput = createForm.querySelector("textarea[name='description']");
-    if (!titleInput || !locationInput || !dateInput || !timeInput || !neededInput || !descriptionInput) return;
+    const requirementsInput = createForm.querySelector("textarea[name='requirements']");
+    if (!titleInput || !locationInput || !dateInput || !timeInput || !neededInput || !descriptionInput || !requirementsInput) return;
 
     const formData = {
       title: titleInput.value,
@@ -574,7 +584,8 @@ if (createForm) {
       time: timeInput.value,
       category: selectedCategoryKey,
       needed: safeInt(neededInput.value, 0),
-      description: descriptionInput.value
+      description: descriptionInput.value,
+      requirements: requirementsInput.value
     };
 
     if (!formData.category) {
