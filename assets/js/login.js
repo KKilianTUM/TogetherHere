@@ -6,6 +6,16 @@ const loginForm = document.getElementById("loginForm");
 const submitBtn = document.getElementById("loginSubmitBtn");
 const formState = document.getElementById("loginFormState");
 
+
+function renderPostRegistrationHint() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("registered") !== "1") return;
+
+  setFormMessage(formState, "is-success", "Registration complete. Please log in.");
+  url.searchParams.delete("registered");
+  window.history.replaceState({}, "", url);
+}
+
 function loginErrorMessage(status, payloadMessage) {
   if (payloadMessage) return payloadMessage;
   if (status === 401) return "Invalid email or password.";
@@ -53,5 +63,6 @@ async function handleLoginSubmit(event) {
 }
 
 if (loginForm) {
+  renderPostRegistrationHint();
   loginForm.addEventListener("submit", handleLoginSubmit);
 }

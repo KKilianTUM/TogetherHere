@@ -74,6 +74,27 @@
   border-color:rgba(58,115,255,.5);
 }
 
+.line-field input[aria-invalid="true"]{
+  border-color:#b00020;
+  box-shadow:0 0 0 2px rgba(176,0,32,.15);
+}
+
+.field-hint,
+.field-error{
+  min-height:16px;
+  margin:0;
+  font-size:12px;
+  font-weight:400;
+}
+
+.field-hint{
+  color:rgba(28,31,37,.68);
+}
+
+.field-error{
+  color:#b00020;
+}
+
 .form-state{
   min-height:22px;
   margin:0;
