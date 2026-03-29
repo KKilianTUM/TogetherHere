@@ -1,10 +1,15 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import pool from '../db/pool.js';
+import config from '../config/index.js';
 
 const BCRYPT_COST_FACTOR = 12;
 const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
+const ALLOWED_LOGIN_FIELDS = new Set(['email', 'password']);
 const INVALID_REGISTRATION_INPUT_MESSAGE = 'Invalid registration input.';
+const INVALID_LOGIN_INPUT_MESSAGE = 'Invalid login input.';
+const INACTIVE_ACCOUNT_MESSAGE = 'Account is not active.';
+const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password.';
 
 function hashSessionToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -107,6 +112,35 @@ function validateRegistrationInput(input) {
   };
 }
 
+function ensureOnlyAllowedLoginFields(input) {
+  for (const field of Object.keys(input)) {
+    if (!ALLOWED_LOGIN_FIELDS.has(field)) {
+      throw new AuthValidationError(INVALID_LOGIN_INPUT_MESSAGE);
+    }
+  }
+}
+
+function validateLoginInput(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new AuthValidationError(INVALID_LOGIN_INPUT_MESSAGE);
+  }
+
+  ensureOnlyAllowedLoginFields(input);
+
+  const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+  const password = input.password;
+
+  if (!isValidEmail(email) || typeof password !== 'string' || password.length === 0) {
+    throw new AuthValidationError(INVALID_LOGIN_INPUT_MESSAGE);
+  }
+
+  return { email, password };
+}
+
+function generateSessionToken() {
+  return crypto.randomBytes(32).toString('base64url');
+}
+
 export async function registerUser(input) {
   const { email, password, displayName } = validateRegistrationInput(input);
 
@@ -128,6 +162,49 @@ export async function registerUser(input) {
 
     throw error;
   }
+}
+
+export async function loginUser(input) {
+  const { email, password } = validateLoginInput(input);
+
+  const userResult = await pool.query(
+    `SELECT id, email, password_hash, display_name AS "displayName", status
+     FROM users
+     WHERE email = $1
+     LIMIT 1`,
+    [email]
+  );
+
+  const userRecord = userResult.rows[0];
+  if (!userRecord) {
+    throw new AuthUnauthorizedError(INVALID_CREDENTIALS_MESSAGE);
+  }
+
+  const passwordMatches = await bcrypt.compare(password, userRecord.password_hash);
+  if (!passwordMatches) {
+    throw new AuthUnauthorizedError(INVALID_CREDENTIALS_MESSAGE);
+  }
+
+  if (typeof userRecord.status === 'string' && userRecord.status.toLowerCase() !== 'active') {
+    throw new AuthUnauthorizedError(INACTIVE_ACCOUNT_MESSAGE);
+  }
+
+  const sessionToken = generateSessionToken();
+  const tokenHash = hashSessionToken(sessionToken);
+  await pool.query(
+    `INSERT INTO sessions (user_id, token_hash, expires_at)
+     VALUES ($1, $2, NOW() + ($3::int * INTERVAL '1 second'))`,
+    [userRecord.id, tokenHash, config.sessionMaxAgeSeconds]
+  );
+
+  return {
+    sessionToken,
+    user: {
+      id: userRecord.id,
+      email: userRecord.email,
+      displayName: userRecord.displayName
+    }
+  };
 }
 
 export async function getSessionUserByToken(sessionToken) {
