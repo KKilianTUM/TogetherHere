@@ -30,3 +30,5 @@ Use ordered, immutable migration files:
 - `0003_add_indexes.sql`
 
 Never edit an applied migration in shared environments; add a new migration instead.
+
+For full forward/rollback procedures, see `docs/db-migrations.md`.
