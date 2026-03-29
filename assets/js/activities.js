@@ -543,7 +543,9 @@ if (createForm) {
 
   if (dateInput && timeInput) {
     syncDateTimeConstraints(dateInput, timeInput);
-    dateInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput, { clampDateValue: true }));
+    dateInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput, { clampDateValue: false }));
+    dateInput.addEventListener("change", () => syncDateTimeConstraints(dateInput, timeInput, { clampDateValue: true }));
+    dateInput.addEventListener("blur", () => syncDateTimeConstraints(dateInput, timeInput, { clampDateValue: true }));
     timeInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput, { clampDateValue: false }));
   }
 
