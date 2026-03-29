@@ -483,7 +483,7 @@ if (createForm) {
       return;
     }
     if (parsedDate.getTime() < Date.now()) {
-      createFormError.textContent = "Event date/time cannot be before creation time.";
+      createFormError.textContent = "Event date/time cannot be in the past.";
       return;
     }
     if (!formData.title.trim()) {
