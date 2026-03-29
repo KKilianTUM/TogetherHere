@@ -9,6 +9,6 @@ if (previewTrigger && previewGrid) {
 
     window.setTimeout(() => {
       previewGrid.classList.remove('is-glowing');
-    }, 1800);
+    }, 2200);
   });
 }
