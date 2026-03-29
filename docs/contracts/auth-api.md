@@ -118,3 +118,17 @@ All non-2xx responses from auth endpoints use:
 ```
 
 For server failures (`5xx`), `error` is always `Internal Server Error`.
+
+
+## Frontend UI payload mapping (stabilization)
+
+The current frontend UI layer must submit auth requests with these exact keys:
+
+- Login form payload: `{ "email": string, "password": string }`
+- Register form payload: `{ "displayName": string, "email": string, "password": string }`
+
+Normalization rules used by frontend helpers:
+
+- Request body is always JSON with `Content-Type: application/json`.
+- Session-bearing auth calls send credentials with `credentials: include`.
+- Error messaging prefers `message` from API response body when present.
