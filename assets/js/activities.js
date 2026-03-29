@@ -33,10 +33,7 @@ const categoryRows = new Map(
     })
     .filter(Boolean)
 );
-const defaultCategoryKey = "getting-to-know-the-city";
-let selectedCategoryKey = categoryRows.has(defaultCategoryKey)
-  ? defaultCategoryKey
-  : (categoryRows.keys().next().value || "");
+let selectedCategoryKey = "";
 
 let activeCard = null;
 let lastFocusedElement = null;
@@ -367,12 +364,11 @@ function sortAllCategoriesByDate(){
 }
 
 function getTargetCategoryRow(categoryKey){
-  return categoryRows.get(categoryKey) || categoryRows.get(selectedCategoryKey) || categoryRows.values().next().value || null;
+  return categoryRows.get(categoryKey) || null;
 }
 
 function setSelectedCategory(categoryKey){
-  if (!categoryRows.has(categoryKey)) return;
-  selectedCategoryKey = categoryKey;
+  selectedCategoryKey = categoryRows.has(categoryKey) ? categoryKey : "";
   if (!categoryPicker) return;
   const buttons = categoryPicker.querySelectorAll(".category-pill");
   buttons.forEach((button) => {
@@ -581,6 +577,11 @@ if (createForm) {
       description: descriptionInput.value
     };
 
+    if (!formData.category) {
+      createFormError.textContent = "Please select a category.";
+      return;
+    }
+
     if (!formData.location) {
       createFormError.textContent = "Please add a location.";
       return;
@@ -619,7 +620,7 @@ if (createForm) {
 
     buildCardFromForm(formData, parsedDate);
     createForm.reset();
-    setSelectedCategory(defaultCategoryKey);
+    setSelectedCategory("");
     uploadedImageUrl = "";
     createFormError.textContent = "";
     createForm.hidden = true;
