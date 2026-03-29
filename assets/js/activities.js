@@ -85,10 +85,7 @@ function openModal(card){
   const dt = (card.dataset.datetime || "").trim();
   mDateVal.textContent = formatDateNice(dt);
 
-  mInit.replaceChildren();
-  const hostLabel = document.createElement("b");
-  hostLabel.textContent = "Host:";
-  mInit.append(hostLabel, ` ${(card.dataset.initiator || "").trim()}`);
+  mInit.textContent = (card.dataset.initiator || "").trim();
 
   renderModalParticipants(card);
 
@@ -282,8 +279,9 @@ function getMaxAllowedDate(){
   return maxDate;
 }
 
-function syncDateTimeConstraints(dateInput, timeInput){
+function syncDateTimeConstraints(dateInput, timeInput, options = {}){
   if (!dateInput || !timeInput) return;
+  const { clampDateValue = true } = options;
   const now = new Date();
   const today = formatDateInputValue(now);
   const maxAllowedDate = getMaxAllowedDate();
@@ -292,10 +290,12 @@ function syncDateTimeConstraints(dateInput, timeInput){
   dateInput.min = today;
   dateInput.max = maxDate;
 
-  if (dateInput.value && dateInput.value < today) {
-    dateInput.value = today;
-  } else if (dateInput.value && dateInput.value > maxDate) {
-    dateInput.value = maxDate;
+  if (clampDateValue) {
+    if (dateInput.value && dateInput.value < today) {
+      dateInput.value = today;
+    } else if (dateInput.value && dateInput.value > maxDate) {
+      dateInput.value = maxDate;
+    }
   }
 
   if (dateInput.value === today) {
@@ -307,6 +307,11 @@ function syncDateTimeConstraints(dateInput, timeInput){
   } else {
     timeInput.removeAttribute("min");
   }
+}
+
+function limitToWordCount(text, maxWords){
+  const words = String(text || "").trim().split(/\s+/).filter(Boolean);
+  return words.slice(0, maxWords).join(" ");
 }
 
 function generateUniquePlaceholderImage(){
@@ -538,9 +543,17 @@ if (createForm) {
 
   if (dateInput && timeInput) {
     syncDateTimeConstraints(dateInput, timeInput);
-    dateInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput));
-    timeInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput));
+    dateInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput, { clampDateValue: true }));
+    timeInput.addEventListener("input", () => syncDateTimeConstraints(dateInput, timeInput, { clampDateValue: false }));
   }
+
+  const titleInput = createForm.querySelector("input[name='title']");
+  titleInput?.addEventListener("input", () => {
+    const trimmedTitle = limitToWordCount(titleInput.value, 7);
+    if (trimmedTitle !== titleInput.value) {
+      titleInput.value = trimmedTitle;
+    }
+  });
 
   imageInput?.addEventListener("change", (e) => {
     const file = e.target.files?.[0];
