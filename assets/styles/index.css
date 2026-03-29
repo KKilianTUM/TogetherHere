@@ -252,54 +252,16 @@
 .certificate-panel{
   width:min(860px, 100%);
   margin:0 auto 0 0;
-  position:relative;
-  aspect-ratio:3 / 2;
-  min-height:280px;
   border-radius:20px;
-  background-color:#f7f8fb;
-  background-image:url("/images/certificate-index-volunteering.jpeg");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
   overflow:hidden;
+  background:#f7f8fb;
 }
 
-.certificate-copy{
-  position:absolute;
-  left:8%;
-  right:27%;
-  top:22%;
-  bottom:20%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
-
-.certificate-copy h2{
-  font-family:Quicksand, Poppins, sans-serif;
-  letter-spacing:.2px;
-  margin-bottom:8px;
-  font-size:clamp(20px, 2vw, 30px);
-}
-
-.certificate-copy .muted{
-  margin:0;
-  font-size:clamp(12px, 1.05vw, 16px);
-  line-height:1.5;
-  color:rgba(28,31,37,.82);
-}
-
-@media (max-width: 860px){
-  .certificate-panel{
-    min-height:230px;
-  }
-
-  .certificate-copy{
-    left:8%;
-    right:20%;
-    top:18%;
-    bottom:17%;
-  }
+.certificate-image{
+  width:100%;
+  display:block;
+  height:auto;
+  object-fit:cover;
 }
 
 .footer{
