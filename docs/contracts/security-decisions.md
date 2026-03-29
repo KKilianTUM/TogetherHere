@@ -20,9 +20,11 @@ Rationale and required behavior:
 
 Current contract:
 
-- Rely on `SameSite=Lax` session cookie as baseline CSRF mitigation.
-- Treat state-changing auth endpoints as same-site only unless explicitly opened.
-- If cross-site state-changing requests are introduced later, add explicit CSRF token validation as a versioned contract update.
+- Keep `SameSite=Lax` on the session cookie as baseline browser-level CSRF mitigation.
+- Enforce explicit CSRF validation for all state-changing methods (`POST`, `PUT`, `PATCH`, `DELETE`).
+- Mint an `HttpOnly` CSRF secret cookie and derive a request token server-side.
+- Require clients to send the derived token in `X-CSRF-Token` (or configured equivalent header).
+- Expose token retrieval through `GET /csrf-token` for first-party clients.
 
 ## Decision 3: CORS policy
 

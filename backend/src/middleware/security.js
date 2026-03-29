@@ -24,7 +24,7 @@ function parseCookies(cookieHeader = '') {
 function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${encodeURIComponent(value)}`];
 
-  if (options.maxAgeSeconds) {
+  if (options.maxAgeSeconds !== undefined) {
     parts.push(`Max-Age=${options.maxAgeSeconds}`);
   }
 
@@ -51,16 +51,40 @@ function createCsrfToken(secret) {
   return crypto.createHmac('sha256', secret).update('togetherhere-csrf-v1').digest('hex');
 }
 
+function isAllowedOrigin(origin) {
+  return config.corsAllowedOrigins.includes(origin);
+}
+
 export function corsMiddleware(req, res, next) {
   const origin = req.headers.origin;
 
-  if (origin && config.corsAllowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', config.corsAllowedMethods.join(', '));
-    res.setHeader('Access-Control-Allow-Headers', config.corsAllowedHeaders.join(', '));
+  if (!origin) {
+    if (req.method === 'OPTIONS') {
+      return res.status(204).end();
+    }
+
+    return next();
   }
+
+  if (!isAllowedOrigin(origin)) {
+    if (req.method === 'OPTIONS') {
+      return res.status(403).json({
+        error: 'Request Error',
+        message: 'Origin is not allowed by CORS policy'
+      });
+    }
+
+    return res.status(403).json({
+      error: 'Request Error',
+      message: 'Origin is not allowed by CORS policy'
+    });
+  }
+
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Vary', 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', config.corsAllowedMethods.join(', '));
+  res.setHeader('Access-Control-Allow-Headers', config.corsAllowedHeaders.join(', '));
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -85,7 +109,7 @@ export function csrfProtection(req, res, next) {
 
   let csrfSecret = cookies[config.csrfCookieName];
 
-  if (!csrfSecret) {
+  if (!csrfSecret || csrfSecret.length < 32) {
     csrfSecret = crypto.randomBytes(32).toString('hex');
     res.append(
       'Set-Cookie',
@@ -108,7 +132,17 @@ export function csrfProtection(req, res, next) {
 
   const headerToken = req.headers[config.csrfHeaderName];
 
-  if (!headerToken || headerToken !== csrfToken) {
+  if (typeof headerToken !== 'string') {
+    return res.status(403).json({
+      error: 'Request Error',
+      message: 'Invalid CSRF token'
+    });
+  }
+
+  const providedToken = Buffer.from(headerToken, 'utf8');
+  const expectedToken = Buffer.from(csrfToken, 'utf8');
+
+  if (providedToken.length !== expectedToken.length || !crypto.timingSafeEqual(providedToken, expectedToken)) {
     return res.status(403).json({
       error: 'Request Error',
       message: 'Invalid CSRF token'

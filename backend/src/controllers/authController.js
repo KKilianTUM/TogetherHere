@@ -4,7 +4,7 @@ import { loginUser, registerUser, revokeSessionByToken } from '../services/authS
 function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${encodeURIComponent(value)}`];
 
-  if (options.maxAgeSeconds) {
+  if (options.maxAgeSeconds !== undefined) {
     parts.push(`Max-Age=${options.maxAgeSeconds}`);
   }
 
