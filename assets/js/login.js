@@ -69,9 +69,27 @@ async function handleLoginSubmit(event) {
 }
 
 async function initLoginPage() {
-  const canRender = await requireGuest({ redirectTo: "activities.html" });
-  if (!canRender || !loginForm) return;
+  if (!loginForm) return;
 
+  const fields = Array.from(loginForm.elements || []);
+  fields.forEach((field) => {
+    field.disabled = true;
+  });
+  setFormMessage(formState, "is-loading", "Checking your session…");
+
+  const canRender = await requireGuest({
+    redirectTo: "activities.html",
+    onError: (message) => {
+      setFormMessage(formState, "is-error", `${message} Please refresh and try again.`);
+    }
+  });
+
+  if (!canRender) return;
+
+  fields.forEach((field) => {
+    field.disabled = false;
+  });
+  setFormMessage(formState, "", "");
   renderPostRegistrationHint();
   loginForm.addEventListener("submit", handleLoginSubmit);
 }

@@ -1,45 +1,70 @@
 # Frontend Auth Flows
 
-## Auth bootstrap foundation (S14.1)
+## Auth bootstrap foundation (S14.2)
 
-The frontend now relies on a single auth-state module (`assets/js/authState.js`) as the source of truth for authentication status across pages.
+The frontend relies on a single auth-state module (`assets/js/authState.js`) as the source of truth for authentication status across pages.
 
 ### Bootstrap behavior
 
-- Auth bootstrap uses `GET /auth/me` with `credentials: include`.
-- Bootstrap is **deduplicated**: parallel calls share one in-flight request to prevent race conditions.
-- Until `/auth/me` resolves, auth state is `loading`; once resolved it becomes either:
-  - `authenticated` with `user`
-  - `guest` with `user = null`
+- App/page startup calls `bootstrapAuthState()` and resolves auth through shared `meRequest()` (`GET /auth/me`) in `assets/js/authApi.js`.
+- Bootstrap is **deduplicated**: parallel calls share one in-flight request.
+- Bootstrap states are explicit:
+  - `loading` while session status is unresolved
+  - `authenticated` with `user` when `/auth/me` returns `200`
+  - `guest` when `/auth/me` returns `401/403`
+  - `error` for unexpected failures (network/5xx/unexpected response)
 - Legacy token storage remnants (`token`, `authToken`, `sessionToken`, `user`, `currentUser`) are cleared from `localStorage` and `sessionStorage` during bootstrap to enforce cookie-session-only behavior.
 
-### Route guards
+## Route-guard flow
 
-Reusable route guards now standardize page-level access decisions:
+Reusable route guards in `assets/js/routeGuards.js` standardize page-level access decisions:
 
 - `requireAuthenticated()` for protected pages (e.g. `activities.html`)
   - redirects unauthenticated users to `login.html`
-  - appends `returnTo=<current page>` for post-login navigation continuity
+  - appends `returnTo=<current page>` for post-login continuity
+  - supports `onError` fallback rendering when bootstrap fails unexpectedly
 - `requireGuest()` for guest-only pages (`login.html`, `register.html`)
   - redirects authenticated users to `activities.html`
+  - supports `onError` fallback rendering when bootstrap fails unexpectedly
 
-### Shared nav rendering contract
+## Navigation rendering contract
 
-`mountAuthNavigation()` in `assets/js/navAuth.js` is used to normalize nav rendering:
+`mountAuthNavigation()` in `assets/js/navAuth.js` controls conditional navigation rendering:
 
-- guest navigation actions are shown only when auth state is `guest`
-- authenticated actions (`Hi, <name>`, activities shortcut, logout) are shown only when auth state is `authenticated`
-- logout uses `POST /auth/logout` and then transitions to guest state + `index.html`
+- while auth is unresolved (`unknown`/`loading`), nav loading nodes are shown and guest/auth links are hidden
+- guest nav actions (login/register) are shown only when state is `guest`
+- authenticated actions (`Hi, <name>`, activities, logout) are shown only when state is `authenticated`
+
+## Logout flow
+
+Logout UI is wired through `POST /auth/logout` via `logoutRequest()`.
+
+On logout click:
+
+1. send logout request
+2. mark local state as logged out (`guest`)
+3. force a fresh bootstrap (`GET /auth/me`) for deterministic state reconciliation
+4. navigate to `index.html`
+
+## Page lifecycle states
+
+### Guest-only pages (`login.html`, `register.html`)
+
+- disable form controls and show `Checking your session…` while auth bootstrap runs
+- if bootstrap resolves to authenticated, redirect to `activities.html`
+- if bootstrap resolves to guest, enable form controls and render normal form UX
+- if bootstrap resolves to error, render explicit error fallback and keep form submission blocked
+
+### Protected page (`activities.html`)
+
+- show a bootstrap banner (`Checking your session…`) before protected content initialization
+- if unauthenticated, redirect to login with `returnTo`
+- if bootstrap fails unexpectedly, show an error fallback with `Retry` action
+- initialize activities module only after authenticated access is confirmed
 
 ## Registration (`register.html`)
 
-The registration screen is implemented as a progressive enhancement form that submits through shared auth utilities.
-
-### Payload mapping to backend
-
-The submit handler sends `POST /auth/register` through `registerRequest` in `assets/js/authApi.js`.
-
-Payload keys are aligned with the frozen auth contract:
+Registration submits through shared auth utilities using `POST /auth/register`:
 
 ```json
 {
@@ -49,46 +74,11 @@ Payload keys are aligned with the frozen auth contract:
 }
 ```
 
-### Client-side validation (UX only)
-
-Client validation mirrors backend constraints for faster feedback, but the backend remains the source of truth.
-
-Rules:
-
-- `displayName`: required, trimmed, 2-50 chars, allowed chars `[A-Za-z0-9 _-]`
-- `email`: required, valid email shape
-- `password`: required, 12-128 chars, must include lowercase, uppercase, number, and symbol
-
-Inline validation behavior:
-
-- each field has an associated error container
-- invalid fields are marked with `aria-invalid="true"`
-- blur validation updates individual field errors
-- submit validation renders all errors before request dispatch
-
-### Submission states
-
-The registration form includes explicit states:
-
-- **idle**: submit enabled (`Create account`)
-- **loading**: submit disabled (`Creating…`) and live status message
-- **error**: form-level error message with backend-aware mapping
-- **success**: confirmation message then transition to login flow
-
-### Backend response handling
-
-`register.js` maps backend responses to clear user guidance:
-
-- `409`: duplicate email account
-- `400`: invalid details / weak or invalid password guidance
-- `5xx`: generic temporary server failure fallback
-- network failure: generic connectivity fallback
-
-### Navigation and post-registration transition
-
-- Header link: `Already have account? Log in` → `login.html`
-- Successful registration redirects to `login.html?registered=1` after status feedback delay
+Client-side validation remains UX-only; backend validation is authoritative.
 
 ## Login (`login.html`)
 
-The login flow remains wired through `loginRequest` and now applies guest-only guarding before rendering.
+Login submits through shared auth utilities (`POST /auth/login`) and:
+
+- stores authenticated user in global auth state
+- redirects to `returnTo` target (if valid `*.html`) or `activities.html`

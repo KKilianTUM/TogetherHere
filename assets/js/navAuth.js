@@ -20,16 +20,21 @@ export function mountAuthNavigation({
   guestSelectors = [],
   authSelectors = [],
   userLabelSelectors = [],
-  logoutSelectors = []
+  logoutSelectors = [],
+  loadingSelectors = []
 } = {}) {
   const guestNodes = selectorsToNodes(guestSelectors);
   const authNodes = selectorsToNodes(authSelectors);
+  const loadingNodes = selectorsToNodes(loadingSelectors);
   const userLabelNodes = selectorsToNodes(userLabelSelectors);
   const logoutNodes = selectorsToNodes(logoutSelectors);
 
   const render = (state) => {
     const isAuth = state.status === "authenticated";
-    toggle(guestNodes, !isAuth);
+    const isLoading = state.status === "unknown" || state.status === "loading";
+
+    toggle(loadingNodes, isLoading);
+    toggle(guestNodes, !isAuth && !isLoading);
     toggle(authNodes, isAuth);
 
     userLabelNodes.forEach((node) => {
@@ -40,12 +45,11 @@ export function mountAuthNavigation({
   logoutNodes.forEach((logoutNode) => {
     logoutNode.addEventListener("click", async (event) => {
       event.preventDefault();
-      try {
-        await logoutRequest();
-      } finally {
-        markLoggedOut();
-        window.location.assign("index.html");
-      }
+
+      await logoutRequest().catch(() => null);
+      markLoggedOut();
+      await bootstrapAuthState({ force: true });
+      window.location.assign("index.html");
     });
   });
 

@@ -114,3 +114,11 @@ button{ font-family:inherit; }
   border-color:rgba(58,115,255,.4);
   box-shadow:0 6px 18px rgba(58,115,255,.12);
 }
+
+.auth-bootstrap-banner{
+  margin:16px 0;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
