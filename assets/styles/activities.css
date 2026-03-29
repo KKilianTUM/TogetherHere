@@ -204,16 +204,7 @@
 
 .participant-field input{
   width:50%;
-  margin-left:auto;
-}
-
-.participant-field{
-  align-items:flex-end;
-}
-
-.participant-field span{
-  width:50%;
-  text-align:left;
+  margin-left:0;
 }
 
 .description-requirements-field{
