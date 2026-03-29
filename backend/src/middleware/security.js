@@ -3,7 +3,7 @@ import config from '../config/index.js';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
-function parseCookies(cookieHeader = '') {
+export function parseCookies(cookieHeader = '') {
   return cookieHeader
     .split(';')
     .map((segment) => segment.trim())
@@ -21,7 +21,7 @@ function parseCookies(cookieHeader = '') {
     }, {});
 }
 
-function serializeCookie(name, value, options = {}) {
+export function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${encodeURIComponent(value)}`];
 
   if (options.maxAgeSeconds) {
