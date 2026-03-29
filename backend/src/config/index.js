@@ -46,7 +46,12 @@ const config = {
   sessionMaxAgeSeconds: Number(process.env.SESSION_MAX_AGE_SECONDS || 60 * 60 * 24 * 7),
   sessionCookieName: process.env.SESSION_COOKIE_NAME || '__Host-th_session',
   csrfCookieName: process.env.CSRF_COOKIE_NAME || '__Host-th_csrf',
-  csrfHeaderName: (process.env.CSRF_HEADER_NAME || 'x-csrf-token').toLowerCase()
+  csrfHeaderName: (process.env.CSRF_HEADER_NAME || 'x-csrf-token').toLowerCase(),
+  authRateLimitWindowMs: Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
+  authRateLimitBaseBackoffMs: Number(process.env.AUTH_RATE_LIMIT_BASE_BACKOFF_MS || 1000),
+  authRateLimitMaxBackoffMs: Number(process.env.AUTH_RATE_LIMIT_MAX_BACKOFF_MS || 60 * 1000),
+  authRateLimitLockoutThreshold: Number(process.env.AUTH_RATE_LIMIT_LOCKOUT_THRESHOLD || 10),
+  authRateLimitLockoutMs: Number(process.env.AUTH_RATE_LIMIT_LOCKOUT_MS || 15 * 60 * 1000)
 };
 
 export default config;
