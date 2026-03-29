@@ -291,10 +291,16 @@ function syncDateTimeConstraints(dateInput, timeInput, options = {}){
   dateInput.max = maxDate;
 
   if (clampDateValue) {
-    if (dateInput.value && dateInput.value < today) {
-      dateInput.value = today;
-    } else if (dateInput.value && dateInput.value > maxDate) {
-      dateInput.value = maxDate;
+    if (dateInput.value) {
+      const [yearPart] = dateInput.value.split("-");
+      const year = parseInt(yearPart, 10);
+      const minYear = now.getFullYear();
+      const maxYear = maxAllowedDate.getFullYear();
+      if (!Number.isFinite(year) || year < minYear || year > maxYear) {
+        dateInput.value = "";
+      } else if (dateInput.value < today || dateInput.value > maxDate) {
+        dateInput.value = "";
+      }
     }
   }
 
