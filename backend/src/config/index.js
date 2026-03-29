@@ -40,6 +40,8 @@ const config = {
   port: Number(process.env.PORT || 3000),
   ...selectedConfig,
   databaseUrl: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/togetherhere',
+  sessionCookieName: process.env.SESSION_COOKIE_NAME || '__Host-th_session',
+  sessionTtlSeconds: Number(process.env.SESSION_TTL_SECONDS || 60 * 60 * 24 * 7),
   corsAllowedOrigins: parseCsv(process.env.CORS_ALLOWED_ORIGINS, selectedConfig.corsAllowedOrigins || []),
   corsAllowedMethods: parseCsv(process.env.CORS_ALLOWED_METHODS, selectedConfig.corsAllowedMethods || ['GET']),
   corsAllowedHeaders: parseCsv(process.env.CORS_ALLOWED_HEADERS, selectedConfig.corsAllowedHeaders || ['Content-Type']),
