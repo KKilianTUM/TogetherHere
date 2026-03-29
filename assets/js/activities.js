@@ -23,7 +23,20 @@ const headerPlusBtn = document.getElementById("headerPlusBtn");
 const createForm = document.getElementById("activityCreateForm");
 const creatorAnchor = document.getElementById("activityCreatorAnchor");
 const createFormError = document.getElementById("createFormError");
-const firstCategoryRow = document.querySelector(".category .slider-row");
+const categoryPicker = document.getElementById("categoryPicker");
+const categoryRows = new Map(
+  Array.from(document.querySelectorAll(".category[data-category-key]"))
+    .map((categorySection) => {
+      const key = categorySection.dataset.categoryKey;
+      const row = categorySection.querySelector(".slider-row");
+      return key && row ? [key, row] : null;
+    })
+    .filter(Boolean)
+);
+const defaultCategoryKey = "getting-to-know-the-city";
+let selectedCategoryKey = categoryRows.has(defaultCategoryKey)
+  ? defaultCategoryKey
+  : (categoryRows.keys().next().value || "");
 
 let activeCard = null;
 let lastFocusedElement = null;
@@ -353,8 +366,25 @@ function sortAllCategoriesByDate(){
   document.querySelectorAll(".category .slider-row").forEach(sortCategoryCardsByDate);
 }
 
+function getTargetCategoryRow(categoryKey){
+  return categoryRows.get(categoryKey) || categoryRows.get(selectedCategoryKey) || categoryRows.values().next().value || null;
+}
+
+function setSelectedCategory(categoryKey){
+  if (!categoryRows.has(categoryKey)) return;
+  selectedCategoryKey = categoryKey;
+  if (!categoryPicker) return;
+  const buttons = categoryPicker.querySelectorAll(".category-pill");
+  buttons.forEach((button) => {
+    const isSelected = button.dataset.categoryTarget === selectedCategoryKey;
+    button.classList.toggle("is-active", isSelected);
+    button.setAttribute("aria-checked", isSelected ? "true" : "false");
+  });
+}
+
 function buildCardFromForm(formData, dateObj){
-  if (!firstCategoryRow) return;
+  const targetCategoryRow = getTargetCategoryRow(formData.category);
+  if (!targetCategoryRow) return;
   const escapeHtml = (text) => String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -399,8 +429,8 @@ function buildCardFromForm(formData, dateObj){
       <button class="more" type="button">More</button>
     </div>`;
 
-  firstCategoryRow.append(card);
-  sortCategoryCardsByDate(firstCategoryRow);
+  targetCategoryRow.append(card);
+  sortCategoryCardsByDate(targetCategoryRow);
   const ui = card.querySelector("[data-count-ui]");
   if (ui) ui.textContent = formatCardCount(card);
 }
@@ -521,6 +551,15 @@ if (createForm) {
     uploadedImageUrl = file ? URL.createObjectURL(file) : "";
   });
 
+  if (categoryPicker) {
+    setSelectedCategory(selectedCategoryKey);
+    categoryPicker.addEventListener("click", (e) => {
+      const button = e.target.closest(".category-pill");
+      if (!button) return;
+      setSelectedCategory(button.dataset.categoryTarget || "");
+    });
+  }
+
   createForm.addEventListener("submit", (e) => {
     e.preventDefault();
     createFormError.textContent = "";
@@ -537,6 +576,7 @@ if (createForm) {
       location: locationInput.value,
       date: dateInput.value,
       time: timeInput.value,
+      category: selectedCategoryKey,
       needed: safeInt(neededInput.value, 0),
       description: descriptionInput.value
     };
@@ -579,6 +619,7 @@ if (createForm) {
 
     buildCardFromForm(formData, parsedDate);
     createForm.reset();
+    setSelectedCategory(defaultCategoryKey);
     uploadedImageUrl = "";
     createFormError.textContent = "";
     createForm.hidden = true;
