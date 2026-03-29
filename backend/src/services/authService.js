@@ -1,36 +1,62 @@
-const DEFAULT_SESSIONS = [
-  {
-    sessionId: 'sess-demo-user-1',
-    token: 'token-demo-user-1',
-    userId: 'user-1',
-    roles: ['member']
-  },
-  {
-    sessionId: 'sess-demo-host-1',
-    token: 'token-demo-host-1',
-    userId: 'host-1',
-    roles: ['member', 'host']
+function normalizeSessionEntry(entry, index) {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    throw new Error(`AUTH_SESSIONS_JSON session at index ${index} must be an object.`);
   }
-];
+
+  const { sessionId, token, userId, roles } = entry;
+
+  if (!sessionId || typeof sessionId !== 'string') {
+    throw new Error(`AUTH_SESSIONS_JSON session at index ${index} must include a string sessionId.`);
+  }
+
+  if (!token || typeof token !== 'string') {
+    throw new Error(`AUTH_SESSIONS_JSON session ${sessionId} must include a string token.`);
+  }
+
+  if (!userId || typeof userId !== 'string') {
+    throw new Error(`AUTH_SESSIONS_JSON session ${sessionId} must include a string userId.`);
+  }
+
+  if (!Array.isArray(roles) || roles.length === 0 || roles.some((role) => typeof role !== 'string')) {
+    throw new Error(
+      `AUTH_SESSIONS_JSON session ${sessionId} must include a non-empty array of string roles.`
+    );
+  }
+
+  return {
+    sessionId,
+    token,
+    userId,
+    roles
+  };
+}
 
 function parseAuthSessions() {
   const raw = process.env.AUTH_SESSIONS_JSON;
 
   if (!raw) {
-    return DEFAULT_SESSIONS;
+    throw new Error('AUTH_SESSIONS_JSON is required and must contain at least one session.');
   }
+
+  let parsed;
 
   try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : DEFAULT_SESSIONS;
+    parsed = JSON.parse(raw);
   } catch {
-    return DEFAULT_SESSIONS;
+    throw new Error('AUTH_SESSIONS_JSON must be valid JSON.');
   }
+
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error('AUTH_SESSIONS_JSON must be a non-empty JSON array.');
+  }
+
+  return parsed.map((entry, index) => normalizeSessionEntry(entry, index));
 }
 
+const authSessions = parseAuthSessions();
+
 export function findSessionById(sessionId) {
-  const sessions = parseAuthSessions();
-  return sessions.find((entry) => entry.sessionId === sessionId) || null;
+  return authSessions.find((entry) => entry.sessionId === sessionId) || null;
 }
 
 export function hasRequiredRoles(userRoles = [], requiredRoles = []) {
