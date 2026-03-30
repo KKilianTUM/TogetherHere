@@ -21,6 +21,20 @@ Required columns:
   - `suspended`
   - `disabled`
 
+
+## `email_verification_tokens`
+
+Required columns:
+
+- `id BIGINT` primary key
+- `user_id BIGINT NOT NULL` references `users(id)` with `ON DELETE CASCADE`
+- `token_hash TEXT NOT NULL UNIQUE`
+- `created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
+- `updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
+- `expires_at TIMESTAMPTZ NOT NULL` (`expires_at > created_at`)
+- `used_at TIMESTAMPTZ NULL`
+- `last_sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
+
 ## `sessions`
 
 Source of truth for active sessions.

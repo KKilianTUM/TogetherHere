@@ -8,19 +8,31 @@ const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
 const ALLOWED_LOGIN_FIELDS = new Set(['email', 'password']);
 const ALLOWED_FORGOT_PASSWORD_FIELDS = new Set(['email']);
 const ALLOWED_RESET_PASSWORD_FIELDS = new Set(['token', 'password']);
+const ALLOWED_ISSUE_VERIFICATION_FIELDS = new Set(['email']);
+const ALLOWED_CONFIRM_VERIFICATION_FIELDS = new Set(['token']);
 const INVALID_REGISTRATION_INPUT_MESSAGE = 'Invalid registration input.';
 const INVALID_LOGIN_INPUT_MESSAGE = 'Invalid login input.';
 const INVALID_FORGOT_PASSWORD_INPUT_MESSAGE = 'Invalid forgot password input.';
 const INVALID_RESET_PASSWORD_INPUT_MESSAGE = 'Invalid reset password input.';
+const INVALID_ISSUE_VERIFICATION_INPUT_MESSAGE = 'Invalid verification issue input.';
+const INVALID_CONFIRM_VERIFICATION_INPUT_MESSAGE = 'Invalid verification confirm input.';
 const INACTIVE_ACCOUNT_MESSAGE = 'Account is not active.';
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password.';
 
-function hashSessionToken(token) {
+function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
+function hashSessionToken(token) {
+  return hashToken(token);
+}
+
 function hashPasswordResetToken(token) {
-  return crypto.createHash('sha256').update(token).digest('hex');
+  return hashToken(token);
+}
+
+function hashEmailVerificationToken(token) {
+  return hashToken(token);
 }
 
 export class AuthValidationError extends Error {
@@ -82,10 +94,10 @@ function validateDisplayName(displayName) {
   return /^[A-Za-z0-9 _-]+$/.test(trimmed);
 }
 
-function ensureOnlyAllowedFields(input) {
+function ensureOnlyAllowedFields(input, allowedFields, errorMessage) {
   for (const field of Object.keys(input)) {
-    if (!ALLOWED_REGISTER_FIELDS.has(field)) {
-      throw new AuthValidationError(INVALID_REGISTRATION_INPUT_MESSAGE);
+    if (!allowedFields.has(field)) {
+      throw new AuthValidationError(errorMessage);
     }
   }
 }
@@ -95,7 +107,7 @@ function validateRegistrationInput(input) {
     throw new AuthValidationError(INVALID_REGISTRATION_INPUT_MESSAGE);
   }
 
-  ensureOnlyAllowedFields(input);
+  ensureOnlyAllowedFields(input, ALLOWED_REGISTER_FIELDS, INVALID_REGISTRATION_INPUT_MESSAGE);
 
   const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
   const password = input.password;
@@ -120,20 +132,12 @@ function validateRegistrationInput(input) {
   };
 }
 
-function ensureOnlyAllowedLoginFields(input) {
-  for (const field of Object.keys(input)) {
-    if (!ALLOWED_LOGIN_FIELDS.has(field)) {
-      throw new AuthValidationError(INVALID_LOGIN_INPUT_MESSAGE);
-    }
-  }
-}
-
 function validateLoginInput(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new AuthValidationError(INVALID_LOGIN_INPUT_MESSAGE);
   }
 
-  ensureOnlyAllowedLoginFields(input);
+  ensureOnlyAllowedFields(input, ALLOWED_LOGIN_FIELDS, INVALID_LOGIN_INPUT_MESSAGE);
 
   const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
   const password = input.password;
@@ -153,12 +157,8 @@ function generatePasswordResetToken() {
   return crypto.randomBytes(32).toString('base64url');
 }
 
-function ensureOnlyAllowedForgotPasswordFields(input) {
-  for (const field of Object.keys(input)) {
-    if (!ALLOWED_FORGOT_PASSWORD_FIELDS.has(field)) {
-      throw new AuthValidationError(INVALID_FORGOT_PASSWORD_INPUT_MESSAGE);
-    }
-  }
+function generateEmailVerificationToken() {
+  return crypto.randomBytes(32).toString('base64url');
 }
 
 function validateForgotPasswordInput(input) {
@@ -166,7 +166,7 @@ function validateForgotPasswordInput(input) {
     throw new AuthValidationError(INVALID_FORGOT_PASSWORD_INPUT_MESSAGE);
   }
 
-  ensureOnlyAllowedForgotPasswordFields(input);
+  ensureOnlyAllowedFields(input, ALLOWED_FORGOT_PASSWORD_FIELDS, INVALID_FORGOT_PASSWORD_INPUT_MESSAGE);
 
   const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
   if (!isValidEmail(email)) {
@@ -176,20 +176,12 @@ function validateForgotPasswordInput(input) {
   return { email };
 }
 
-function ensureOnlyAllowedResetPasswordFields(input) {
-  for (const field of Object.keys(input)) {
-    if (!ALLOWED_RESET_PASSWORD_FIELDS.has(field)) {
-      throw new AuthValidationError(INVALID_RESET_PASSWORD_INPUT_MESSAGE);
-    }
-  }
-}
-
 function validateResetPasswordInput(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new AuthValidationError(INVALID_RESET_PASSWORD_INPUT_MESSAGE);
   }
 
-  ensureOnlyAllowedResetPasswordFields(input);
+  ensureOnlyAllowedFields(input, ALLOWED_RESET_PASSWORD_FIELDS, INVALID_RESET_PASSWORD_INPUT_MESSAGE);
 
   const token = typeof input.token === 'string' ? input.token.trim() : '';
   const password = input.password;
@@ -201,6 +193,88 @@ function validateResetPasswordInput(input) {
   return { token, password };
 }
 
+function validateIssueVerificationInput(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new AuthValidationError(INVALID_ISSUE_VERIFICATION_INPUT_MESSAGE);
+  }
+
+  ensureOnlyAllowedFields(input, ALLOWED_ISSUE_VERIFICATION_FIELDS, INVALID_ISSUE_VERIFICATION_INPUT_MESSAGE);
+
+  const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+  if (!isValidEmail(email)) {
+    throw new AuthValidationError(INVALID_ISSUE_VERIFICATION_INPUT_MESSAGE);
+  }
+
+  return { email };
+}
+
+function validateConfirmVerificationInput(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new AuthValidationError(INVALID_CONFIRM_VERIFICATION_INPUT_MESSAGE);
+  }
+
+  ensureOnlyAllowedFields(input, ALLOWED_CONFIRM_VERIFICATION_FIELDS, INVALID_CONFIRM_VERIFICATION_INPUT_MESSAGE);
+
+  const token = typeof input.token === 'string' ? input.token.trim() : '';
+  if (!token) {
+    throw new AuthValidationError(INVALID_CONFIRM_VERIFICATION_INPUT_MESSAGE);
+  }
+
+  return { token };
+}
+
+async function issueVerificationTokenForUser(userId) {
+  const existingTokenResult = await pool.query(
+    `SELECT id, expires_at AS "expiresAt", last_sent_at AS "lastSentAt"
+     FROM email_verification_tokens
+     WHERE user_id = $1
+       AND used_at IS NULL
+       AND expires_at > NOW()
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [userId]
+  );
+
+  const existingToken = existingTokenResult.rows[0];
+  if (existingToken?.lastSentAt) {
+    const now = Date.now();
+    const nextResendAtMs = new Date(existingToken.lastSentAt).getTime() + config.verificationResendCooldownSeconds * 1000;
+
+    if (Number.isFinite(nextResendAtMs) && now < nextResendAtMs) {
+      return {
+        issued: true,
+        throttled: true,
+        nextResendAt: new Date(nextResendAtMs).toISOString()
+      };
+    }
+  }
+
+  const verificationToken = generateEmailVerificationToken();
+  const tokenHash = hashEmailVerificationToken(verificationToken);
+
+  if (existingToken) {
+    await pool.query(
+      `UPDATE email_verification_tokens
+       SET used_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $1`,
+      [existingToken.id]
+    );
+  }
+
+  await pool.query(
+    `INSERT INTO email_verification_tokens (user_id, token_hash, expires_at, last_sent_at)
+     VALUES ($1, $2, NOW() + ($3::int * INTERVAL '1 second'), NOW())`,
+    [userId, tokenHash, config.verificationTokenTtlSeconds]
+  );
+
+  return {
+    issued: true,
+    throttled: false,
+    verificationToken
+  };
+}
+
 export async function registerUser(input) {
   const { email, password, displayName } = validateRegistrationInput(input);
 
@@ -208,13 +282,19 @@ export async function registerUser(input) {
 
   try {
     const result = await pool.query(
-      `INSERT INTO users (email, password_hash, display_name)
-       VALUES ($1, $2, $3)
-       RETURNING id, email, display_name AS "displayName", created_at AS "createdAt"`,
+      `INSERT INTO users (email, password_hash, display_name, status)
+       VALUES ($1, $2, $3, 'pending_verification')
+       RETURNING id, email, display_name AS "displayName", created_at AS "createdAt", status`,
       [email, passwordHash, displayName]
     );
 
-    return result.rows[0];
+    const user = result.rows[0];
+    const verification = await issueVerificationTokenForUser(user.id);
+
+    return {
+      ...user,
+      verificationToken: verification.verificationToken || null
+    };
   } catch (error) {
     if (error?.code === '23505') {
       throw new AuthConflictError('Account already exists for this email.');
@@ -245,7 +325,7 @@ export async function loginUser(input) {
     throw new AuthUnauthorizedError(INVALID_CREDENTIALS_MESSAGE);
   }
 
-  if (typeof userRecord.status === 'string' && userRecord.status.toLowerCase() !== 'active') {
+  if (typeof userRecord.status !== 'string' || userRecord.status.toLowerCase() !== 'active') {
     throw new AuthUnauthorizedError(INACTIVE_ACCOUNT_MESSAGE);
   }
 
@@ -399,4 +479,78 @@ export async function resetPassword(input) {
   );
 
   return { reset: true };
+}
+
+export async function issueVerification(input) {
+  const { email } = validateIssueVerificationInput(input);
+
+  const userResult = await pool.query(
+    `SELECT id, status, email_verified_at AS "emailVerifiedAt"
+     FROM users
+     WHERE email = $1
+     LIMIT 1`,
+    [email]
+  );
+
+  const user = userResult.rows[0];
+  if (!user) {
+    return { issued: true };
+  }
+
+  if (user.emailVerifiedAt || String(user.status || '').toLowerCase() === 'active') {
+    return { issued: true };
+  }
+
+  return issueVerificationTokenForUser(user.id);
+}
+
+export async function resendVerification(input) {
+  return issueVerification(input);
+}
+
+export async function confirmVerification(input) {
+  const { token } = validateConfirmVerificationInput(input);
+  const tokenHash = hashEmailVerificationToken(token);
+
+  const verificationResult = await pool.query(
+    `UPDATE email_verification_tokens evt
+     SET used_at = NOW(),
+         updated_at = NOW()
+     FROM users u
+     WHERE evt.user_id = u.id
+       AND evt.token_hash = $1
+       AND evt.used_at IS NULL
+       AND evt.expires_at > NOW()
+       AND (
+         u.email_verified_at IS NULL
+         OR LOWER(COALESCE(u.status, '')) = 'pending_verification'
+       )
+     RETURNING u.id AS "userId"`,
+    [tokenHash]
+  );
+
+  if (verificationResult.rowCount === 0) {
+    throw new AuthValidationError(INVALID_CONFIRM_VERIFICATION_INPUT_MESSAGE);
+  }
+
+  const userId = verificationResult.rows[0].userId;
+  await pool.query(
+    `UPDATE users
+     SET email_verified_at = COALESCE(email_verified_at, NOW()),
+         status = 'active',
+         updated_at = NOW()
+     WHERE id = $1`,
+    [userId]
+  );
+
+  await pool.query(
+    `UPDATE email_verification_tokens
+     SET used_at = COALESCE(used_at, NOW()),
+         updated_at = NOW()
+     WHERE user_id = $1
+       AND used_at IS NULL`,
+    [userId]
+  );
+
+  return { verified: true };
 }

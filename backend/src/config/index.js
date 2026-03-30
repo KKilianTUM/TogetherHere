@@ -92,6 +92,8 @@ const config = {
   ),
   sessionMaxAgeSeconds: Number(process.env.SESSION_MAX_AGE_SECONDS || 60 * 60 * 24 * 7),
   passwordResetTokenTtlSeconds: Number(process.env.PASSWORD_RESET_TOKEN_TTL_SECONDS || 60 * 30),
+  verificationTokenTtlSeconds: Number(process.env.VERIFICATION_TOKEN_TTL_SECONDS || 60 * 30),
+  verificationResendCooldownSeconds: Number(process.env.VERIFICATION_RESEND_COOLDOWN_SECONDS || 60),
   sessionCookieName: process.env.SESSION_COOKIE_NAME || '__Host-th_session',
   sessionCookieSecure: parseBoolean(process.env.SESSION_COOKIE_SECURE, selectedConfig.sessionCookieSecure ?? true),
   sessionCookieSameSite: process.env.SESSION_COOKIE_SAMESITE || selectedConfig.sessionCookieSameSite || 'Lax',

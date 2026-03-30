@@ -1,8 +1,11 @@
 import config from '../config/index.js';
 import {
+  confirmVerification,
+  issueVerification,
   loginUser,
   registerUser,
   requestPasswordReset,
+  resendVerification,
   resetPassword,
   revokeSessionByToken
 } from '../services/authService.js';
@@ -115,6 +118,33 @@ export async function resetPasswordWithToken(req, res, next) {
   try {
     await resetPassword(req.body);
     res.status(200).json({ reset: true });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function issueVerificationToken(req, res, next) {
+  try {
+    const result = await issueVerification(req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function resendVerificationToken(req, res, next) {
+  try {
+    const result = await resendVerification(req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function confirmVerificationToken(req, res, next) {
+  try {
+    const result = await confirmVerification(req.body);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
