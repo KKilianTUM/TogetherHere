@@ -19,11 +19,12 @@ The pipeline is intentionally sequential. Each stage must pass before the next s
    - Installs backend dependencies with `npm install` in `backend/`.
    - Runs `npm run check` (Node syntax checks).
 
-2. **unit/integration tests**
+2. **unit/integration tests (CI parity)**
    - Checks out the repository and installs backend dependencies.
-   - Searches for `*.test.js` and `*.spec.js` files under `backend/`.
-   - If tests exist, runs `node --test`.
-   - If no tests exist yet, the stage exits successfully with a skip message.
+   - Starts PostgreSQL 16 (`togetherhere_test`).
+   - Applies migrations to the test database via `./scripts/db-migrate.sh`.
+   - Runs `npm run test:ci-parity` in `backend/` with explicit auth/security env defaults (CORS/CSRF/rate-limit).
+   - Enforces deterministic ordering with `--test-concurrency=1`.
 
 3. **migration validation**
    - Starts a temporary PostgreSQL 16 service.
@@ -52,5 +53,5 @@ The pipeline is intentionally sequential. Each stage must pass before the next s
 ## Extending the pipeline
 
 - Add stricter linting by introducing dedicated lint scripts in `backend/package.json` and updating the `lint` stage.
-- Replace the test auto-skip logic once unit/integration suites are added.
+- Extend integration suites by reusing `backend/test/support/` helpers for shared app/auth/reset behavior.
 - Extend artifact contents if additional deployable assets are introduced.

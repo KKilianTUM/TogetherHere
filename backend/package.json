@@ -8,7 +8,8 @@
     "start": "NODE_ENV=production node src/server.js",
     "start:local": "NODE_ENV=local node src/server.js",
     "check": "node --check src/server.js",
-    "test": "NODE_ENV=test node --test test/integration/*.test.js"
+    "test": "NODE_ENV=test node --test --test-concurrency=1 test/integration/*.test.js",
+    "test:ci-parity": "NODE_ENV=test DATABASE_URL=${TEST_DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/togetherhere_test} CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173 CSRF_COOKIE_SECURE=false SESSION_COOKIE_SECURE=false AUTH_RATE_LIMIT_WINDOW_MS=900000 AUTH_RATE_LIMIT_BASE_BACKOFF_MS=1000 AUTH_RATE_LIMIT_MAX_BACKOFF_MS=60000 AUTH_RATE_LIMIT_LOCKOUT_THRESHOLD=10 AUTH_RATE_LIMIT_LOCKOUT_MS=900000 node --test --test-concurrency=1 test/integration/*.test.js"
   },
   "dependencies": {
     "dotenv": "^16.6.1",

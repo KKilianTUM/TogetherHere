@@ -205,3 +205,8 @@ export function authRateLimit(req, res, next) {
 
   next();
 }
+
+
+export function resetAuthRateLimitStoreForTests() {
+  rateLimitStore.clear();
+}
