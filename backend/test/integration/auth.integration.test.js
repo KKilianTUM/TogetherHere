@@ -10,6 +10,21 @@ process.env.NODE_ENV = 'test';
 if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = TEST_DATABASE_URL;
 }
+if (!process.env.AUTH_RATE_LIMIT_WINDOW_MS) {
+  process.env.AUTH_RATE_LIMIT_WINDOW_MS = '10000';
+}
+if (!process.env.AUTH_RATE_LIMIT_BASE_BACKOFF_MS) {
+  process.env.AUTH_RATE_LIMIT_BASE_BACKOFF_MS = '50';
+}
+if (!process.env.AUTH_RATE_LIMIT_MAX_BACKOFF_MS) {
+  process.env.AUTH_RATE_LIMIT_MAX_BACKOFF_MS = '200';
+}
+if (!process.env.AUTH_RATE_LIMIT_LOCKOUT_THRESHOLD) {
+  process.env.AUTH_RATE_LIMIT_LOCKOUT_THRESHOLD = '2';
+}
+if (!process.env.AUTH_RATE_LIMIT_LOCKOUT_MS) {
+  process.env.AUTH_RATE_LIMIT_LOCKOUT_MS = '1000';
+}
 
 function assertSafeTestDatabaseUrl(databaseUrl) {
   const normalized = String(databaseUrl || '').toLowerCase();
@@ -275,4 +290,76 @@ test('me/logout return unauthorized when no session is present', async () => {
   assert.equal(logoutResponse.status, 401);
   const logoutPayload = await logoutResponse.json();
   assert.equal(logoutPayload.message, 'No authenticated session.');
+});
+
+test('auth rate limit applies backoff and lockout after repeated login failures', async () => {
+  const client = buildClient();
+  const email = buildUniqueEmail('rate-limit');
+
+  const registerResponse = await client.request('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      email,
+      password: authFixtures.password,
+      displayName: authFixtures.displayName
+    })
+  });
+  const registerPayload = await registerResponse.json();
+
+  await client.request('/auth/verification/confirm', {
+    method: 'POST',
+    body: JSON.stringify({ token: registerPayload.user.verificationToken })
+  });
+
+  const firstFailure = await client.request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password: authFixtures.wrongPassword })
+  });
+  assert.equal(firstFailure.status, 401);
+
+  const secondAttemptDuringBackoff = await client.request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password: authFixtures.wrongPassword })
+  });
+  assert.equal(secondAttemptDuringBackoff.status, 429);
+  assert.ok(secondAttemptDuringBackoff.headers.get('retry-after'));
+
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  const thirdFailure = await client.request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password: authFixtures.wrongPassword })
+  });
+  assert.equal(thirdFailure.status, 401);
+
+  const fourthAttemptDuringLockout = await client.request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password: authFixtures.wrongPassword })
+  });
+  assert.equal(fourthAttemptDuringLockout.status, 429);
+  assert.ok(fourthAttemptDuringLockout.headers.get('retry-after'));
+});
+
+test('csrf protection rejects state-changing auth requests without token for cookie sessions', async (t) => {
+  if (config.authTransportStrategy !== 'cookie-session') {
+    t.skip('CSRF token enforcement is only enabled for cookie-session auth transport.');
+    return;
+  }
+
+  const email = buildUniqueEmail('csrf-enforcement');
+  const response = await fetch(`${baseUrl}/auth/register`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      email,
+      password: authFixtures.password,
+      displayName: authFixtures.displayName
+    })
+  });
+
+  assert.equal(response.status, 403);
+  const payload = await response.json();
+  assert.equal(payload.message, 'Invalid CSRF token.');
 });
