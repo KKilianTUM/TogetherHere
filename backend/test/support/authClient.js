@@ -63,17 +63,24 @@ export function buildAuthClient({ baseUrl, csrfHeaderName }) {
     const method = (options.method || 'GET').toUpperCase();
     const headers = new Headers(options.headers || {});
     const cookieHeader = getCookieHeader();
+    const shouldInjectCsrfToken = options.injectCsrfToken !== false;
 
     if (cookieHeader) {
       headers.set('cookie', cookieHeader);
     }
 
-    if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-      if (!csrfToken) {
-        await refreshCsrfToken();
-      }
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && shouldInjectCsrfToken) {
+      if (typeof options.csrfToken === 'string') {
+        headers.set(csrfHeaderName, options.csrfToken);
+      } else {
+        if (!csrfToken) {
+          await refreshCsrfToken();
+        }
 
-      headers.set(csrfHeaderName, csrfToken);
+        headers.set(csrfHeaderName, csrfToken);
+      }
+    } else if (typeof options.csrfToken === 'string') {
+      headers.set(csrfHeaderName, options.csrfToken);
     }
 
     if (options.body && !headers.has('content-type')) {
@@ -91,8 +98,21 @@ export function buildAuthClient({ baseUrl, csrfHeaderName }) {
     return response;
   }
 
+  async function refreshCsrf() {
+    await refreshCsrfToken();
+    return csrfToken;
+  }
+
+  function clearCookie(name) {
+    cookies.delete(name);
+  }
+
   function getCookie(name) {
     return cookies.get(name);
+  }
+
+  function getCsrfToken() {
+    return csrfToken;
   }
 
   function resetAuthState() {
@@ -102,7 +122,10 @@ export function buildAuthClient({ baseUrl, csrfHeaderName }) {
 
   return {
     request,
+    refreshCsrf,
+    getCsrfToken,
     getCookie,
+    clearCookie,
     resetAuthState
   };
 }

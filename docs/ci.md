@@ -55,3 +55,24 @@ The pipeline is intentionally sequential. Each stage must pass before the next s
 - Add stricter linting by introducing dedicated lint scripts in `backend/package.json` and updating the `lint` stage.
 - Extend integration suites by reusing `backend/test/support/` helpers for shared app/auth/reset behavior.
 - Extend artifact contents if additional deployable assets are introduced.
+
+## Fast local run for S19 security tests
+
+When iterating on S19 (rate-limit + CSRF) coverage, run only the auth integration suite with CI-parity security defaults:
+
+```bash
+cd backend
+NODE_ENV=test \
+DATABASE_URL=${TEST_DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/togetherhere_test} \
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173 \
+CSRF_COOKIE_SECURE=false \
+SESSION_COOKIE_SECURE=false \
+AUTH_RATE_LIMIT_WINDOW_MS=900000 \
+AUTH_RATE_LIMIT_BASE_BACKOFF_MS=1000 \
+AUTH_RATE_LIMIT_MAX_BACKOFF_MS=60000 \
+AUTH_RATE_LIMIT_LOCKOUT_THRESHOLD=10 \
+AUTH_RATE_LIMIT_LOCKOUT_MS=900000 \
+node --test --test-concurrency=1 test/integration/auth.integration.test.js
+```
+
+For complete CI parity (all integration files), use `npm run test:ci-parity` from `backend/`.
