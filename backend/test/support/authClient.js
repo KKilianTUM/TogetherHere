@@ -60,8 +60,10 @@ export function buildAuthClient({ baseUrl, csrfHeaderName }) {
   let csrfToken = null;
 
   function setCookieHeadersIntoJar(response) {
-    const cookieValues = response.headers.getSetCookie?.()
-      || splitCombinedSetCookieHeader(response.headers.get('set-cookie'));
+    const fromGetSetCookie = response.headers.getSetCookie?.();
+    const cookieValues = Array.isArray(fromGetSetCookie) && fromGetSetCookie.length > 0
+      ? fromGetSetCookie
+      : splitCombinedSetCookieHeader(response.headers.get('set-cookie'));
 
     for (const rawCookie of cookieValues) {
       const parsed = parseSetCookieHeader(rawCookie);
