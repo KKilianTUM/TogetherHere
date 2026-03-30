@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createServer } from 'node:http';
-import pg from 'pg';
 import { authFixtures, buildUniqueEmail } from '../fixtures/auth.fixtures.js';
+import { createTestServer, closeTestServer } from '../support/testApp.js';
+import { buildAuthClient } from '../support/authClient.js';
+import { createResetFixture } from '../support/resetFixture.js';
 
 const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/togetherhere_test';
 
@@ -11,151 +12,22 @@ if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = TEST_DATABASE_URL;
 }
 
-function assertSafeTestDatabaseUrl(databaseUrl) {
-  const normalized = String(databaseUrl || '').toLowerCase();
-  if (!normalized.includes('test')) {
-    throw new Error(`Refusing to run auth integration tests against a non-test database URL: ${databaseUrl}`);
-  }
-}
-
-assertSafeTestDatabaseUrl(process.env.DATABASE_URL);
-
-const { default: app } = await import('../../src/app.js');
 const { default: config } = await import('../../src/config/index.js');
 
-const { Pool } = pg;
-const db = new Pool({ connectionString: process.env.DATABASE_URL, ssl: false });
-
-const server = createServer(app);
-await new Promise((resolve) => server.listen(0, resolve));
-
-const address = server.address();
-if (!address || typeof address === 'string') {
-  throw new Error('Failed to determine test server port.');
-}
-
-const baseUrl = `http://127.0.0.1:${address.port}`;
-
-const TABLES_TO_TRUNCATE = ['email_verification_tokens', 'password_reset_tokens', 'sessions', 'users'];
-
-async function resetDatabase() {
-  await db.query(`TRUNCATE ${TABLES_TO_TRUNCATE.join(', ')} RESTART IDENTITY CASCADE`);
-}
-
-function parseSetCookieHeader(cookieHeaderValue) {
-  const [firstPart] = cookieHeaderValue.split(';');
-  const separatorIndex = firstPart.indexOf('=');
-
-  if (separatorIndex === -1) {
-    return null;
-  }
-
-  const name = firstPart.slice(0, separatorIndex).trim();
-  const value = firstPart.slice(separatorIndex + 1).trim();
-
-  if (!name) {
-    return null;
-  }
-
-  return { name, value };
-}
-
-function buildClient() {
-  const cookies = new Map();
-  let csrfToken = null;
-
-  function setCookieHeadersIntoJar(response) {
-    const cookieValues = response.headers.getSetCookie?.() || [];
-
-    for (const rawCookie of cookieValues) {
-      const parsed = parseSetCookieHeader(rawCookie);
-      if (!parsed) {
-        continue;
-      }
-
-      if (!parsed.value) {
-        cookies.delete(parsed.name);
-        continue;
-      }
-
-      cookies.set(parsed.name, parsed.value);
-    }
-  }
-
-  function getCookieHeader() {
-    return Array.from(cookies.entries())
-      .map(([name, value]) => `${name}=${value}`)
-      .join('; ');
-  }
-
-  async function request(path, options = {}) {
-    const method = (options.method || 'GET').toUpperCase();
-    const headers = new Headers(options.headers || {});
-    const cookieHeader = getCookieHeader();
-
-    if (cookieHeader) {
-      headers.set('cookie', cookieHeader);
-    }
-
-    if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-      if (!csrfToken) {
-        await refreshCsrfToken();
-      }
-
-      headers.set(config.csrfHeaderName, csrfToken);
-    }
-
-    if (options.body && !headers.has('content-type')) {
-      headers.set('content-type', 'application/json');
-    }
-
-    const response = await fetch(`${baseUrl}${path}`, {
-      ...options,
-      method,
-      headers
-    });
-
-    setCookieHeadersIntoJar(response);
-
-    return response;
-  }
-
-  async function refreshCsrfToken() {
-    const headers = new Headers();
-    const cookieHeader = getCookieHeader();
-
-    if (cookieHeader) {
-      headers.set('cookie', cookieHeader);
-    }
-
-    const response = await fetch(`${baseUrl}/csrf-token`, { headers });
-    setCookieHeadersIntoJar(response);
-
-    const payload = await response.json();
-    csrfToken = payload.csrfToken;
-  }
-
-  function getCookie(name) {
-    return cookies.get(name);
-  }
-
-  return {
-    request,
-    getCookie
-  };
-}
+const resetFixture = createResetFixture({ databaseUrl: process.env.DATABASE_URL });
+const { server, baseUrl } = await createTestServer();
 
 test.beforeEach(async () => {
-  await resetDatabase();
+  await resetFixture.resetSecurityState();
 });
 
 test.after(async () => {
-  await db.end();
-  await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+  await resetFixture.close();
+  await closeTestServer(server);
 });
 
 test('register -> verify -> login -> me -> logout lifecycle', async () => {
-  const client = buildClient();
+  const client = buildAuthClient({ baseUrl, csrfHeaderName: config.csrfHeaderName });
   const email = buildUniqueEmail('lifecycle');
 
   const registerResponse = await client.request('/auth/register', {
@@ -202,10 +74,12 @@ test('register -> verify -> login -> me -> logout lifecycle', async () => {
   assert.equal(meAfterLogoutResponse.status, 401);
   const meAfterLogoutPayload = await meAfterLogoutResponse.json();
   assert.equal(meAfterLogoutPayload.message, 'No authenticated session.');
+
+  client.resetAuthState();
 });
 
 test('register rejects duplicate email', async () => {
-  const client = buildClient();
+  const client = buildAuthClient({ baseUrl, csrfHeaderName: config.csrfHeaderName });
   const email = buildUniqueEmail('duplicate');
 
   const firstRegister = await client.request('/auth/register', {
@@ -234,7 +108,7 @@ test('register rejects duplicate email', async () => {
 });
 
 test('login rejects wrong password', async () => {
-  const client = buildClient();
+  const client = buildAuthClient({ baseUrl, csrfHeaderName: config.csrfHeaderName });
   const email = buildUniqueEmail('wrong-password');
 
   const registerResponse = await client.request('/auth/register', {
@@ -264,7 +138,7 @@ test('login rejects wrong password', async () => {
 });
 
 test('me/logout return unauthorized when no session is present', async () => {
-  const client = buildClient();
+  const client = buildAuthClient({ baseUrl, csrfHeaderName: config.csrfHeaderName });
 
   const meResponse = await client.request('/auth/me');
   assert.equal(meResponse.status, 401);
