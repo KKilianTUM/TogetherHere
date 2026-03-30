@@ -15,3 +15,13 @@ The test suite refuses to run if `DATABASE_URL` does not contain `test`, to avoi
 cd backend
 npm test
 ```
+
+## CI usage
+
+GitHub Actions runs these tests with:
+
+```bash
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/togetherhere_test ./scripts/db-migrate.sh
+cd backend
+TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5432/togetherhere_test npm test
+```

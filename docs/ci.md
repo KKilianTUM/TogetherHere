@@ -20,10 +20,11 @@ The pipeline is intentionally sequential. Each stage must pass before the next s
    - Runs `npm run check` (Node syntax checks).
 
 2. **unit/integration tests**
+   - Starts a temporary PostgreSQL 16 service (`togetherhere_test`).
    - Checks out the repository and installs backend dependencies.
-   - Searches for `*.test.js` and `*.spec.js` files under `backend/`.
-   - If tests exist, runs `node --test`.
-   - If no tests exist yet, the stage exits successfully with a skip message.
+   - Runs `./scripts/db-migrate.sh` with `DATABASE_URL=postgres://postgres:postgres@localhost:5432/togetherhere_test`.
+   - Runs `npm test` in `backend/` with `TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5432/togetherhere_test`.
+   - This executes the integration suite, including auth lockout/rate-limit and CSRF enforcement coverage.
 
 3. **migration validation**
    - Starts a temporary PostgreSQL 16 service.
@@ -54,3 +55,14 @@ The pipeline is intentionally sequential. Each stage must pass before the next s
 - Add stricter linting by introducing dedicated lint scripts in `backend/package.json` and updating the `lint` stage.
 - Replace the test auto-skip logic once unit/integration suites are added.
 - Extend artifact contents if additional deployable assets are introduced.
+
+## Running the CI test command locally
+
+To mirror the CI integration-test stage:
+
+```bash
+export DATABASE_URL=postgres://postgres:postgres@localhost:5432/togetherhere_test
+./scripts/db-migrate.sh
+cd backend
+TEST_DATABASE_URL="$DATABASE_URL" npm test
+```
