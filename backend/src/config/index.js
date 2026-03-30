@@ -2,13 +2,15 @@ import dotenv from 'dotenv';
 import localConfig from './env.local.js';
 import developmentConfig from './env.development.js';
 import productionConfig from './env.production.js';
+import testConfig from './env.test.js';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 
 const envFileByEnv = {
   local: '.env.local',
   development: '.env.development',
-  production: '.env.production'
+  production: '.env.production',
+  test: '.env.test'
 };
 
 const selectedEnvFile = envFileByEnv[nodeEnv] || '.env';
@@ -19,7 +21,8 @@ dotenv.config();
 const configByEnv = {
   local: localConfig,
   development: developmentConfig,
-  production: productionConfig
+  production: productionConfig,
+  test: testConfig
 };
 
 const selectedConfig = configByEnv[nodeEnv] || developmentConfig;
