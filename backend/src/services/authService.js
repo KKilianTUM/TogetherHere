@@ -6,12 +6,20 @@ import config from '../config/index.js';
 const BCRYPT_COST_FACTOR = 12;
 const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
 const ALLOWED_LOGIN_FIELDS = new Set(['email', 'password']);
+const ALLOWED_FORGOT_PASSWORD_FIELDS = new Set(['email']);
+const ALLOWED_RESET_PASSWORD_FIELDS = new Set(['token', 'password']);
 const INVALID_REGISTRATION_INPUT_MESSAGE = 'Invalid registration input.';
 const INVALID_LOGIN_INPUT_MESSAGE = 'Invalid login input.';
+const INVALID_FORGOT_PASSWORD_INPUT_MESSAGE = 'Invalid forgot password input.';
+const INVALID_RESET_PASSWORD_INPUT_MESSAGE = 'Invalid reset password input.';
 const INACTIVE_ACCOUNT_MESSAGE = 'Account is not active.';
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password.';
 
 function hashSessionToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+function hashPasswordResetToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
@@ -141,6 +149,58 @@ function generateSessionToken() {
   return crypto.randomBytes(32).toString('base64url');
 }
 
+function generatePasswordResetToken() {
+  return crypto.randomBytes(32).toString('base64url');
+}
+
+function ensureOnlyAllowedForgotPasswordFields(input) {
+  for (const field of Object.keys(input)) {
+    if (!ALLOWED_FORGOT_PASSWORD_FIELDS.has(field)) {
+      throw new AuthValidationError(INVALID_FORGOT_PASSWORD_INPUT_MESSAGE);
+    }
+  }
+}
+
+function validateForgotPasswordInput(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new AuthValidationError(INVALID_FORGOT_PASSWORD_INPUT_MESSAGE);
+  }
+
+  ensureOnlyAllowedForgotPasswordFields(input);
+
+  const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+  if (!isValidEmail(email)) {
+    throw new AuthValidationError(INVALID_FORGOT_PASSWORD_INPUT_MESSAGE);
+  }
+
+  return { email };
+}
+
+function ensureOnlyAllowedResetPasswordFields(input) {
+  for (const field of Object.keys(input)) {
+    if (!ALLOWED_RESET_PASSWORD_FIELDS.has(field)) {
+      throw new AuthValidationError(INVALID_RESET_PASSWORD_INPUT_MESSAGE);
+    }
+  }
+}
+
+function validateResetPasswordInput(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new AuthValidationError(INVALID_RESET_PASSWORD_INPUT_MESSAGE);
+  }
+
+  ensureOnlyAllowedResetPasswordFields(input);
+
+  const token = typeof input.token === 'string' ? input.token.trim() : '';
+  const password = input.password;
+
+  if (!token || !validatePassword(password)) {
+    throw new AuthValidationError(INVALID_RESET_PASSWORD_INPUT_MESSAGE);
+  }
+
+  return { token, password };
+}
+
 export async function registerUser(input) {
   const { email, password, displayName } = validateRegistrationInput(input);
 
@@ -249,4 +309,94 @@ export async function revokeSessionByToken(sessionToken, revokeReason = 'logout'
   }
 
   return { revoked: true, reason: revokeReason };
+}
+
+export async function requestPasswordReset(input) {
+  const { email } = validateForgotPasswordInput(input);
+
+  const userResult = await pool.query(
+    `SELECT id, status
+     FROM users
+     WHERE email = $1
+     LIMIT 1`,
+    [email]
+  );
+
+  const userRecord = userResult.rows[0];
+  if (!userRecord) {
+    return { requested: true };
+  }
+
+  if (typeof userRecord.status === 'string' && userRecord.status.toLowerCase() !== 'active') {
+    return { requested: true };
+  }
+
+  const resetToken = generatePasswordResetToken();
+  const tokenHash = hashPasswordResetToken(resetToken);
+
+  await pool.query(
+    `DELETE FROM password_reset_tokens
+     WHERE user_id = $1
+       AND used_at IS NULL`,
+    [userRecord.id]
+  );
+
+  await pool.query(
+    `INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
+     VALUES ($1, $2, NOW() + ($3::int * INTERVAL '1 second'))`,
+    [userRecord.id, tokenHash, config.passwordResetTokenTtlSeconds]
+  );
+
+  return {
+    requested: true,
+    resetToken
+  };
+}
+
+export async function resetPassword(input) {
+  const { token, password } = validateResetPasswordInput(input);
+  const tokenHash = hashPasswordResetToken(token);
+  const passwordHash = await bcrypt.hash(password, BCRYPT_COST_FACTOR);
+
+  const result = await pool.query(
+    `UPDATE password_reset_tokens prt
+     SET used_at = NOW(),
+         updated_at = NOW()
+     FROM users u
+     WHERE prt.user_id = u.id
+       AND prt.token_hash = $1
+       AND prt.used_at IS NULL
+       AND prt.expires_at > NOW()
+       AND (
+         u.status IS NULL
+         OR LOWER(u.status) = 'active'
+       )
+     RETURNING u.id AS "userId"`,
+    [tokenHash]
+  );
+
+  if (result.rowCount === 0) {
+    throw new AuthValidationError(INVALID_RESET_PASSWORD_INPUT_MESSAGE);
+  }
+
+  const userId = result.rows[0].userId;
+
+  await pool.query(
+    `UPDATE users
+     SET password_hash = $1,
+         updated_at = NOW()
+     WHERE id = $2`,
+    [passwordHash, userId]
+  );
+
+  await pool.query(
+    `UPDATE sessions
+     SET revoked_at = NOW(),
+         updated_at = NOW()
+     WHERE user_id = $1
+       AND revoked_at IS NULL`,
+    [userId]
+  );
+
+  return { reset: true };
 }

@@ -91,6 +91,7 @@ const config = {
     parseCsv(process.env.CORS_ALLOWED_HEADERS, selectedConfig.corsAllowedHeaders || ['Content-Type', 'X-CSRF-Token'])
   ),
   sessionMaxAgeSeconds: Number(process.env.SESSION_MAX_AGE_SECONDS || 60 * 60 * 24 * 7),
+  passwordResetTokenTtlSeconds: Number(process.env.PASSWORD_RESET_TOKEN_TTL_SECONDS || 60 * 30),
   sessionCookieName: process.env.SESSION_COOKIE_NAME || '__Host-th_session',
   sessionCookieSecure: parseBoolean(process.env.SESSION_COOKIE_SECURE, selectedConfig.sessionCookieSecure ?? true),
   sessionCookieSameSite: process.env.SESSION_COOKIE_SAMESITE || selectedConfig.sessionCookieSameSite || 'Lax',
