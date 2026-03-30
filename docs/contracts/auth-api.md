@@ -19,7 +19,7 @@ All endpoints are served from the backend API host.
 
 ### `POST /auth/register`
 
-Creates a user account.
+Creates a user account in `pending_verification` status and issues an email verification token.
 
 Request body:
 
@@ -39,7 +39,9 @@ Success (`201`):
     "id": 1,
     "email": "user@example.com",
     "displayName": "Together User",
-    "createdAt": "2026-03-29T00:00:00.000Z"
+    "createdAt": "2026-03-29T00:00:00.000Z",
+    "status": "pending_verification",
+    "verificationToken": "raw-token-for-delivery"
   }
 }
 ```
@@ -52,7 +54,7 @@ Error codes:
 
 ### `POST /auth/login`
 
-Authenticates credentials and creates a server-side session.
+Authenticates credentials and creates a server-side session. Account status must be `active`.
 
 Request body:
 
@@ -78,7 +80,7 @@ Success (`200`):
 Error codes:
 
 - `400` invalid request payload / validation failure
-- `401` invalid email or password
+- `401` invalid email/password or account is not active
 - `500` internal server error
 
 ### `POST /auth/logout`
@@ -111,6 +113,67 @@ Success (`200`):
 Error codes:
 
 - `401` unauthenticated / session invalid or expired
+- `500` internal server error
+
+### `POST /auth/verification/issue`
+
+Issues a verification token for a pending account.
+
+Request body:
+
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+Success (`200`):
+
+```json
+{
+  "issued": true,
+  "throttled": false,
+  "verificationToken": "raw-token-for-delivery"
+}
+```
+
+Throttled success (`200`):
+
+```json
+{
+  "issued": true,
+  "throttled": true,
+  "nextResendAt": "2026-03-30T10:00:00.000Z"
+}
+```
+
+### `POST /auth/verification/resend`
+
+Resends verification token with the same payload/response contract as `/auth/verification/issue`.
+
+### `POST /auth/verification/confirm`
+
+Confirms a verification token and activates account status.
+
+Request body:
+
+```json
+{
+  "token": "raw-token"
+}
+```
+
+Success (`200`):
+
+```json
+{
+  "verified": true
+}
+```
+
+Error codes:
+
+- `400` invalid token payload or expired/used token
 - `500` internal server error
 
 ## Error response shape
