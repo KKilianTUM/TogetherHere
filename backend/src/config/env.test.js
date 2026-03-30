@@ -1,0 +1,20 @@
+export default {
+  appName: 'TogetherHere API (Test)',
+  logLevel: 'warn',
+  enableRequestLog: false,
+  dbSsl: false,
+  authTransportStrategy: 'cookie-session',
+  frontendOriginAllowlistSource: 'CORS_ALLOWED_ORIGINS',
+  corsAllowedOrigins: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  corsAllowedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  corsAllowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+  sessionCookieSecure: false,
+  sessionCookieSameSite: 'Lax',
+  sessionCookiePath: '/',
+  sessionCookieDomain: '',
+  csrfCookieSecure: false,
+  csrfCookieSameSite: 'Strict',
+  csrfCookiePath: '/',
+  csrfCookieDomain: '',
+  csrfCookieMaxAgeSeconds: 60 * 60 * 12
+};
