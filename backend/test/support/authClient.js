@@ -62,8 +62,8 @@ export function buildAuthClient({ baseUrl, csrfHeaderName }) {
   async function request(path, options = {}) {
     const method = (options.method || 'GET').toUpperCase();
     const headers = new Headers(options.headers || {});
-    const cookieHeader = getCookieHeader();
     const shouldInjectCsrfToken = options.injectCsrfToken !== false;
+    let cookieHeader = getCookieHeader();
 
     if (cookieHeader) {
       headers.set('cookie', cookieHeader);
@@ -75,12 +75,20 @@ export function buildAuthClient({ baseUrl, csrfHeaderName }) {
       } else {
         if (!csrfToken) {
           await refreshCsrfToken();
+          cookieHeader = getCookieHeader();
         }
 
         headers.set(csrfHeaderName, csrfToken);
       }
     } else if (typeof options.csrfToken === 'string') {
       headers.set(csrfHeaderName, options.csrfToken);
+    }
+
+    const recomputedCookieHeader = getCookieHeader();
+    if (recomputedCookieHeader) {
+      headers.set('cookie', recomputedCookieHeader);
+    } else {
+      headers.delete('cookie');
     }
 
     if (options.body && !headers.has('content-type')) {

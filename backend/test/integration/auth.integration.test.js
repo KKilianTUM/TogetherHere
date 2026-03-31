@@ -288,6 +288,24 @@ test('csrf: state-changing requests reject missing token and accept valid token'
   assert.equal(validTokenResponse.status, 201);
 });
 
+test('csrf client: first state-changing request succeeds without a manual csrf pre-call', async () => {
+  const client = buildAuthClient({ baseUrl, csrfHeaderName: config.csrfHeaderName });
+  const email = buildUniqueEmail('csrf-lazy-first-post');
+
+  const registerResponse = await client.request('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      email,
+      password: authFixtures.password,
+      displayName: authFixtures.displayName
+    })
+  });
+
+  assert.equal(registerResponse.status, 201);
+  assert.ok(typeof client.getCsrfToken() === 'string' && client.getCsrfToken().length > 0);
+  assert.ok(client.getCookie(config.csrfCookieName));
+});
+
 test('csrf: safe/idempotent routes work without csrf header and set csrf state', async () => {
   const client = buildAuthClient({ baseUrl, csrfHeaderName: config.csrfHeaderName });
 
