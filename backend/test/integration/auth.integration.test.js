@@ -51,6 +51,8 @@ async function registerAndVerify(client, tag) {
 
   assert.equal(registerResponse.status, 201);
   const registerPayload = await registerResponse.json();
+  assert.ok(registerPayload.user);
+  assert.ok(registerPayload.user.verificationToken);
 
   const verifyResponse = await client.request('/auth/verification/confirm', {
     method: 'POST',
@@ -76,6 +78,7 @@ test('register -> verify -> login -> me -> logout lifecycle', async () => {
 
   assert.equal(registerResponse.status, 201);
   const registerPayload = await registerResponse.json();
+  assert.ok(registerPayload.user);
   assert.equal(registerPayload.user.email, email);
   assert.ok(registerPayload.user.verificationToken);
 
@@ -155,7 +158,10 @@ test('login rejects wrong password', async () => {
     })
   });
 
+  assert.equal(registerResponse.status, 201);
   const registerPayload = await registerResponse.json();
+  assert.ok(registerPayload.user);
+  assert.ok(registerPayload.user.verificationToken);
 
   await client.request('/auth/verification/confirm', {
     method: 'POST',
