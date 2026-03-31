@@ -4,6 +4,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/auth",
+      "destination": "https://api.togetherhere.example/auth"
+    },
+    {
       "source": "/auth/:path*",
       "destination": "https://api.togetherhere.example/auth/:path*"
     },

@@ -15,8 +15,14 @@ Do not mix alternate routing approaches (per-page hardcoded API origins, ad-hoc 
 Routing/proxy behavior is centralized in root `vercel.json`.
 
 Expected behavior:
+- `/auth` is rewritten to `https://api.togetherhere.example/auth`.
 - `/auth/*` is rewritten to `https://api.togetherhere.example/auth/*`.
 - `/csrf-token` is rewritten to `https://api.togetherhere.example/csrf-token`.
+
+Rewrite contract:
+- Requests remain same-origin from the browser perspective (`/auth/*`, `/csrf-token` from the frontend origin).
+- Vercel rewrites forward the incoming HTTP method, request headers, and cookies to the backend target.
+- Response headers/cookies from the backend are returned to the browser, so `credentials: "include"` in `assets/js/authApi.js` continues to work for session + CSRF cookies.
 
 This keeps frontend auth calls relative-path based while still reaching the API origin in production.
 
@@ -50,6 +56,13 @@ Required production values:
 - `AUTH_REFRESH_TOKEN_SECRET`
 - `LOG_LEVEL`
 
+CORS/cookie contract for production:
+- `ALLOWED_FRONTEND_ORIGIN` must include the deployed frontend origin (for example, `https://app.togetherhere.example`).
+- `CORS_ALLOWED_ORIGINS` should contain that same origin (comma-separated when multiple origins are needed).
+- Backend runtime merges both values into the active CORS allowlist so auth bootstrap calls (`GET /auth/me`) are accepted from the deployed frontend.
+- `SESSION_COOKIE_DOMAIN` and `CSRF_COOKIE_DOMAIN` should be set to the shared parent domain (for example, `.togetherhere.example`).
+- Keep cookie SameSite policy at `Lax` (session) and `Strict` (CSRF) unless architecture changes from this same-site app/api model.
+
 ## 4) Deploy in this order
 
 1. Provision/update backend infrastructure in EU/EEA and apply environment variables from `backend/.env.production.example`.
@@ -57,7 +70,9 @@ Required production values:
 3. Deploy frontend on Vercel with root `vercel.json` present.
 4. Run smoke checks from frontend origin:
    - `GET /csrf-token` succeeds.
+   - `GET /auth/me` returns `401`/`403` for guests (not `404` or network failure).
    - Login/logout/auth bootstrap flows complete using relative paths.
+   - `login.html` and `register.html` remain interactive (no bootstrap lock caused by missing auth routes).
 
 ## 5) Operational guardrails
 
