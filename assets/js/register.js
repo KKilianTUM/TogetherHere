@@ -2,10 +2,12 @@ import { registerRequest } from "./authApi.js";
 import { requireGuest } from "./routeGuards.js";
 import { setButtonLoadingState, setFormMessage } from "./authFeedback.js";
 import { readRaw, readTrimmed, validateRegisterFields } from "./authValidation.js";
+import { getAuthState } from "./authState.js";
 
 const registerForm = document.getElementById("registerForm");
 const submitBtn = document.getElementById("registerSubmitBtn");
 const formState = document.getElementById("registerFormState");
+let submitHandlerAttached = false;
 
 const fieldMap = {
   displayName: {
@@ -68,6 +70,15 @@ async function handleRegisterSubmit(event) {
   event.preventDefault();
   if (!(registerForm instanceof HTMLFormElement)) return;
 
+  if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    setFormMessage(
+      formState,
+      "is-error",
+      "You appear to be offline. Reconnect to the internet, then try creating your account again."
+    );
+    return;
+  }
+
   clearFieldErrors();
   const fields = collectRegisterFields(registerForm);
   const errors = validateAndRender(fields);
@@ -96,7 +107,11 @@ async function handleRegisterSubmit(event) {
       window.location.assign("login.html?registered=1");
     }, 700);
   } catch {
-    setFormMessage(formState, "is-error", "Unable to reach the server. Please try again.");
+    setFormMessage(
+      formState,
+      "is-error",
+      "We could not reach /auth/register. Check your connection and server availability, then try again."
+    );
   } finally {
     setButtonLoadingState(submitBtn, false, "Create account", "Creating…");
   }
@@ -105,25 +120,23 @@ async function handleRegisterSubmit(event) {
 async function initRegisterPage() {
   if (!registerForm) return;
 
-  const fields = Array.from(registerForm.elements || []);
-  fields.forEach((field) => {
-    field.disabled = true;
-  });
+  setButtonLoadingState(submitBtn, true, "Create account", "Checking session…");
   setFormMessage(formState, "is-loading", "Checking your session…");
 
-  const canRender = await requireGuest({
+  await requireGuest({
     redirectTo: "activities.html",
     onError: (message) => {
       setFormMessage(formState, "is-error", `${message} Please refresh and try again.`);
     }
   });
 
-  if (!canRender) return;
+  const authState = getAuthState();
+  if (authState.status === "authenticated") return;
 
-  fields.forEach((field) => {
-    field.disabled = false;
-  });
-  setFormMessage(formState, "", "");
+  if (authState.status !== "error") {
+    setFormMessage(formState, "", "");
+  }
+  setButtonLoadingState(submitBtn, false, "Create account", "Creating…");
 
   ["displayName", "email", "password"].forEach((fieldName) => {
     const field = fieldMap[fieldName];
@@ -134,7 +147,10 @@ async function initRegisterPage() {
     });
   });
 
-  registerForm.addEventListener("submit", handleRegisterSubmit);
+  if (!submitHandlerAttached) {
+    registerForm.addEventListener("submit", handleRegisterSubmit);
+    submitHandlerAttached = true;
+  }
 }
 
 initRegisterPage();
