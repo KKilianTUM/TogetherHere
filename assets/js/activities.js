@@ -207,36 +207,6 @@ function openMapsForActiveCard(){
   safeOpenExternal(googleMapsUrl);
 }
 
-function normalizeDateTimeInput(input){
-  const raw = String(input || "").trim();
-  if (!raw) return null;
-
-  const compact = raw.replace(/\./g, ":").replace(/\s+/g, " ").trim();
-  const lower = compact.toLowerCase();
-  const weekdays = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
-  const match = lower.match(/^next\s+(sunday|monday|tuesday|wednesday|thursday|friday|saturday)(?:\s+(\d{1,2}:\d{2}))?$/i);
-
-  if (match){
-    const dayIdx = weekdays.indexOf(match[1]);
-    const now = new Date();
-    const result = new Date(now);
-    const delta = (dayIdx - now.getDay() + 7) % 7 || 7;
-    result.setDate(now.getDate() + delta);
-
-    if (match[2]){
-      const [hh, mm] = match[2].split(":").map((x) => parseInt(x, 10));
-      if (hh > 23 || mm > 59) return null;
-      result.setHours(hh, mm, 0, 0);
-    } else {
-      result.setHours(12, 0, 0, 0);
-    }
-    return result;
-  }
-
-  const parsed = new Date(compact);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
 function openCreateForm(){
   if (!createForm || !heroPlusBtn) return;
   createForm.hidden = false;

@@ -41,8 +41,3 @@ export function validateRegisterFields({ email, password, displayName }) {
 
   return errors;
 }
-
-export function validateRegisterInput(fields) {
-  const errors = validateRegisterFields(fields);
-  return errors.displayName || errors.email || errors.password || "";
-}
