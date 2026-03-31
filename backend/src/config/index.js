@@ -78,6 +78,17 @@ function normalizeCorsHeaders(headers) {
   return normalized.length > 0 ? [...new Set(normalized)] : ['content-type', 'x-csrf-token'];
 }
 
+function resolveCorsAllowedOrigins(defaultOrigins = []) {
+  const csvOrigins = parseCsv(process.env.CORS_ALLOWED_ORIGINS, defaultOrigins);
+  const singleAllowedFrontendOrigin = (process.env.ALLOWED_FRONTEND_ORIGIN || '').trim();
+
+  if (!singleAllowedFrontendOrigin) {
+    return csvOrigins;
+  }
+
+  return [...new Set([...csvOrigins, singleAllowedFrontendOrigin])];
+}
+
 const config = {
   env: nodeEnv,
   port: Number(process.env.PORT || 3000),
@@ -86,7 +97,7 @@ const config = {
   authTransportStrategy: process.env.AUTH_TRANSPORT_STRATEGY || selectedConfig.authTransportStrategy || 'cookie-session',
   frontendOriginAllowlistSource:
     process.env.FRONTEND_ORIGIN_ALLOWLIST_SOURCE || selectedConfig.frontendOriginAllowlistSource || 'CORS_ALLOWED_ORIGINS',
-  corsAllowedOrigins: parseCsv(process.env.CORS_ALLOWED_ORIGINS, selectedConfig.corsAllowedOrigins || []),
+  corsAllowedOrigins: resolveCorsAllowedOrigins(selectedConfig.corsAllowedOrigins || []),
   corsAllowedMethods: normalizeCorsMethods(
     parseCsv(process.env.CORS_ALLOWED_METHODS, selectedConfig.corsAllowedMethods || ['GET', 'POST', 'OPTIONS'])
   ),
