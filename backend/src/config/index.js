@@ -86,7 +86,14 @@ const config = {
   authTransportStrategy: process.env.AUTH_TRANSPORT_STRATEGY || selectedConfig.authTransportStrategy || 'cookie-session',
   frontendOriginAllowlistSource:
     process.env.FRONTEND_ORIGIN_ALLOWLIST_SOURCE || selectedConfig.frontendOriginAllowlistSource || 'CORS_ALLOWED_ORIGINS',
-  corsAllowedOrigins: parseCsv(process.env.CORS_ALLOWED_ORIGINS, selectedConfig.corsAllowedOrigins || []),
+  corsAllowedOrigins: [
+    ...new Set(
+      [
+        ...parseCsv(process.env.CORS_ALLOWED_ORIGINS, selectedConfig.corsAllowedOrigins || []),
+        ...parseCsv(process.env.ALLOWED_FRONTEND_ORIGIN, [])
+      ].filter(Boolean)
+    )
+  ],
   corsAllowedMethods: normalizeCorsMethods(
     parseCsv(process.env.CORS_ALLOWED_METHODS, selectedConfig.corsAllowedMethods || ['GET', 'POST', 'OPTIONS'])
   ),
