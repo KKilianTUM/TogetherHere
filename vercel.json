@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/auth/:path*",
+      "destination": "https://api.togetherhere.example/auth/:path*"
+    },
+    {
+      "source": "/csrf-token",
+      "destination": "https://api.togetherhere.example/csrf-token"
+    }
+  ]
+}

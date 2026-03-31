@@ -26,6 +26,16 @@ function isCsrfErrorResponse(status, payload) {
   return message.includes("csrf");
 }
 
+function assertRelativeApiPath(path) {
+  const normalizedPath = typeof path === "string" ? path.trim() : "";
+
+  if (!normalizedPath.startsWith("/") || normalizedPath.startsWith("//") || /^https?:\/\//i.test(normalizedPath)) {
+    throw new Error(`Auth API path must be relative. Received: ${path}`);
+  }
+
+  return normalizedPath;
+}
+
 async function ensureCsrfToken(forceRefresh = false) {
   if (csrfToken && !forceRefresh) return csrfToken;
 
@@ -48,6 +58,7 @@ async function ensureCsrfToken(forceRefresh = false) {
 export async function authApiRequest(path, body, options = {}) {
   const method = options.method || "POST";
   const hasBody = body !== undefined;
+  const requestPath = assertRelativeApiPath(path);
 
   if (isCsrfProtectedMethod(method)) {
     await ensureCsrfToken();
@@ -65,7 +76,7 @@ export async function authApiRequest(path, body, options = {}) {
 
   const headers = Object.keys(requestHeaders).length ? requestHeaders : undefined;
 
-  let response = await fetch(path, {
+  let response = await fetch(requestPath, {
     method,
     headers,
     credentials: "include",
@@ -79,7 +90,7 @@ export async function authApiRequest(path, body, options = {}) {
 
     const retryHeaders = { ...(headers || {}), "x-csrf-token": csrfToken };
 
-    response = await fetch(path, {
+    response = await fetch(requestPath, {
       method,
       headers: retryHeaders,
       credentials: "include",
