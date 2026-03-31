@@ -1,12 +1,13 @@
 import { loginRequest } from "./authApi.js";
 import { requireGuest } from "./routeGuards.js";
-import { setAuthenticatedUser } from "./authState.js";
+import { getAuthState, setAuthenticatedUser } from "./authState.js";
 import { setButtonLoadingState, setFormMessage } from "./authFeedback.js";
 import { readRaw, readTrimmed, validateLoginInput } from "./authValidation.js";
 
 const loginForm = document.getElementById("loginForm");
 const submitBtn = document.getElementById("loginSubmitBtn");
 const formState = document.getElementById("loginFormState");
+let submitHandlerAttached = false;
 
 
 function renderPostRegistrationHint() {
@@ -71,27 +72,29 @@ async function handleLoginSubmit(event) {
 async function initLoginPage() {
   if (!loginForm) return;
 
-  const fields = Array.from(loginForm.elements || []);
-  fields.forEach((field) => {
-    field.disabled = true;
-  });
+  setButtonLoadingState(submitBtn, true, "Log in", "Checking session…");
   setFormMessage(formState, "is-loading", "Checking your session…");
 
-  const canRender = await requireGuest({
+  await requireGuest({
     redirectTo: "activities.html",
     onError: (message) => {
       setFormMessage(formState, "is-error", `${message} Please refresh and try again.`);
     }
   });
 
-  if (!canRender) return;
+  const authState = getAuthState();
+  if (authState.status === "authenticated") return;
 
-  fields.forEach((field) => {
-    field.disabled = false;
-  });
-  setFormMessage(formState, "", "");
+  if (authState.status !== "error") {
+    setFormMessage(formState, "", "");
+  }
+  setButtonLoadingState(submitBtn, false, "Log in", "Logging in…");
   renderPostRegistrationHint();
-  loginForm.addEventListener("submit", handleLoginSubmit);
+
+  if (!submitHandlerAttached) {
+    loginForm.addEventListener("submit", handleLoginSubmit);
+    submitHandlerAttached = true;
+  }
 }
 
 initLoginPage();
