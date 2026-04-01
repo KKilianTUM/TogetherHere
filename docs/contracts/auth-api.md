@@ -19,7 +19,7 @@ All endpoints are served from the backend API host.
 
 ### `POST /auth/register`
 
-Creates a user account in `pending_verification` status and issues an email verification token.
+Creates a user account in `pending_verification` status and sends the verification code/link through the configured email provider API (`EMAIL_PROVIDER`).
 
 Request body:
 
@@ -40,8 +40,7 @@ Success (`201`):
     "email": "user@example.com",
     "displayName": "Together User",
     "createdAt": "2026-03-29T00:00:00.000Z",
-    "status": "pending_verification",
-    "verificationToken": "raw-token-for-delivery"
+    "status": "pending_verification"
   }
 }
 ```
@@ -117,7 +116,7 @@ Error codes:
 
 ### `POST /auth/verification/issue`
 
-Issues a verification token for a pending account.
+Issues a verification token for a pending account and sends delivery via provider API.
 
 Request body:
 
@@ -132,8 +131,7 @@ Success (`200`):
 ```json
 {
   "issued": true,
-  "throttled": false,
-  "verificationToken": "raw-token-for-delivery"
+  "throttled": false
 }
 ```
 
@@ -150,6 +148,15 @@ Throttled success (`200`):
 ### `POST /auth/verification/resend`
 
 Resends verification token with the same payload/response contract as `/auth/verification/issue`.
+
+### Local/test token exposure guard
+
+For local/test automation only, plaintext `verificationToken` and `resetToken` may be included in responses **only when**:
+
+- `NODE_ENV` is `local` or `test`, and
+- `AUTH_EXPOSE_TOKENS_IN_RESPONSE=true`.
+
+Production must keep `AUTH_EXPOSE_TOKENS_IN_RESPONSE=false`.
 
 ### `POST /auth/verification/confirm`
 

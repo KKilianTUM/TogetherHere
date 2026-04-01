@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import pool from '../db/pool.js';
 import config from '../config/index.js';
+import { sendAuthEmail } from './emailDeliveryService.js';
 
 const BCRYPT_COST_FACTOR = 12;
 const ALLOWED_REGISTER_FIELDS = new Set(['email', 'password', 'displayName']);
@@ -161,6 +162,48 @@ function generateEmailVerificationToken() {
   return crypto.randomBytes(32).toString('base64url');
 }
 
+function buildVerificationUrl(token) {
+  if (!config.appBaseUrl) {
+    return null;
+  }
+
+  return `${config.appBaseUrl.replace(/\/$/, '')}/verify-email?token=${encodeURIComponent(token)}`;
+}
+
+function buildPasswordResetUrl(token) {
+  if (!config.appBaseUrl) {
+    return null;
+  }
+
+  return `${config.appBaseUrl.replace(/\/$/, '')}/reset-password?token=${encodeURIComponent(token)}`;
+}
+
+async function sendVerificationEmail(email, token) {
+  const verifyUrl = buildVerificationUrl(token);
+  const subject = 'Verify your TogetherHere account';
+  const text = verifyUrl
+    ? `Use this verification code: ${token}\n\nOr open this link: ${verifyUrl}`
+    : `Use this verification code: ${token}`;
+  const html = verifyUrl
+    ? `<p>Use this verification code: <strong>${token}</strong></p><p>Or verify with this link: <a href="${verifyUrl}">${verifyUrl}</a></p>`
+    : `<p>Use this verification code: <strong>${token}</strong></p>`;
+
+  await sendAuthEmail({ to: email, subject, text, html });
+}
+
+async function sendPasswordResetEmail(email, token) {
+  const resetUrl = buildPasswordResetUrl(token);
+  const subject = 'Reset your TogetherHere password';
+  const text = resetUrl
+    ? `Use this password reset code: ${token}\n\nOr open this link: ${resetUrl}`
+    : `Use this password reset code: ${token}`;
+  const html = resetUrl
+    ? `<p>Use this password reset code: <strong>${token}</strong></p><p>Or reset with this link: <a href="${resetUrl}">${resetUrl}</a></p>`
+    : `<p>Use this password reset code: <strong>${token}</strong></p>`;
+
+  await sendAuthEmail({ to: email, subject, text, html });
+}
+
 function validateForgotPasswordInput(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new AuthValidationError(INVALID_FORGOT_PASSWORD_INPUT_MESSAGE);
@@ -223,7 +266,8 @@ function validateConfirmVerificationInput(input) {
   return { token };
 }
 
-async function issueVerificationTokenForUser(userId) {
+async function issueVerificationTokenForUser(user) {
+  const userId = user.id;
   const existingTokenResult = await pool.query(
     `SELECT id, expires_at AS "expiresAt", last_sent_at AS "lastSentAt"
      FROM email_verification_tokens
@@ -268,10 +312,12 @@ async function issueVerificationTokenForUser(userId) {
     [userId, tokenHash, config.verificationTokenTtlSeconds]
   );
 
+  await sendVerificationEmail(user.email, verificationToken);
+
   return {
     issued: true,
     throttled: false,
-    verificationToken
+    ...(config.authExposeTokensInResponse ? { verificationToken } : {})
   };
 }
 
@@ -289,11 +335,11 @@ export async function registerUser(input) {
     );
 
     const user = result.rows[0];
-    const verification = await issueVerificationTokenForUser(user.id);
+    const verification = await issueVerificationTokenForUser({ id: user.id, email: user.email });
 
     return {
       ...user,
-      verificationToken: verification.verificationToken || null
+      ...(config.authExposeTokensInResponse ? { verificationToken: verification.verificationToken || null } : {})
     };
   } catch (error) {
     if (error?.code === '23505') {
@@ -427,10 +473,9 @@ export async function requestPasswordReset(input) {
     [userRecord.id, tokenHash, config.passwordResetTokenTtlSeconds]
   );
 
-  return {
-    requested: true,
-    resetToken
-  };
+  await sendPasswordResetEmail(email, resetToken);
+
+  return config.authExposeTokensInResponse ? { requested: true, resetToken } : { requested: true };
 }
 
 export async function resetPassword(input) {
@@ -501,7 +546,7 @@ export async function issueVerification(input) {
     return { issued: true };
   }
 
-  return issueVerificationTokenForUser(user.id);
+  return issueVerificationTokenForUser({ id: user.id, email });
 }
 
 export async function resendVerification(input) {

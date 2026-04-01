@@ -8,6 +8,8 @@ import { createResetFixture } from '../support/resetFixture.js';
 const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/togetherhere_test';
 
 process.env.NODE_ENV = 'test';
+process.env.AUTH_EXPOSE_TOKENS_IN_RESPONSE = 'true';
+process.env.EMAIL_PROVIDER = 'noop';
 if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = TEST_DATABASE_URL;
 }
