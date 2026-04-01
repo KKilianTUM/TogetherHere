@@ -123,7 +123,18 @@ const config = {
   authRateLimitBaseBackoffMs: Number(process.env.AUTH_RATE_LIMIT_BASE_BACKOFF_MS || 1000),
   authRateLimitMaxBackoffMs: Number(process.env.AUTH_RATE_LIMIT_MAX_BACKOFF_MS || 60 * 1000),
   authRateLimitLockoutThreshold: Number(process.env.AUTH_RATE_LIMIT_LOCKOUT_THRESHOLD || 10),
-  authRateLimitLockoutMs: Number(process.env.AUTH_RATE_LIMIT_LOCKOUT_MS || 15 * 60 * 1000)
+  authRateLimitLockoutMs: Number(process.env.AUTH_RATE_LIMIT_LOCKOUT_MS || 15 * 60 * 1000),
+  authExposeTokensInResponse:
+    parseBoolean(process.env.AUTH_EXPOSE_TOKENS_IN_RESPONSE, false) && (nodeEnv === 'local' || nodeEnv === 'test'),
+  emailProvider: (process.env.EMAIL_PROVIDER || 'noop').toLowerCase(),
+  emailFromAddress: process.env.EMAIL_FROM_ADDRESS || 'noreply@togetherhere.local',
+  emailReplyToAddress: process.env.EMAIL_REPLY_TO_ADDRESS || '',
+  appBaseUrl: process.env.APP_BASE_URL || '',
+  resendApiKey: process.env.RESEND_API_KEY || '',
+  postmarkServerToken: process.env.POSTMARK_SERVER_TOKEN || '',
+  sesRegion: process.env.AWS_SES_REGION || process.env.AWS_REGION || '',
+  sesAccessKeyId: process.env.AWS_SES_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || '',
+  sesSecretAccessKey: process.env.AWS_SES_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || ''
 };
 
 export default config;

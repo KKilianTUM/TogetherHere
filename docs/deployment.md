@@ -60,6 +60,14 @@ Required production values:
 - `CSRF_COOKIE_PATH=/`
 - `AUTH_ACCESS_TOKEN_SECRET`
 - `AUTH_REFRESH_TOKEN_SECRET`
+- `APP_BASE_URL`
+- `EMAIL_PROVIDER` (`resend`, `postmark`, or `ses`)
+- `EMAIL_FROM_ADDRESS`
+- Provider credentials:
+  - `RESEND_API_KEY` when `EMAIL_PROVIDER=resend`
+  - `POSTMARK_SERVER_TOKEN` when `EMAIL_PROVIDER=postmark`
+  - `AWS_SES_REGION`, `AWS_SES_ACCESS_KEY_ID`, `AWS_SES_SECRET_ACCESS_KEY` when `EMAIL_PROVIDER=ses`
+- `AUTH_EXPOSE_TOKENS_IN_RESPONSE=false`
 - `LOG_LEVEL`
 
 CORS/cookie contract for production:
@@ -73,7 +81,7 @@ CORS/cookie contract for production:
 ## 4) Deploy in this order
 
 1. Provision/update backend infrastructure in EU/EEA and apply environment variables from `backend/.env.production.example`.
-   - At minimum set: `DATABASE_URL`, `ALLOWED_FRONTEND_ORIGIN=https://<your-vercel-domain-or-custom-domain>`, `CORS_ALLOWED_ORIGINS=https://<same-frontend-origin>`, `SESSION_COOKIE_DOMAIN=.yourdomain.com`, `CSRF_COOKIE_DOMAIN=.yourdomain.com`, `SESSION_COOKIE_SECURE=true`, `CSRF_COOKIE_SECURE=true`, plus auth rate-limit variables for your traffic profile.
+   - At minimum set: `DATABASE_URL`, `ALLOWED_FRONTEND_ORIGIN=https://<your-vercel-domain-or-custom-domain>`, `CORS_ALLOWED_ORIGINS=https://<same-frontend-origin>`, `SESSION_COOKIE_DOMAIN=.yourdomain.com`, `CSRF_COOKIE_DOMAIN=.yourdomain.com`, `SESSION_COOKIE_SECURE=true`, `CSRF_COOKIE_SECURE=true`, `APP_BASE_URL=https://<your-frontend-origin>`, `EMAIL_PROVIDER`, provider credentials, and `AUTH_EXPOSE_TOKENS_IN_RESPONSE=false`, plus auth rate-limit variables for your traffic profile.
 2. Run database migrations against production before enabling public traffic (`./scripts/db-migrate.sh` with production `DATABASE_URL`).
 3. Deploy backend API and verify health/auth endpoints (`/csrf-token`, `/auth/me`) on `https://api.togetherhere.example`.
 4. Deploy frontend on Vercel with root `vercel.json` present.
