@@ -5,15 +5,15 @@
   "rewrites": [
     {
       "source": "/auth",
-      "destination": "https://api.togetherhere.example/auth"
+      "destination": "https://api.yourdomain.com/auth"
     },
     {
       "source": "/auth/:path*",
-      "destination": "https://api.togetherhere.example/auth/:path*"
+      "destination": "https://api.yourdomain.com/auth/:path*"
     },
     {
       "source": "/csrf-token",
-      "destination": "https://api.togetherhere.example/csrf-token"
+      "destination": "https://api.yourdomain.com/csrf-token"
     }
   ]
 }
