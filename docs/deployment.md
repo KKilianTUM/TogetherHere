@@ -73,9 +73,11 @@ CORS/cookie contract for production:
 ## 4) Deploy in this order
 
 1. Provision/update backend infrastructure in EU/EEA and apply environment variables from `backend/.env.production.example`.
-2. Deploy backend API and verify health/auth endpoints (`/csrf-token`, `/auth/me`) on `https://api.togetherhere.example`.
-3. Deploy frontend on Vercel with root `vercel.json` present.
-4. Run smoke checks from frontend origin:
+   - At minimum set: `DATABASE_URL`, `ALLOWED_FRONTEND_ORIGIN=https://<your-vercel-domain-or-custom-domain>`, `CORS_ALLOWED_ORIGINS=https://<same-frontend-origin>`, `SESSION_COOKIE_DOMAIN=.yourdomain.com`, `CSRF_COOKIE_DOMAIN=.yourdomain.com`, `SESSION_COOKIE_SECURE=true`, `CSRF_COOKIE_SECURE=true`, plus auth rate-limit variables for your traffic profile.
+2. Run database migrations against production before enabling public traffic (`./scripts/db-migrate.sh` with production `DATABASE_URL`).
+3. Deploy backend API and verify health/auth endpoints (`/csrf-token`, `/auth/me`) on `https://api.togetherhere.example`.
+4. Deploy frontend on Vercel with root `vercel.json` present.
+5. Run smoke checks from frontend origin:
    - `GET /csrf-token` succeeds.
    - `GET /auth/me` returns `401`/`403` for guests (not `404` or network failure).
    - Login/logout/auth bootstrap flows complete using relative paths.
