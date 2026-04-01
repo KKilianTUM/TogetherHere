@@ -52,6 +52,12 @@ Required production values:
 - `CORS_ALLOWED_ORIGINS`
 - `SESSION_COOKIE_DOMAIN`
 - `CSRF_COOKIE_DOMAIN`
+- `SESSION_COOKIE_NAME=__Secure-th_session`
+- `CSRF_COOKIE_NAME=__Secure-th_csrf`
+- `SESSION_COOKIE_SECURE=true`
+- `CSRF_COOKIE_SECURE=true`
+- `SESSION_COOKIE_PATH=/`
+- `CSRF_COOKIE_PATH=/`
 - `AUTH_ACCESS_TOKEN_SECRET`
 - `AUTH_REFRESH_TOKEN_SECRET`
 - `LOG_LEVEL`
@@ -61,6 +67,7 @@ CORS/cookie contract for production:
 - `CORS_ALLOWED_ORIGINS` should contain that same origin (comma-separated when multiple origins are needed).
 - Backend runtime merges both values into the active CORS allowlist so auth bootstrap calls (`GET /auth/me`) are accepted from the deployed frontend.
 - `SESSION_COOKIE_DOMAIN` and `CSRF_COOKIE_DOMAIN` should be set to the shared parent domain (for example, `.togetherhere.example`).
+- When cookie `Domain` is set for cross-subdomain auth, use `__Secure-` cookie name prefixes (not `__Host-`) because `__Host-` cookies must not include a `Domain` attribute.
 - Keep cookie SameSite policy at `Lax` (session) and `Strict` (CSRF) unless architecture changes from this same-site app/api model.
 
 ## 4) Deploy in this order
