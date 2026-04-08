@@ -16,12 +16,54 @@ function parseSetCookieHeader(cookieHeaderValue) {
   return { name, value };
 }
 
+function splitCombinedSetCookieHeader(headerValue) {
+  if (typeof headerValue !== 'string' || !headerValue.trim()) {
+    return [];
+  }
+
+  const cookies = [];
+  let buffer = '';
+  let inExpiresAttribute = false;
+
+  for (let index = 0; index < headerValue.length; index += 1) {
+    const currentChar = headerValue[index];
+    const nextPart = headerValue.slice(index, index + 8).toLowerCase();
+
+    if (nextPart === 'expires=') {
+      inExpiresAttribute = true;
+    }
+
+    if (currentChar === ',' && !inExpiresAttribute) {
+      if (buffer.trim()) {
+        cookies.push(buffer.trim());
+      }
+      buffer = '';
+      continue;
+    }
+
+    if (inExpiresAttribute && currentChar === ';') {
+      inExpiresAttribute = false;
+    }
+
+    buffer += currentChar;
+  }
+
+  if (buffer.trim()) {
+    cookies.push(buffer.trim());
+  }
+
+  return cookies;
+}
+
 export function buildAuthClient({ baseUrl, csrfHeaderName }) {
   const cookies = new Map();
   let csrfToken = null;
 
   function setCookieHeadersIntoJar(response) {
-    const cookieValues = response.headers.getSetCookie?.() || [];
+    const fromGetSetCookie = response.headers.getSetCookie?.();
+    const cookieValues = Array.isArray(fromGetSetCookie) && fromGetSetCookie.length > 0
+      ? fromGetSetCookie
+      : splitCombinedSetCookieHeader(response.headers.get('set-cookie'));
 
     for (const rawCookie of cookieValues) {
       const parsed = parseSetCookieHeader(rawCookie);

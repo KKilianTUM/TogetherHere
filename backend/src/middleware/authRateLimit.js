@@ -81,6 +81,7 @@ function getRateState(key) {
 
 function pruneState(state, now, windowMs) {
   state.attempts = state.attempts.filter((attemptMs) => now - attemptMs <= windowMs);
+  state.consecutiveFailures = state.attempts.length;
 }
 
 function clearExpiredEntries(now, maxIdleMs) {
@@ -153,6 +154,14 @@ export function authRateLimit(req, res, next) {
     state.lastSeenAt = finishedAt;
     pruneState(state, finishedAt, config.authRateLimitWindowMs);
 
+    if (state.lockoutUntil <= finishedAt) {
+      state.lockoutUntil = 0;
+    }
+
+    if (state.backoffUntil <= finishedAt) {
+      state.backoffUntil = 0;
+    }
+
     if (res.statusCode >= 200 && res.statusCode < 300) {
       rateLimitStore.delete(requestKey);
       logSecurityEvent('auth_attempt_success', {
@@ -169,7 +178,7 @@ export function authRateLimit(req, res, next) {
     }
 
     state.attempts.push(finishedAt);
-    state.consecutiveFailures += 1;
+    state.consecutiveFailures = state.attempts.length;
 
     const failureCount = state.attempts.length;
     const exponentialFactor = Math.max(0, state.consecutiveFailures - 1);
