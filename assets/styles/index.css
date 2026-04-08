@@ -270,6 +270,21 @@
   border-radius:999px;
 }
 
+.certificate-panel{
+  width:min(860px, 100%);
+  margin:0 auto 0 0;
+  border-radius:20px;
+  overflow:hidden;
+  background:#f7f8fb;
+}
+
+.certificate-image{
+  width:100%;
+  display:block;
+  height:auto;
+  object-fit:cover;
+}
+
 .footer{
   padding:24px 0 34px;
   border-top:1px solid rgba(0,0,0,.06);
